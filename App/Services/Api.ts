@@ -17,4 +17,5 @@ export interface Api{
 
 export interface HipHopApi{
     login: (params: IUserRequest) => Observable<ApiResponse<IUserData>>; 
+    getSongByCat: () => Observable<ApiResponse<any>>;
 }

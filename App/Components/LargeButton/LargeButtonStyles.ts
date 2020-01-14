@@ -6,7 +6,6 @@ export default StyleSheet.create({
         flexDirection: "row",
         height: 40,
         // marginHorizontal: 20,
-        backgroundColor: colors.maroon,
         justifyContent: "center",
     },
     btnText: {

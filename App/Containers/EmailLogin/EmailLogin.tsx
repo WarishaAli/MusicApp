@@ -33,7 +33,8 @@ class EmailLogin extends React.Component<Props, State> {
         this.props.navigation.navigate("SignUpScreen");
       }
       public login = () => {
-          console.log(this.state.email, this.state.password);
+
+        //   console.log(this.state.email, this.state.password);
           this.props.login({deviceType: "android", deviecId: "sdSdSDs", socialType: "normal",
             emailId: this.state.email, password: this.state.password});
         //   this.props.navigation.navigate("HomeScreen");
@@ -50,10 +51,13 @@ class EmailLogin extends React.Component<Props, State> {
                 <AppLogo iconStyle={{color: colors.maroon}} appNameStyle={{color: colors.coal}} appSloganStyle={{color: colors.maroon}}/>
                 <InputText placeHolder={"Email"} onChangeText={this.setEmail} value={this.state.email}/>
                 <InputText style={{marginTop: 20}} placeHolder={"Password"} onChangeText = {this.setPassword} value={this.state.password} secureTextEntry={true}/>
-                <LargeButton  onPress={this.login} style={{marginTop: 20}} text={"LOGIN"}/>
+                <LargeButton  onPress={this.login} style={{marginTop: 20}} text={"LOGIN"}
+                disabled={this.state.email.length === 0 || this.state.password.length === 0}
+                />
                 <Text style={styles.forgotPwdText}>Forgot Password?</Text>
                 <Text style={styles.forgotPwdText}>OR</Text>
-                <LargeButton style={{marginTop: 10}} text={"LOGIN WITH FACEBOOK"} iconName={"sc-facebook"} iconType={"EvilIcons"}></LargeButton>
+                <LargeButton style={{marginTop: 10}} text={"LOGIN WITH FACEBOOK"} iconName={"sc-facebook"} iconType={"EvilIcons"}
+                ></LargeButton>
                 <Text style={styles.accountText}>Don't have an account? <Text onPress={this.openSignup} style={{color: colors.maroon}}>Sign up</Text></Text>
        
             </Container>

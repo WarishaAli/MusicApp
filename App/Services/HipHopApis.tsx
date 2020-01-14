@@ -4,15 +4,16 @@ import { IUserData, IUserRequest } from "../Lib/Interfaces";
 import { from } from "rxjs";
 
 
-export default (): HipHopApi => {
+export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHopApi => {
 
     const api = apicreate({
-        baseURL:`app.hiphopstreets.com/mobileServices`,
+        baseURL,
         headers: {
             "Cache-Control": "no-cache",
-            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+            // "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+            "Content-Type": "application/json",
           },
-          // 20 second timeout...
+        //   20 second timeout...
           timeout: 20000,
         });
         const login = (params: IUserRequest) => from(api.post(`/login`, {
@@ -22,7 +23,11 @@ export default (): HipHopApi => {
             email_id: params.emailId,
             password: params.password
         }));
+        const getSongByCat = () => from(api.get(`getsongbycat?song_category=Trap`));
+
+
         return{
             login,
+            getSongByCat,
         }
 };

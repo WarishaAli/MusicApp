@@ -9,30 +9,43 @@ import { IDependencies } from "../../Reducers/CreateStore";
 import { ApiResponse } from "apisauce";
 import { IUserData } from "../../Lib/Interfaces";
 import { Alert } from "react-native";
+import { from } from "seamless-immutable";
 
 export const checkIfLoginEpic: Epic = (action$, state$) => action$.pipe(
     ofType(getType(LoginActions.checkIsLogin)),
-    mergeMap(() => {
+    mergeMap(async () => {
         let isLogin = false;
-              const value =  AsyncStorage.getItem(LOGIN_KEY);
+              const value =  await AsyncStorage.getItem(LOGIN_KEY);
               if(value !== null) {
                 //   value.userId ? isLogin= true : isLogin = false
                 //   console.log(value.userId, "login check")
-              console.log(value);
+              console.log(value, JSON.stringify(value));
+              return of(LoginActions.loginSuccess(value));
+              } else{
+                return of(LoginActions.loginFailure());
               }
-        return of(LoginActions.setIsLogin(isLogin));
-    })
+    }),
+    mergeMap((response) => {
+      return from(response)}),
 );
 
 export const loginRequestEpic: Epic = (action$, state$, {api}: IDependencies) => action$.pipe(
   ofType(getType(LoginActions.loginRequest)),
   mergeMap((action) => {
-    return api.hiphop.login({socialType: "normal", deviceType: "android",
-    deviecId: "sdSdSDs", emailId: "ali.warishaa@gmail.com", password: "123456"}).pipe(
-      mergeMap((response: ApiResponse<any>) => {
-        console.log("response", response);
-        if(response.ok){
-          return of(LoginActions.loginSuccess(response.data))
+    return api.hiphop.login(action.payload)
+    // return api.hiphop.getSongByCat()
+    .pipe(
+      mergeMap(async (response: ApiResponse<any>) => {
+        console.log("response", response, response.data.error);
+        if(response.ok && response.data.error === "false"){
+          try{
+            await AsyncStorage.setItem(LOGIN_KEY, response.data);
+            return of(LoginActions.loginSuccess(response.data))
+          }
+          catch(error){
+            Alert.alert("Error", "Unfortunately an error occurred while saving your login information, please try again later or contact customer support");
+            return of(LoginActions.loginFailure());
+          }
         }
         else{
           Alert.alert("Error", "Unfortunatley an error occurred during your login, please check your internet connection or try again later");

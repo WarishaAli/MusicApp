@@ -6,12 +6,14 @@ import colors from "../../Themes/Colors";
 export interface Props{
     placeHolder: string;
     style?: any;
+    onChangeText: (text: string) => void;
 }
 
-const InputText: React.SFC<Props> = ({placeHolder, style, ...remaining}: Props) => (
+const InputText: React.SFC<Props> = ({placeHolder, style, onChangeText, ...remaining}: Props) => (
     <TextInput
     {...remaining}
     style={[styles.textField, style]} placeholder={placeHolder} placeholderTextColor={colors.charcoal}
+    onChangeText={onChangeText}
     ></TextInput>
 )
 
