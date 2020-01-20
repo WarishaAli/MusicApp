@@ -10,9 +10,10 @@ import { NavigationScreenProps } from "react-navigation";
 import { IUserRequest } from "../../Lib/Interfaces";
 import { LoginActions } from "../../Reducers/LoginReducers";
 import { connect } from "react-redux";
+import {Content} from "native-base";
 
 export interface DispatchProps{
-    login: (params: IUserRequest) => void;
+    login: (email: string, pwd: string, socialType: string) => void;
 }
 export interface State{
     email: string;
@@ -35,8 +36,7 @@ class EmailLogin extends React.Component<Props, State> {
       public login = () => {
 
         //   console.log(this.state.email, this.state.password);
-          this.props.login({deviceType: "android", deviecId: "sdSdSDs", socialType: "normal",
-            emailId: this.state.email, password: this.state.password});
+          this.props.login(this.state.email, this.state.password, "normal");
         //   this.props.navigation.navigate("HomeScreen");
       }
       public setEmail = (text: string) => {
@@ -48,6 +48,7 @@ class EmailLogin extends React.Component<Props, State> {
     public render () {
         return(
             <Container style={styles.mainContainer}>
+                <Content>
                 <AppLogo iconStyle={{color: colors.maroon}} appNameStyle={{color: colors.coal}} appSloganStyle={{color: colors.maroon}}/>
                 <InputText placeHolder={"Email"} onChangeText={this.setEmail} value={this.state.email}/>
                 <InputText style={{marginTop: 20}} placeHolder={"Password"} onChangeText = {this.setPassword} value={this.state.password} secureTextEntry={true}/>
@@ -59,14 +60,14 @@ class EmailLogin extends React.Component<Props, State> {
                 <LargeButton style={{marginTop: 10}} text={"LOGIN WITH FACEBOOK"} iconName={"sc-facebook"} iconType={"EvilIcons"}
                 ></LargeButton>
                 <Text style={styles.accountText}>Don't have an account? <Text onPress={this.openSignup} style={{color: colors.maroon}}>Sign up</Text></Text>
-       
+                </Content>
             </Container>
         )
     }
 }
 
 const mapDispatchToProps = (dispatch):DispatchProps => ({
-    login: (params) => dispatch(LoginActions.loginRequest(params))
+    login: (email, pwd, socialType) => dispatch(LoginActions.loginRequest(email, pwd, socialType))
 })
 
 export default connect(null, mapDispatchToProps) (EmailLogin);

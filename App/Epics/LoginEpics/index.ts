@@ -1,56 +1,97 @@
-import { Epic, ofType } from "redux-observable";
-import { getType } from "typesafe-actions";
-import { LoginActions } from "../../Reducers/LoginReducers";
-import { mergeMap } from "rxjs/operators";
-import { of } from "rxjs";
 import AsyncStorage from '@react-native-community/async-storage';
-import { LOGIN_KEY } from "../../Lib/Constants";
-import { IDependencies } from "../../Reducers/CreateStore";
 import { ApiResponse } from "apisauce";
-import { IUserData } from "../../Lib/Interfaces";
 import { Alert } from "react-native";
-import { from } from "seamless-immutable";
+import { Epic, ofType } from "redux-observable";
+import { of } from "rxjs";
+import { mergeMap } from "rxjs/operators";
+import { getType } from "typesafe-actions";
+import { LOGIN_KEY } from "../../Lib/Constants";
+import { IUserData } from "../../Lib/Interfaces";
+import { IDependencies } from "../../Reducers/CreateStore";
+import { LoginActions } from "../../Reducers/LoginReducers";
+import { SongsActions } from "../../Reducers/SongsReducer";
+
+export let loginData: any = undefined;
+// export let shouldLogin: boolean = false;
+export let loginResponse: IUserData = undefined;
 
 export const checkIfLoginEpic: Epic = (action$, state$) => action$.pipe(
-    ofType(getType(LoginActions.checkIsLogin)),
-    mergeMap(async () => {
-        let isLogin = false;
-              const value =  await AsyncStorage.getItem(LOGIN_KEY);
-              if(value !== null) {
-                //   value.userId ? isLogin= true : isLogin = false
-                //   console.log(value.userId, "login check")
-              console.log(value, JSON.stringify(value));
-              return of(LoginActions.loginSuccess(value));
-              } else{
-                return of(LoginActions.loginFailure());
-              }
-    }),
-    mergeMap((response) => {
-      return from(response)}),
-);
+  ofType(getType(LoginActions.checkIsLogin)),
+  mergeMap(async () => {
+    // var loginData: IUserData | undefined = undefined;
+    try {
+      const value = await AsyncStorage.getItem(LOGIN_KEY);
+      console.log("from async storage", value);
+      if (value !== null) {
+        loginData = JSON.parse(value);
+      }
+    } catch (e) {
+      console.log(e, "error getting value from async");
+      return of(SongsActions.void())
+    }
+  }),
+  mergeMap((response) => {
+    return loginData ? of(LoginActions.loginSuccess(loginData)) : of(LoginActions.loginFailure());
+    // return of(LoginActions.loginSuccess({}))
+  }),
+)
 
-export const loginRequestEpic: Epic = (action$, state$, {api}: IDependencies) => action$.pipe(
+export const loginRequestEpic: Epic = (action$, state$, { api }: IDependencies) => action$.pipe(
   ofType(getType(LoginActions.loginRequest)),
   mergeMap((action) => {
-    return api.hiphop.login(action.payload)
-    // return api.hiphop.getSongByCat()
-    .pipe(
+    return api.hiphop.login(action.payload.email, action.payload.pwd, action.payload.socialType).pipe(
       mergeMap(async (response: ApiResponse<any>) => {
-        console.log("response", response, response.data.error);
-        if(response.ok && response.data.error === "false"){
-          try{
-            await AsyncStorage.setItem(LOGIN_KEY, response.data);
-            return of(LoginActions.loginSuccess(response.data))
+        console.log(response)
+        if (response.ok && response.data.error === false) {
+
+          try {
+            await AsyncStorage.setItem(LOGIN_KEY, JSON.stringify(response.data.object));
+            loginResponse = response.data.object;
           }
-          catch(error){
+          catch (error) {
+            console.log(error);
             Alert.alert("Error", "Unfortunately an error occurred while saving your login information, please try again later or contact customer support");
-            return of(LoginActions.loginFailure());
+            // return of(LoginActions.loginFailure());
           }
         }
-        else{
-          Alert.alert("Error", "Unfortunatley an error occurred during your login, please check your internet connection or try again later");
-          return of(LoginActions.loginFailure())
+        else {
+          Alert.alert("Error", "Unfortunatley an error occurred during your login, please check your credentials or try again later");
+          // return of(LoginActions.loginFailure())
+        };
+        return of(SongsActions.void())
+      }),
+      mergeMap(() => {
+        return loginResponse ? of(LoginActions.loginSuccess(loginResponse)) : of(LoginActions.loginFailure());
+        // return of(LoginActions.loginSuccess({}))
+
+      })
+    );
+  })
+);
+export const signupRequestEpic: Epic = (action$, state$, { api }: IDependencies) => action$.pipe(
+  ofType(getType(LoginActions.signup)),
+  mergeMap((action) => {
+    return api.hiphop.signup(action.payload.username, action.payload.email, action.payload.pwd).pipe(
+      mergeMap(async (response: ApiResponse<any>) => {
+        if (response.ok && response.data.error === false) {
+          try {
+            await AsyncStorage.setItem(LOGIN_KEY, JSON.stringify(response.data.object));
+            loginResponse = response.data.object;
+          }
+          catch (error) {
+            console.log(error);
+            Alert.alert("Error", "Unfortunately an error occurred while saving your account information, please try again later or contact customer support");
+          }
         }
+        else {
+          Alert.alert("Error", "Unfortunatley an error occurred during your signup, please check your internet connection or try again later");
+        };
+        return of(SongsActions.void())
+      }),
+      mergeMap(() => {
+        return loginResponse ? of(LoginActions.loginSuccess(loginResponse)) : of(LoginActions.loginFailure());
+
+
       })
     );
   })

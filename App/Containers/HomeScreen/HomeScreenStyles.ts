@@ -24,9 +24,10 @@ export default StyleSheet.create({
     },
     subHeading: {
         fontSize: 20,
-        fontWeight: "bold",
+        // fontWeight: "bold",
         color: colors.coal,
-        marginTop: 40
+        marginVertical: 30,
+        // marginTop: 40
     },
     icon: {
         color: colors.snow, alignSelf: "flex-end"
@@ -44,8 +45,12 @@ export default StyleSheet.create({
         color: colors.snow, fontSize: 15, fontWeight: "normal", textAlign: "center",
     },
     cardItemStyle: {
-        height: 80,
+        // height: 50,
         flex: 0.5,
+        marginTop: 10,
+        marginRight: 20,
+        backgroundColor: colors.silver,
+        borderRadius: 20,
         
     },
     cardImage: {
@@ -54,7 +59,16 @@ export default StyleSheet.create({
     musicPlayer:{
         marginBottom: 10,
         position: "absolute",
-        bottom: 80,
+        bottom: 60,
         width: "100%",
     },
+    listStyle:{
+        // marginTop: 10,
+    },
+    noDataText:{
+        alignSelf: "flex-start",
+        paddingTop: 40,
+        fontSize: 16,
+        paddingHorizontal: 10,
+    }
 });

@@ -22,8 +22,9 @@ export default StyleSheet.create({
         flexDirection: "row",
     },
     heading: {
-        color: colors.black,
+        color: colors.charcoal,
         fontSize: 18,
+        alignSelf: "center",
         // textAlign: "left",
     },
     subHeading: {
@@ -76,6 +77,7 @@ export default StyleSheet.create({
     },
     headerView:{ 
         paddingLeft: 20,
+        marginTop: 20,
     },
     listenBtn:{
         backgroundColor: colors.lightMaroon,
@@ -84,10 +86,17 @@ export default StyleSheet.create({
         marginTop: 5,
         justifyContent: "center",
         borderRadius: 5,
+        width: "50%"
+        // flex: 0.5
     },
     listenTxt: {
         color: colors.snow,
         textAlign: "center",
         fontSize: 15,
+    },
+    songImg:{
+        width: 40,
+        height: 40,
+        borderRadius: 10,
     }
 })

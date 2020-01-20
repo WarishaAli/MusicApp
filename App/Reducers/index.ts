@@ -8,6 +8,8 @@ import {BottomBarReducer, BottomBarState} from "./BottomBarReducer";
 import SongsReducer, { SongsState } from "./SongsReducer";
 import LoginReducer, { LoginState } from "./LoginReducers";
 import Api from "../Services/Api";
+import CategoryReducers, { CategoryState } from "./CategoryReducers";
+import FavoriteReducers, { FavoriteState } from "./FavoritesReducer";
 
 /* ------------- Assemble The Reducers ------------- */
 export const reducers = combineReducers({
@@ -16,6 +18,8 @@ export const reducers = combineReducers({
   bottomBar: BottomBarReducer,
   songs: SongsReducer,
   login: LoginReducer,
+  category: CategoryReducers,
+  favorites: FavoriteReducers,
 });
 
 export interface RootState {
@@ -24,6 +28,8 @@ export interface RootState {
   bottomBar: BottomBarState;
   songs: SongsState,
   login: LoginState,
+  category: CategoryState,
+  favorites: FavoriteState,
 }
 const api: any = Api.create;
 const db: any = "";

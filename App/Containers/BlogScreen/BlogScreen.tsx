@@ -10,6 +10,7 @@ import { NavigationScreenProps } from "react-navigation";
 import { BottomBarBtns } from "../../Types/BottomBar";
 import { BottomBarActions } from "../../Reducers/BottomBarReducer";
 import { connect } from "react-redux";
+import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 
 export interface DispatchProps{
     selectBottomTab: (tab: BottomBarBtns) => void;
@@ -38,6 +39,7 @@ class BlogScreen extends React.Component<Props>{
     public render(){
         return(
             <Container>
+                <CommonHeader title={"Read Blogs"}/>
                 <FlatList style={{padding: 20}}data={Blogs} renderItem={this.renderItems}/>
                 <BottomBar navigation={this.props.navigation}/>
             </Container>

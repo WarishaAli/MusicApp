@@ -1,12 +1,13 @@
 import { NavigationScreenProps, FlatList } from "react-navigation";
 import React from "react";
-import {Container, Card, Content} from "native-base";
+import {Container, Card, Content, Icon} from "native-base";
 import {Text, TouchableOpacity, ImageBackground} from "react-native";
 import styles from "./AllCategoriesScreenStyles";
 import { PlaylistTypes, Playlist } from "../../Lib/PlaylistTypes";
 import colors from "../../Themes/Colors";
 import { SongsActions } from "../../Reducers/SongsReducer";
 import { connect } from "react-redux";
+import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 
 export interface OwnProps{
 
@@ -40,8 +41,11 @@ class AllCategoriesScreen extends React.Component<Props>{
     public render(){
         return(
             <Container>
+                 <CommonHeader title={"Explore " + this.categoryData.title}
+                 leftItem={<Icon name={"ios-arrow-back"} style={{color: colors.snow, fontSize: 23}} onPress={() => this.props.navigation.pop()} />}
+                 />
                 <Content style={{padding: 20}}>
-                    <Text style={styles.headerTitle}>{this.categoryData.title}</Text>
+                    {/* <Text style={styles.headerTitle}>{this.categoryData.title}</Text> */}
                     <FlatList renderItem={this.renderTiles} data={this.categoryData.data}/>
                 </Content>
             </Container>

@@ -5,8 +5,11 @@ import { mapReducers, ReducerMap } from "../../Lib/ReduxHelpers";
 import {IUserData, IUserRequest} from "../../Lib/Interfaces";
 
 const actions = {
-    loginRequest: createAction("LOGIN_REQUEST", (params: IUserRequest) => ({
-        type: "LOGIN_REQUEST", payload: params
+    signup: createAction("SIGNUP_REQUEST", (username: string, email: string, pwd: string) => ({
+        type: "SIGNUP_REQUEST", payload: {username, email, pwd}
+    })),
+    loginRequest: createAction("LOGIN_REQUEST", (email: string, pwd: string, socialType: string) => ({
+        type: "LOGIN_REQUEST", payload: {email, pwd, socialType}
     })),
     loginSuccess: createAction("LOGIN_SUCCESS", (params: IUserData) => ({
         type: "LOGIN_SUCCESS", payload: params

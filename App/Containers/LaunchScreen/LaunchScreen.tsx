@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Image, ScrollView, Text, View, ImageBackground } from "react-native";
-import {Container, Icon} from "native-base";
+import {Container, Content} from "native-base";
 
 import { Images } from "../../Themes";
 
@@ -22,14 +22,16 @@ export default class LaunchScreen extends Component<NavigationScreenProps> {
   public render() {
     return (
      <Container style={styles.mainContainer}>
+       {/* <Content> */}
        <ImageBackground style={{flex: 1}}source={Images.backgroundImg}>
        {/* <AppLogo style={{marginTop: 200}} appNameStyle={{color: colors.snow}} appSloganStyle={{color: colors.lightPink}} iconStyle={{color: colors.snow}}/> */}
-       <View style={{width: "100%", position: "absolute", bottom: 20}}>
+       <ScrollView style={{width: "100%", position: "absolute", bottom: 20}}>
        <Text style={styles.accountText}>Don't have an account? <Text onPress={this.openSignup} style={{color: colors.maroon}}>Sign up</Text></Text>
        <LargeButton style={{marginTop: 10,  marginHorizontal: 20}} text={"LOGIN WITH FACEBOOK"} iconName={"sc-facebook"} iconType={"EvilIcons"}></LargeButton>
        <LargeTransparentButton onPress={this.openLogin} style={{marginTop: 10}}text={"LOGIN WITH EMAIL"} iconName={"email"} iconType={"MaterialCommunityIcons"}/>
-       </View>
+       </ScrollView>
        </ImageBackground>
+       {/* </Content> */}
      </Container>
     );
   }
