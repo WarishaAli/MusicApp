@@ -19,7 +19,8 @@ export default StyleSheet.create({
     },
     textStyle:{
         color: colors.snow,
-        fontSize: 15
+        fontSize: 13,
+        fontFamily: "serif"
     },
     iconHolder: {
         // backgroundColor: colors.snow,

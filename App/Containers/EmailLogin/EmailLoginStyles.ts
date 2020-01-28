@@ -11,11 +11,13 @@ export default StyleSheet.create({
         fontWeight: "bold",
         textAlign: "center",
         marginTop: 20,
+        fontFamily: "serif"
     },
     accountText: {
         fontWeight: "bold",
         fontSize: 15,
         textAlign: "center",
         marginTop: 20,
+        fontFamily: "serif"
       }
 });

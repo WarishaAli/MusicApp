@@ -1,21 +1,26 @@
+import { Button, Container, Icon, Row } from "native-base";
 import React from "react";
-import { NavigationScreenProps, FlatList } from "react-navigation";
-import { Container, Content, Button, Icon, Col } from "native-base";
-import { Text, View, TouchableOpacity, Image } from "react-native";
-import { playlists } from "../../Lib/PlaylistData";
-import styles from "./PlaylistScreenStyles";
+import { Image, Text, TouchableOpacity, View, Picker } from "react-native";
+import { ScrollView, TextInput } from "react-native-gesture-handler";
+import { FlatList, NavigationScreenProps } from "react-navigation";
+import { connect, Dispatch } from "react-redux";
 import BottomBar from "../../Components/BottomBar";
+import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 import MusicPlayer from "../../Components/MusicPlayer/MusicPlayer";
+import { Playlist, PlaylistTypes, Songs } from "../../Lib/PlaylistTypes";
+import { BottomBarActions } from "../../Reducers/BottomBarReducer";
+import { CategoryAction } from "../../Reducers/CategoryReducers";
+import { FavoriteAction, IFavoriteResponse } from "../../Reducers/FavoritesReducer";
+import { RootState } from "../../Reducers/index";
+import { MySongAction } from "../../Reducers/MySongsReducer";
+import { SongsActions } from "../../Reducers/SongsReducer";
 import colors from "../../Themes/Colors";
 import { BottomBarBtns } from "../../Types/BottomBar";
-import { connect, Dispatch } from "react-redux";
-import { BottomBarActions } from "../../Reducers/BottomBarReducer";
-import { SongsActions } from "../../Reducers/SongsReducer";
-import { RootState } from "../../Reducers/index"
-import { PlaylistTypes, Playlist, Songs } from "../../Lib/PlaylistTypes";
-import CommonHeader from "../../Components/CommonHeader/CommonHeader";
-import { FavoriteAction, IFavoriteResponse } from "../../Reducers/FavoritesReducer";
-import { CategoryAction } from "../../Reducers/CategoryReducers";
+import styles from "./PlaylistScreenStyles";
+import ModalView from "../../Components/ModalView/ModalView";
+import ImagePicker from 'react-native-image-picker';
+import DocumentPicker from 'react-native-document-picker';
+import { ISongUpload } from "../../Lib/Interfaces";
 
 export interface OwnProps {
     comingFrom: PlaylistTypes;
@@ -24,10 +29,12 @@ export interface OwnProps {
 export interface DispatchProps {
     setBottomTab: (btnName: BottomBarBtns) => void;
     playMusic: (shouldPlay: boolean) => void;
-    // selectPlaylist: (playlist: Playlist) => void;
     selectSong: (song: Songs) => void;
     getFavorites: () => void;
     getSongByCat: (catName: string) => void;
+    makeFavorite: (songId: string) => void;
+    getMySong: () => void;
+    uploadSong: (params: ISongUpload) => void;
 }
 export interface StateProps {
     shouldPlay: boolean;
@@ -35,10 +42,19 @@ export interface StateProps {
     selectedSong: Songs | undefined;
     favorites: undefined | Array<IFavoriteResponse>;
     categorySongs: undefined | Array<any>;
+    mySongs: undefined | Array<Songs>;
 }
 export interface State {
     playlistType: PlaylistTypes;
-    categoryName: string;
+    categoryData: any;
+    showModal: boolean;
+    songName: string;
+    songImage: {uri: string, type: string, name: string};
+    songFile: any;
+    songCat: string;
+    imgPosition: { x: number, y: number };
+    songStatus: 0 | 1;
+    showPicker: boolean;
 }
 export type Props = OwnProps & NavigationScreenProps & DispatchProps & StateProps;
 
@@ -47,12 +63,35 @@ class PlaylistScreen extends React.Component<Props, State>{
         super(props);
         this.state = {
             playlistType: this.props.navigation.getParam("comingFrom"),
-            categoryName: this.props.navigation.getParam("category")
+            categoryData: this.props.navigation.getParam("category"),
+            showModal: false,
+            songCat: "",
+            songFile: undefined,
+            songImage: {uri: "", type: "image/jpeg", name: ""},
+            songName: "",
+            imgPosition: { x: 0, y: 0 },
+            songStatus: 1,
+            showPicker: false
         }
     }
     public async componentDidMount() {
-        this.state.playlistType === PlaylistTypes.PLAYLIST ? this.props.getFavorites() : this.props.getSongByCat(this.state.categoryName);
-        this.state.playlistType === PlaylistTypes.PLAYLIST && this.props.setBottomTab(BottomBarBtns.PLAYLIST);
+        switch(this.state.playlistType){
+            case PlaylistTypes.EXPLORE : {
+                this.props.getSongByCat(this.state.categoryData.song_category)
+            }
+            break;
+            case PlaylistTypes.PLAYLIST : {
+                this.props.getFavorites();
+                this.props.setBottomTab(BottomBarBtns.PLAYLIST);
+            }
+            break;
+            case PlaylistTypes.MYSONGS: {
+                this.props.getMySong();
+                this.props.setBottomTab(BottomBarBtns.BLOGS);
+            }
+        }
+        // this.state.playlistType === PlaylistTypes.PLAYLIST ? this.props.getFavorites() : this.props.getSongByCat(this.state.categoryName);
+        // this.state.playlistType === PlaylistTypes.PLAYLIST && this.props.setBottomTab(BottomBarBtns.PLAYLIST);
         // await this.props.selectPlaylist(playlists[0]);
         // this.props.selectSong(this.props.selectedPlaylist.songs[0]);
         this.props.playMusic(false);
@@ -61,60 +100,177 @@ class PlaylistScreen extends React.Component<Props, State>{
         this.props.playMusic(true);
         this.props.selectSong(item);
     }
-    // public selectPlaylist = (list: Playlist) => { 
-    //     this.props.selectPlaylist(list);
-    // }
-    // public renderHorizontalItems = ({item}) => (
-    //         <Button transparent={true} onPress={() => this.selectPlaylist(item)} style={[styles.cardItemStyle,{backgroundColor: item.name === this.props.selectedPlaylist.name ? colors.maroon : colors.lightMaroon}]}>
-    //         <Text style={styles.playlistName}>{item.name}</Text>
-    //         </Button>
-    // );
     public renderSongs = ({ item }) => (
         // image songName catName likeCount
-        <TouchableOpacity onPress={() => this.playSong(item)} style={{ flexDirection: "row", marginTop: 25, }}>
+        <View style={{ flexDirection: "row", marginTop: 25, }}>
             <Image source={{ uri: item.songimage }} style={styles.songImg}></Image>
-            <View style={{paddingLeft: 10}}>
-                <Text style={[styles.heading,
+            <TouchableOpacity  onPress={() => this.playSong(item)} style={{paddingLeft: 10, width: "50%"}}>
+                <Text numberOfLines={2} lineBreakMode={"middle"}style={[styles.heading, {alignSelf: "flex-start"}
                     // { fontWeight: this.props.selectedSong.name === item.name ? "bold" : "normal", color: this.props.selectedSong.name === item.name ? colors.maroon : colors.black }
                 ]}>{item.song_name}</Text>
-                <Text style={[styles.subHeading, {marginTop: 1}]}>{item.song_category}</Text>
-            </View>
-            <View style={{flex: 0.3, flexDirection: "row", paddingLeft: 50}}>
+                {this.state.playlistType === PlaylistTypes.PLAYLIST && <Text style={[styles.subHeading, {marginTop: 1}]}>{item.song_category}</Text>}
+            </TouchableOpacity>
+            <Row></Row>
+            <View style={{flexDirection: "row"}}>
             <Text style={[styles.subHeading, {marginLeft: 0}]}>{item.likecount}</Text>
-            <Icon name={"hearto"} type={"AntDesign"}></Icon>
+            <TouchableOpacity onPress={() => {this.props.makeFavorite(item.songid)}}>
+            <Icon name={"hearto"} type={"AntDesign"} style={styles.heartIcon}></Icon>
+            </TouchableOpacity>
+            {false && <Icon name={"heart"} type={"AntDesign"} style={styles.heartIcon}></Icon>}
             </View>
             {/* <View style={styles.caretView} /> */}
-        </TouchableOpacity>
+        </View>
     )
+    public getHeading = () => {
+        if(this.state.playlistType === PlaylistTypes.EXPLORE){
+            return this.state.categoryData.song_category
+        } else if(this.state.playlistType === PlaylistTypes.PLAYLIST){
+            return "Favorites"
+        } else{
+            return "My Songs"
+        }
+    }
+    public onLayoutImg = (e) => {
+        this.setState({
+            imgPosition: { x: e.nativeEvent.layout.width, y: e.nativeEvent.layout.height }
+        })
+    }
+    public selectImage = () => {
+        const options={
+            title: "Pick your profile picture"
+        }
+        ImagePicker.showImagePicker(options, (response) => {
+            console.log('Response = ', response);
+          
+            if (response.didCancel) {
+              console.log('User cancelled image picker');
+            } else if (response.error) {
+              console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+              console.log('User tapped custom button: ', response.customButton);
+            } else {
+              const source = { uri: response.uri };
+          
+              // You can also display the image using data:
+              // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+          
+              this.setState({songImage: {uri: response.uri, type: response.type, name: response.fileName}});
+            }
+          });
+    }
+    public selectSongFile = async () => {
+        try {
+            const res = await DocumentPicker.pick({
+              type: [DocumentPicker.types.audio],
+            });
+            console.log(
+              res.uri,
+              res.type, // mime type
+              res.name,
+              res.size
+            );
+            this.setState({songFile: {uri: res.uri, name: res.name, type: res.type}})
+          } catch (err) {
+            if (DocumentPicker.isCancel(err)) {
+              // User cancelled the picker, exit any dialogs or menus and move on
+            } else {
+              throw err;
+            }
+          }
+    }
+    public uploadSong = () => {
+        this.setState({showModal: false});
+        this.props.uploadSong({songName: this.state.songName, songFile: this.state.songFile, songCategory: this.state.songCat,
+        songImage: this.state.songImage, status: this.state.songStatus === 0 ? "inactive" : "active",
+        })
+    }
+   
     public render() {
         return (
             <Container>
                 <CommonHeader title={"Stream songs"}
                     leftItem={
-                        this.state.playlistType === PlaylistTypes.EXPLORE && <Icon name={"ios-arrow-back"} style={{ fontSize: 20, color: colors.snow }} onPress={() => this.props.navigation.pop()}></Icon>
+                  this.state.playlistType === PlaylistTypes.EXPLORE &&  <TouchableOpacity onPress={() => this.props.navigation.pop()}>
+                   <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.snow }}></Icon>
+                </TouchableOpacity>
                     }
                 />
+                <View style={{flexDirection: "row"}}>
+                <Image source={{uri: this.state.categoryData.thumbnail}} style={{width: 100, height: 100}}></Image>
                 <View style={styles.headerView}>
-                    <Text style={styles.header}>{this.state.playlistType === PlaylistTypes.EXPLORE ?
-                        this.state.categoryName : "Favorites"}</Text>
+                    <Text style={styles.header}>{this.getHeading()}</Text>
                     <Button style={styles.listenBtn} onPress={() => this.playSong(this.props.selectedPlaylist.songs[0])}>
                         <Icon name={"playcircleo"} type={"AntDesign"} style={{ fontSize: 15, padding: 0, margin: 0 }} />
-                        <Text style={styles.listenTxt}>Play</Text>
+                        <Text style={styles.listenTxt}>Play All</Text>
                     </Button>
                 </View>
-                <Content style={{ paddingHorizontal: 10, paddingTop: 30 }}>
-                    {/* <View>
-                        <Text></Text>
-                    </View> */}
+                </View>
+               
+                <ScrollView style={{ paddingHorizontal: 10, paddingTop: 10, maxHeight: "65%"}}>
                     {this.props.selectedPlaylist &&
-                        <FlatList scrollEnabled={true} style={{ paddingHorizontal: 30 }}
-                            data={this.props.selectedPlaylist} renderItem={this.renderSongs} />}
-                </Content>
+                        <FlatList scrollEnabled={true} style={{ paddingHorizontal: 15, paddingBottom: 40 }}
+                            data={this.props.selectedPlaylist} renderItem={this.renderSongs}
+                            keyExtractor={(item) => item.songid}
+                            />}
+                </ScrollView>
+                {this.state.playlistType === PlaylistTypes.MYSONGS && <TouchableOpacity style={styles.addSong}
+                    onPress={() => this.setState({showModal: true})}
+                >
+                    <Icon name={"add"}style={styles.addIcon} ></Icon>
+                    </TouchableOpacity>}
                 <MusicPlayer
                     style={this.state.playlistType === PlaylistTypes.EXPLORE ? styles.singleCatStyle : styles.playlistStyle}
-                // playNextSong={this.playNext}
                 />
-                {this.state.playlistType === PlaylistTypes.PLAYLIST &&
+                 <ModalView content={
+                    <View style={styles.modalContent}>
+                        {this.state.songImage ? <Image source={{ uri: this.state.songImage.uri}} style={styles.songImageView} onLayout={this.onLayoutImg} />
+                        : <View style={[styles.songImageView,{backgroundColor: colors.maroon}]} onLayout={this.onLayoutImg}>
+                            <Text style={styles.imagePlaceholder}>Add a picture for your song</Text>
+                            {/* <Icon name={"camera"} type={"FontAwesome"} style={styles.emptyImageIcon}></Icon> */}
+                        </View>    
+                    }
+                        <TouchableOpacity style={[styles.cameraView, { top: this.state.imgPosition.y - 100, left: this.state.imgPosition.x - 30, }]}
+                        onPress={this.selectImage}
+                        >
+                            <Icon name={"edit"} type={"AntDesign"} style={styles.camIcon}></Icon>
+                        </TouchableOpacity>
+                        <TextInput style={styles.textFieldStyle}value={this.state.songName} onChangeText={(text) => this.setState({ songName: text })} underlineColorAndroid={colors.maroon}
+                        placeholder={"Enter song name"}
+                        />
+                        <TextInput value={this.state.songCat} onChangeText={(text) => this.setState({ songCat: text })}
+                        underlineColorAndroid={colors.maroon} placeholder={"Enter song category"} />
+                        
+                        <TouchableOpacity onPress={this.selectSongFile}>
+                        <TextInput value={this.state.songFile ? this.state.songFile.name : undefined}
+                        underlineColorAndroid={colors.maroon} placeholder={"Select a song file"} pointerEvents="none" editable={false} />
+                        </TouchableOpacity>
+
+                        {/* <TouchableOpacity onPress={() => this.setState({showPicker: true})}>
+                        <TextInput value={this.state.songStatus===1 ? "active" : "inactive"}
+                        underlineColorAndroid={colors.maroon} placeholder={"Select song's status"}
+                        pointerEvents="none" editable={false} />
+                        </TouchableOpacity> */}
+                        { <Picker
+                            enabled={true}
+                            mode={"dialog"}
+                            selectedValue={this.state.songStatus}
+                            onValueChange={(itemValue, itemIndex) => {this.setState({songStatus: itemValue})}}
+                            style={{color: "#A0A0A0", fontSize: 8, fontWeight: "normal"}}
+                        >
+                            <Picker.Item label="active" value={1}/>
+                            <Picker.Item label="inactive" value={0}/>
+
+                        </Picker>}
+                        <View style={[styles.caretView, {flex: 0.08, backgroundColor: colors.maroon, height: 0.1}]}></View>
+                        {/* <TextInput value={this.state.songFile} onChangeText={(text) => this.setState({ gender: text })} underlineColorAndroid={colors.maroon} /> */}
+                    </View>
+                }
+                    visible={this.state.showModal}
+                    title={"Upload your song"}
+                    cancel={() => { this.setState({ showModal: false }) }}
+                    done={this.uploadSong}
+                />
+                {(this.state.playlistType === PlaylistTypes.PLAYLIST || this.state.playlistType === PlaylistTypes.MYSONGS) &&
                     <BottomBar navigation={this.props.navigation} />}
             </Container>
         );
@@ -126,7 +282,10 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     // selectPlaylist: (playlist) => dispatch(SongsActions.setPlaylist(playlist)),
     selectSong: (song) => dispatch(SongsActions.setSong(song)),
     getFavorites: () => dispatch(FavoriteAction.getFavoriteRequest()),
-    getSongByCat: (catName) => dispatch(CategoryAction.getSongByCatRequest(catName))
+    getSongByCat: (catName) => dispatch(CategoryAction.getSongByCatRequest(catName)),
+    makeFavorite: (songId) => dispatch(FavoriteAction.makeFavoriteRequest(songId)),
+    getMySong: () => dispatch(MySongAction.getMySongsRequest()),
+    uploadSong: (params: ISongUpload) => dispatch(MySongAction.uploadMySongReq(params)),
     // playNext: () => dispatch(SongsActions.setNextSong()),
 });
 export const mapStateToProps = (state: RootState): StateProps => ({
@@ -135,6 +294,7 @@ export const mapStateToProps = (state: RootState): StateProps => ({
     selectedSong: state.songs.song,
     favorites: state.favorites.favoritesData,
     categorySongs: state.category.songByCategory,
+    mySongs: state.mySongs.mySongs,
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlaylistScreen);

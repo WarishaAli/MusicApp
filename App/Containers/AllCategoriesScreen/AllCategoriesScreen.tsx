@@ -8,6 +8,7 @@ import colors from "../../Themes/Colors";
 import { SongsActions } from "../../Reducers/SongsReducer";
 import { connect } from "react-redux";
 import CommonHeader from "../../Components/CommonHeader/CommonHeader";
+import { Images } from "../../Themes";
 
 export interface OwnProps{
 
@@ -30,9 +31,9 @@ class AllCategoriesScreen extends React.Component<Props>{
     public renderTiles = ({item}) => {
         return(
             <Card style={styles.cardItemStyle}>
-                 <ImageBackground style={styles.cardImage} source={{uri: item.image}} resizeMode={"cover"}>
+                 <ImageBackground style={styles.cardImage} source={Images.categoryBackground} resizeMode={"cover"}>
                      <TouchableOpacity onPress={() => {this.selectSingleCategory(item)}}>
-                         <Text style={[styles.subHeading, { color: colors.snow, alignSelf: "center", marginBottom: 10, fontSize: 17}]}>{item.name}</Text>
+                         <Text style={[styles.subHeading, { color: colors.snow, alignSelf: "center", marginBottom: 10, fontSize: 17}]}>{item.song_category}</Text>
                      </TouchableOpacity>
                  </ImageBackground>
              </Card>
@@ -42,11 +43,15 @@ class AllCategoriesScreen extends React.Component<Props>{
         return(
             <Container>
                  <CommonHeader title={"Explore " + this.categoryData.title}
-                 leftItem={<Icon name={"ios-arrow-back"} style={{color: colors.snow, fontSize: 23}} onPress={() => this.props.navigation.pop()} />}
+                 leftItem={
+                 <TouchableOpacity onPress={() => this.props.navigation.pop()}>
+                     <Icon name={"ios-arrow-back"} style={{color: colors.snow, fontSize: 15}}  />
+                 </TouchableOpacity>
+                 }
                  />
-                <Content style={{padding: 20}}>
+                <Content style={{paddingHorizontal: 20,}}>
                     {/* <Text style={styles.headerTitle}>{this.categoryData.title}</Text> */}
-                    <FlatList renderItem={this.renderTiles} data={this.categoryData.data}/>
+                    <FlatList renderItem={this.renderTiles} data={this.categoryData.data} style={{marginBottom: 100}}/>
                 </Content>
             </Container>
         );

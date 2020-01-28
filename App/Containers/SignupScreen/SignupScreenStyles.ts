@@ -17,5 +17,6 @@ export default StyleSheet.create({
         fontSize: 15,
         textAlign: "center",
         marginTop: 20,
+        fontFamily: "serif"
       }
 });

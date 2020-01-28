@@ -3,6 +3,7 @@ import * as SI from "seamless-immutable";
 import {Reducer } from "redux";
 import { mapReducers, ReducerMap } from "../../Lib/ReduxHelpers";
 import { Playlist, Songs } from "../../Lib/PlaylistTypes";
+import { Images } from "../../Themes";
 
 const actions = {
     setIsPlaying: createAction("SET_IS_PLAYING", (isPlaying: boolean) => (
@@ -38,9 +39,11 @@ export const INITIAL_STATE : ImmutableSongsState = SI.from({
     isPlaying: false,
     playlist: undefined,
     song: { 
-        name: "Select a song ",
-        artist: "--------",
-        url: ""},
+        songid: "",
+        song_name: "Select a song",
+        song_category: "from your favorite genre",
+        song_file: undefined,
+    },
     showPlay: false,
 })
 

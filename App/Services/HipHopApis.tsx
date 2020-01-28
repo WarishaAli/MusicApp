@@ -1,6 +1,6 @@
 import { create as apicreate } from "apisauce";
 import { HipHopApi } from "./Api";
-import { IUserData, IUserRequest } from "../Lib/Interfaces";
+import { IUserData, IUserRequest, ISongUpload } from "../Lib/Interfaces";
 import { from } from "rxjs";
 import { deviceId } from "../Lib/ApiData";
 import { Platform } from "react-native";
@@ -11,9 +11,9 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
   const api = apicreate({
     baseURL,
     headers: {
-      "Cache-Control": "no-cache",
+      // "Cache-Control": "no-cache",
       // "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-      "Content-Type": "application/json",
+      // "Content-Type": "application/json",
     },
     //   20 second timeout...
     timeout: 20000,
@@ -25,14 +25,14 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     data.append("name", username);
     return from(api.post(`/signup`, data));
   };
-  const login = (email: string, pwd: string, socialType: string) => {
+  const login = (email: string, pwd: string, socialType: string, socialId: string) => {
     let data = new FormData();
     data.append("socialtype", socialType);
     data.append("device_id", deviceId);
     data.append("devicetype", Platform.OS);
     data.append("email_id", email);
     data.append("password", pwd);
-    // data.append("")
+    data.append("social_id", socialId);
     return from(api.post(`/login`, data));
   }
   const getSongByCat = (category: string) => from(api.get(`getsongbycat?song_category=${category}`));
@@ -57,7 +57,33 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     api.setHeader("accesstoken", token);
     return from(api.get(`/getProfile`))
   };
-  const uploadSong = () => {};
+  const uploadSong = (token: string, params: ISongUpload) => {
+    const data = new FormData();
+    data.append("song_name", params.songName);
+    data.append("song_category", params.songCategory);
+    data.append("song_image", params.songImage);
+    data.append("userfile", params.songFile);
+    data.append("status", params.status);
+    api.setHeader("accesstoken", token);
+    return from(api.post(`/uploadSong`, data))
+  };
+  const updateProfile = (token: string, params: IUserData) => {
+    api.setHeader("accesstoken", token);
+    const data = new FormData();
+    data.append("name", params.userName);
+    data.append("email_id", params.emailId);
+    data.append("sex", params.gender);
+    data.append("biography", params.biography);
+    data.append("image", params.image);
+    return from(api.post(`/updateProfile`, data));
+  };
+
+  const homeData = () => from(api.get(`homeData`));
+
+  const logout = (token: string) => {
+    api.setHeader("accesstoken", token);
+    return from(api.delete(`/logout`));
+  }
 
 
 
@@ -71,5 +97,9 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     getFavoriteSongs,
     getMySongs,
     getProfile,
+    uploadSong,
+    updateProfile,
+    homeData,
+    logout,
   }
 };

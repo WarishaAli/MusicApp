@@ -46,12 +46,12 @@ class SettingScreen extends React.Component<Props>{
     public render() {
         return(
             <Container>
-                <View style={{paddingTop: 5, paddingHorizontal: 18}}>
+                {<View style={{paddingTop: 5, paddingHorizontal: 18}}>
                         {this.renderItem(true, "View Profile", this.openProfile)}
                         {this.renderItem(false, "About Us", this.openAboutUs, "infocirlceo")}
                         {this.renderItem(false, "Privacy Policy", this.openPrivacy, "lock")}
                         {this.renderItem(false, "Logout", this.logout, "logout")}
-                </View>
+                </View>}
                 <BottomBar navigation={this.props.navigation}/>
             </Container>
         )

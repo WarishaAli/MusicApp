@@ -24,7 +24,16 @@ const actions= {
     }))),
     getSongByCatFailure: createAction("SONG_BY_CAT_FAILURE", (() => ({
         type: "SONG_BY_CAT_FAILURE"
-    })))
+    }))),
+    getHomeDataReq: createAction("GET_HOME_DATA_REQ", (() => ({
+        type:"GET_HOME_DATA_REQ",
+    }))),
+    getHomeDataSuccess: createAction("GET_HOME_DATA_SUCCESS", ((params: any) => ({
+        type:"GET_HOME_DATA_SUCCESS", payload: params,
+    }))),
+    getHomeDataFailure: createAction("GET_HOME_DATA_FAILURE", (() => ({
+        type:"GET_HOME_DATA_FAILURE",
+    }))),
 };
 
 export const CategoryAction = actions;
@@ -32,6 +41,7 @@ export const CategoryAction = actions;
 export interface CategoryState {
     categoriesData: Array<ICategoryResponse> | undefined;
     songByCategory: any | undefined;
+    homeData: any | undefined;
 }
 
 export type CategoryActions = PayloadAction<string, any>;
@@ -41,6 +51,7 @@ export type ImmutableCategoryState = SI.ImmutableObject<CategoryState>;
 export const INITIAL_STATE: ImmutableCategoryState = SI.from({
     categoriesData: undefined,
     songByCategory: undefined,
+    homeData: undefined,
 });
 
 export const getCategorySuccess: Reducer<ImmutableCategoryState> = (state, action) => state.merge({
@@ -51,9 +62,14 @@ export const getSongByCatSuccess: Reducer<ImmutableCategoryState> = (state, acti
     songByCategory: action.payload,
 })
 
+export const getHomeDataSuccess: Reducer<ImmutableCategoryState> = (state, action) => state.merge({
+    homeData: action.payload,
+})
+
 const reducerMap: ReducerMap<typeof actions, ImmutableCategoryState> = {
     getCategorySuccess,
     getSongByCatSuccess,
+    getHomeDataSuccess,
 };
 
 export const CategoryReducers = mapReducers(INITIAL_STATE, reducerMap, actions);

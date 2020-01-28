@@ -1,8 +1,10 @@
 import { combineEpics } from "redux-observable";
 import { setNextSongEpic, setPrevSongEpic, selectSongEpic } from "./SongsEpics";
-import { checkIfLoginEpic, loginRequestEpic, signupRequestEpic } from "./LoginEpics";
-import { getCategoriesEpic, getSongByCategoryEpic } from "./CategoryEpics";
-import { getFavoritesEpic } from "./FavoritesEpics";
+import { checkIfLoginEpic, loginRequestEpic, signupRequestEpic, logoutEpic } from "./LoginEpics";
+import { getCategoriesEpic, getSongByCategoryEpic, getHomeDataEpic } from "./CategoryEpics";
+import { getFavoritesEpic, makeFavoritesEpic } from "./FavoritesEpics";
+import { getMySongsEpic, uploadMySongEpic } from "./MySongsEpics";
+import { getProfileEpic, updateProfileEpic } from "./ProfileEpics";
 
 export default combineEpics(
     setNextSongEpic,
@@ -14,4 +16,11 @@ export default combineEpics(
     getCategoriesEpic,
     getFavoritesEpic,
     getSongByCategoryEpic,
+    makeFavoritesEpic,
+    getMySongsEpic,
+    uploadMySongEpic,
+    getProfileEpic,
+    updateProfileEpic,
+    logoutEpic,
+    getHomeDataEpic,
 );

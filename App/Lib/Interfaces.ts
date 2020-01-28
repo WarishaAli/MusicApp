@@ -15,7 +15,7 @@ export interface IUserRequest{
     emailId: string;
     password: string;
 }
-export interface ISongUpload{
+export interface ISongUpload {
     songName: string;
     songCategory: string;
     songImage: string;

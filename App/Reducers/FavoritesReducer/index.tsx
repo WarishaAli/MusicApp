@@ -28,8 +28,8 @@ const actions= {
     }))),
     makeFavoriteRequest: createAction("MAKE_FAVORITE_REQUEST", ((songId: string) => ({
         type: "MAKE_FAVORITE_REQUEST", payload: songId  }))),
-    makeFavoriteSuccess: createAction("MAKE_FAVORITE_SUCCESS", ((params: IFavoriteResponse) => ({
-        type: "MAKE_FAVORITE_SUCCESS", payload: params,
+    makeFavoriteSuccess: createAction("MAKE_FAVORITE_SUCCESS", (() => ({
+        type: "MAKE_FAVORITE_SUCCESS",
     }))),
     makeFavoriteFailure: createAction("MAKE_FAVORITE_FAILURE", (() => ({
         type: "MAKE_FAVORITE_FAILURE",
@@ -52,7 +52,11 @@ export const INITIAL_STATE: ImmutableFavoriteState = SI.from({
 
 export const getFavoriteSuccess: Reducer<ImmutableFavoriteState> = (state, action) => state.merge({
     favoritesData: action.payload,
-})
+});
+
+// export const makeFavoriteSuccess: Reducer<ImmutableFavoriteState> = (state, action) => state.merge({
+
+// })
 
 const reducerMap: ReducerMap<typeof actions, ImmutableFavoriteState> = {
     getFavoriteSuccess,

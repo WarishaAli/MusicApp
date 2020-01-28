@@ -17,7 +17,7 @@ export interface Api{
 
 export interface HipHopApi {
     signup: (username: string, email: string, pwd: string) => Observable<ApiResponse<IUserData>>;
-    login: (email: string, pwd: string, socialType: string) => Observable<ApiResponse<IUserData>>;
+    login: (email: string, pwd: string, socialType: string, socialId: string) => Observable<ApiResponse<IUserData>>;
     getSongByCat: (category: string) => Observable<ApiResponse<any>>;
     getCategories: () => Observable<ApiResponse<any>>;
     makeFavorite: (songId: string, token: string) => Observable<ApiResponse<any>>;
@@ -26,4 +26,6 @@ export interface HipHopApi {
     getProfile: (token: string) => Observable<ApiResponse<any>>;
     uploadSong: (token: string, params: ISongUpload ) => Observable<ApiResponse<any>>;
     updateProfile: (token: string, params: IUserData) => Observable<ApiResponse<any>>;
+    homeData: () => Observable<ApiResponse<any>>;
+    logout: (token: string) => Observable<ApiResponse<any>>;
 }

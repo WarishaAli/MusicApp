@@ -12,21 +12,32 @@ import colors from "../../Themes/Colors";
 import { BottomBarBtns } from "../../Types/BottomBar";
 import styles from "./SettingsScreenStyles";
 import ImagePicker from 'react-native-image-picker';
+import { dispatch } from "rxjs/internal/observable/pairs";
+import { RootState } from "../../Reducers";
+import { IUserData } from "../../Lib/Interfaces";
+import { ProfileAction } from "../../Reducers/ProfileReducers";
+import { LoginActions } from "../../Reducers/LoginReducers";
 
 export interface DispatchProps {
     selectBottomTab: (selectedTab: BottomBarBtns) => void;
+    updateProfile: (params: IUserData) => void;
+    logout: () => void;
 }
 
 export interface State {
     visible: boolean;
-    profileImage: string;
+    profileImage: {uri: string, type: string, name: string};
     userName: string;
     bio: string;
     gender: string;
+    emailId: string;
     imgPosition: { x: number, y: number };
 }
+export interface StateProps{
+    profileData: IUserData;
+}
 
-export type Props = NavigationScreenProps & DispatchProps;
+export type Props = NavigationScreenProps & DispatchProps & StateProps;
 
 class SettingScreen extends React.Component<Props, State>{
 
@@ -34,10 +45,11 @@ class SettingScreen extends React.Component<Props, State>{
         super(props);
         this.state = {
             visible: false,
-            profileImage: "https://www.voguehk.com/media/2019/08/Sep_Rihanna_CoverStory04_online-1-960x1280.jpg",
-            bio: "Muisc Lover | 30 | Pakistan",
-            gender: "Female",
-            userName: "Warisha Ali",
+            profileImage: {uri: "", type: "image/jpeg", name: ""},
+            bio: this.props.profileData.biography || "Say something about yourself",
+            gender: this.props.profileData.sex || "Specify your gender",
+            userName: this.props.profileData.name || "your username",
+            emailId: this.props.profileData.email_id,
             imgPosition: { x: 0, y: 0 }
         }
     }
@@ -69,13 +81,12 @@ class SettingScreen extends React.Component<Props, State>{
     public showModal = () => this.setState({ visible: true });
     public renderTopProfileView = () => (
         <View style={styles.profileView}>
-            {/* <View style={styles.roundView}> */}
-            <Image style={styles.roundView} source={{ uri: this.state.profileImage }}></Image>
-            {/* </View> */}
+            <Image style={styles.roundView} source={{ uri: this.props.profileData.image }}></Image>
             <View style={styles.profileInfo}>
-                <Text style={styles.userNameHeading}>{this.state.userName}</Text>
-                <Text style={styles.bioHeading} numberOfLines={4}>{this.state.bio}}</Text>
-                <Text style={styles.bioHeading} numberOfLines={1}>{this.state.gender}</Text>
+                <Text style={styles.userNameHeading}>{this.props.profileData.name || "Your username"}</Text>
+                <Text style={styles.bioHeading} numberOfLines={4}>{ this.props.profileData.email_id || "Your email id"}</Text>
+                <Text style={styles.bioHeading} numberOfLines={4}>{this.props.profileData.biography || "Say something about yourself"}</Text>
+                <Text style={styles.bioHeading} numberOfLines={1}>{this.props.profileData.sex || "Specify your gender"}</Text>
                 <TouchableOpacity style={{ flexDirection: "row" }} onPress={this.showModal}>
                     <Text style={[styles.userNameHeading, { fontWeight: "normal", fontSize: 15, color: colors.lightMaroon }]}>Edit Profile</Text>
                     <Icon name={"edit-3"} type={"Feather"} style={styles.editIcon}></Icon>
@@ -90,15 +101,18 @@ class SettingScreen extends React.Component<Props, State>{
             <FlatList data={SettingsData} renderItem={this.renderSettingsItems} />
         </View>
     )
+    public logout = (title: string) => {
+        title==="Logout" ? this.props.logout() : (null);
+    }
     public renderSettingsItems = ({ item }) => (
 
         <View style={styles.itemRow}>
             <Icon name={item.iconName} type={item.iconType} style={[styles.editIcon, { padding: 0, alignSelf: "flex-start", fontSize: 20 }]} />
-            <View style={styles.settingsItemView}>
+            <TouchableOpacity style={styles.settingsItemView} onPress={() => this.logout(item.title)}>
                 <Text style={styles.text}>{item.title}</Text>
                 <Text style={styles.descriptionText}>{item.description}</Text>
                 <View style={styles.caretLine}></View>
-            </View>
+            </TouchableOpacity>
         </View>
     )
     public onLayoutImg = (e) => {
@@ -125,27 +139,33 @@ class SettingScreen extends React.Component<Props, State>{
               // You can also display the image using data:
               // const source = { uri: 'data:image/jpeg;base64,' + response.data };
           
-              this.setState({profileImage: response.uri});
+              this.setState({profileImage: {uri: response.uri, type: response.type, name: response.fileName }});
             }
           });
+    }
+    updateProfile = () => {
+        this.setState({visible: false});
+        this.props.updateProfile({userName: this.state.userName, emailId: this.state.emailId, gender: this.state.gender,
+        image: this.state.profileImage, biography: this.state.bio})
     }
     public render() {
         return (
             <Container>
                 <CommonHeader title={"Profile settings"} />
-                <Content style={{ maxHeight: "80%" }}>
+                {this.props.profileData && <Content style={{ maxHeight: "80%" }}>
                     {this.renderTopProfileView()}
                     {this.renderListView()}
-                </Content>
+                </Content>}
                 <ModalView content={
                     <View style={styles.modalContent}>
-                        <Image source={{ uri: this.state.profileImage}} style={styles.roundView} onLayout={this.onLayoutImg} />
+                        <Image source={{ uri: this.state.profileImage.uri}} style={styles.roundView} onLayout={this.onLayoutImg} />
                         <TouchableOpacity style={[styles.cameraView, { top: this.state.imgPosition.y - 140, left: this.state.imgPosition.x - 30, }]}
                         onPress={this.selectImage}
                         >
                             <Icon name={"camera"} type={"FontAwesome"} style={styles.camIcon}></Icon>
                         </TouchableOpacity>
                         <TextInput value={this.state.userName} onChangeText={(text) => this.setState({ userName: text })} underlineColorAndroid={colors.maroon} />
+                        <TextInput value={this.state.emailId} onChangeText={(text) => this.setState({ emailId: text })} underlineColorAndroid={colors.maroon} />
                         <TextInput value={this.state.bio} onChangeText={(text) => this.setState({ bio: text })} underlineColorAndroid={colors.maroon} />
                         <TextInput value={this.state.gender} onChangeText={(text) => this.setState({ gender: text })} underlineColorAndroid={colors.maroon} />
                     </View>
@@ -153,7 +173,7 @@ class SettingScreen extends React.Component<Props, State>{
                     visible={this.state.visible}
                     title={"Edit your profile"}
                     cancel={() => { this.setState({ visible: false }) }}
-                    done={() => { this.setState({ visible: false }) }}
+                    done={this.updateProfile}
                 />
                 <BottomBar navigation={this.props.navigation} />
             </Container>
@@ -161,7 +181,12 @@ class SettingScreen extends React.Component<Props, State>{
     }
 }
 const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
-    selectBottomTab: (tab) => dispatch(BottomBarActions.setSelectedTab(tab))
+    selectBottomTab: (tab) => dispatch(BottomBarActions.setSelectedTab(tab)),
+    updateProfile: (params: IUserData) => dispatch(ProfileAction.updateProfileRequest(params)),
+    logout: () => dispatch(LoginActions.logout())
+})
+const mapStateToProps = (state: RootState): StateProps => ({
+    profileData: state.profile.profileData,
 })
 
-export default connect(null, mapDispatchToProps)(SettingScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(SettingScreen);

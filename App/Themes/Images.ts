@@ -23,6 +23,7 @@ const images = {
   appLogo: require("../Images/appLogo.jpeg"),
   backgroundImg: require("../Images/backgroundImage.jpeg"),
   croppedBackgroundImage: require("../Images/backgroundImageCropped.jpeg"),
+  categoryBackground: require("../Images/catBackground.jpg"),
 };
 
 export default images;

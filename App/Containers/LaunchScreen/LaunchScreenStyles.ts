@@ -21,5 +21,6 @@ export default StyleSheet.create({
     color: colors.snow,
     fontSize: 15,
     textAlign: "center",
+    fontFamily: "serif"
   }
 });

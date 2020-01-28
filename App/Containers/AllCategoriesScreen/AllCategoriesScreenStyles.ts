@@ -13,9 +13,9 @@ export default StyleSheet.create({
     },
     subHeading: {
         fontSize: 20,
-        fontWeight: "bold",
+        // fontWeight: "bold",
         color: colors.coal,
-        marginTop: 40
+        fontFamily: "serif"
     },
     headerTitle:{
         fontSize: 25,

@@ -3,6 +3,9 @@ package com.musicapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.facebook.reactnative.androidsdk.FBSDKPackage;
+import io.github.elyx0.reactnativedocumentpicker.DocumentPickerPackage;
+import com.filechooser.FileChooserPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
@@ -28,6 +31,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new FBSDKPackage(),
+            new DocumentPickerPackage(),
+            new FileChooserPackage(),
             new ImagePickerPackage(),
             new RNDeviceInfo(),
             new AsyncStoragePackage(),

@@ -3,13 +3,15 @@ import { ApiResponse } from "apisauce";
 import { Alert } from "react-native";
 import { Epic, ofType } from "redux-observable";
 import { of } from "rxjs";
-import { mergeMap } from "rxjs/operators";
+import { mergeMap, map } from "rxjs/operators";
 import { getType } from "typesafe-actions";
 import { LOGIN_KEY } from "../../Lib/Constants";
 import { IUserData } from "../../Lib/Interfaces";
 import { IDependencies } from "../../Reducers/CreateStore";
 import { LoginActions } from "../../Reducers/LoginReducers";
 import { SongsActions } from "../../Reducers/SongsReducer";
+import { ProfileAction } from '../../Reducers/ProfileReducers';
+import { async } from 'rxjs/internal/scheduler/async';
 
 export let loginData: any = undefined;
 // export let shouldLogin: boolean = false;
@@ -31,7 +33,7 @@ export const checkIfLoginEpic: Epic = (action$, state$) => action$.pipe(
     }
   }),
   mergeMap((response) => {
-    return loginData ? of(LoginActions.loginSuccess(loginData)) : of(LoginActions.loginFailure());
+    return loginData ? of(LoginActions.loginSuccess(loginData), ProfileAction.getProfileRequest()) : of(LoginActions.loginFailure());
     // return of(LoginActions.loginSuccess({}))
   }),
 )
@@ -39,7 +41,7 @@ export const checkIfLoginEpic: Epic = (action$, state$) => action$.pipe(
 export const loginRequestEpic: Epic = (action$, state$, { api }: IDependencies) => action$.pipe(
   ofType(getType(LoginActions.loginRequest)),
   mergeMap((action) => {
-    return api.hiphop.login(action.payload.email, action.payload.pwd, action.payload.socialType).pipe(
+    return api.hiphop.login(action.payload.email, action.payload.pwd, action.payload.socialType, action.payload.socialId).pipe(
       mergeMap(async (response: ApiResponse<any>) => {
         console.log(response)
         if (response.ok && response.data.error === false) {
@@ -96,3 +98,22 @@ export const signupRequestEpic: Epic = (action$, state$, { api }: IDependencies)
     );
   })
 );
+
+export const logoutEpic: Epic = (action$, state$, {api}: IDependencies) => action$.pipe(
+  ofType(getType(LoginActions.logout)),
+  mergeMap((action: any) => {
+    return api.hiphop.logout(state$.value.login.userData.access_token).pipe(
+      mergeMap(async() => {
+        try{
+            await AsyncStorage.removeItem(LOGIN_KEY)
+        }catch{
+          console.log("logout error")
+        }
+        return of(SongsActions.void())
+    }),
+      mergeMap(() => {
+        return of(LoginActions.loginFailure());
+      })
+    )
+  })
+)

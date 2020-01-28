@@ -8,8 +8,8 @@ const actions = {
     signup: createAction("SIGNUP_REQUEST", (username: string, email: string, pwd: string) => ({
         type: "SIGNUP_REQUEST", payload: {username, email, pwd}
     })),
-    loginRequest: createAction("LOGIN_REQUEST", (email: string, pwd: string, socialType: string) => ({
-        type: "LOGIN_REQUEST", payload: {email, pwd, socialType}
+    loginRequest: createAction("LOGIN_REQUEST", (email: string, pwd: string, socialType: string, socialId? : string) => ({
+        type: "LOGIN_REQUEST", payload: {email, pwd, socialType, socialId}
     })),
     loginSuccess: createAction("LOGIN_SUCCESS", (params: IUserData) => ({
         type: "LOGIN_SUCCESS", payload: params

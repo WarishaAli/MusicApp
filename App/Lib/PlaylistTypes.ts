@@ -1,6 +1,7 @@
 export enum PlaylistTypes{
     EXPLORE= "Explore",
-    PLAYLIST = "Playlist"
+    PLAYLIST = "Playlist",
+    MYSONGS = "My Songs",
 }
 
 export interface Playlist {
@@ -9,7 +10,10 @@ export interface Playlist {
     songs: Songs[];
 }
 export interface Songs{
-    name: string;
-    artist: string;
-    url: string;
+    songid: string;
+    song_name: string;
+    song_category: string;
+    songimage: string;
+    song_file: string;
+    song_type?: string;
 }

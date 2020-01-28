@@ -46,7 +46,7 @@ class BottomBar extends React.Component<Props, State>{
                 this.props.navigation.push("PlaylistScreen", {comingFrom: PlaylistTypes.PLAYLIST});
                 break;
             case BottomBarBtns.BLOGS: 
-                this.props.navigation.push("BlogsScreen");
+                this.props.navigation.push("PlaylistScreen", {comingFrom: PlaylistTypes.MYSONGS});
                 break;
             case BottomBarBtns.SETTINGS:
                 this.props.navigation.push("SettingScreen");
@@ -60,27 +60,27 @@ class BottomBar extends React.Component<Props, State>{
             {/* Explore */}
             <Button onPress={() => this.selectBottomTab(BottomBarBtns.EXPLORE)} transparent={true}
             style={[styles.iconHolder, {backgroundColor: this.props.selectedTab === BottomBarBtns.EXPLORE ? colors.lightMaroon : colors.maroon}]}>
-             <Icon style={styles.iconStyle} name={"explore"} type={"MaterialIcons"}/>
-            <Text style={styles.textStyle}>Explore</Text>
+             <Icon style={styles.iconStyle} name={"compass"} type={"SimpleLineIcons"}/>
+            <Text style={styles.textStyle}>explore</Text>
             </Button>
             {/* Playlist */} 
             <Button onPress={() => this.selectBottomTab(BottomBarBtns.PLAYLIST)} transparent={true}
             style={[styles.iconHolder, {backgroundColor: this.props.selectedTab === BottomBarBtns.PLAYLIST ? colors.lightMaroon : colors.maroon}]}>
-            <Icon style={styles.iconStyle} name={"playlist"} type={"SimpleLineIcons"}/>
-            <Text style={styles.textStyle}>Playlist</Text>
+            <Icon style={styles.iconStyle} name={"favorite-border"} type={"MaterialIcons"}/>
+            <Text style={styles.textStyle}>favorites</Text>
         </Button>
             {/* Blogs */}
             <Button onPress={() => this.selectBottomTab(BottomBarBtns.BLOGS)} transparent={true}
             style={[styles.iconHolder, {backgroundColor: this.props.selectedTab === BottomBarBtns.BLOGS ? colors.lightMaroon : colors.maroon}]}>
-            <Icon style={styles.iconStyle} name={"readme"} type={"FontAwesome5"}/>
-            <Text style={styles.textStyle}>Blogs</Text>
+            <Icon style={styles.iconStyle} name={"playlist"} type={"SimpleLineIcons"}/>
+            <Text style={styles.textStyle}>my songs</Text>
         </Button>
             {/* Settings */}
             
             <Button onPress={() => this.selectBottomTab(BottomBarBtns.SETTINGS)} transparent={true}
             style={[styles.iconHolder, {backgroundColor: this.props.selectedTab === BottomBarBtns.SETTINGS ? colors.lightMaroon : colors.maroon}]}>
-            <Icon style={styles.iconStyle} name={"settings"} type={"MaterialCommunityIcons"}/>
-             <Text style={styles.textStyle}>Settings</Text>
+            <Icon style={styles.iconStyle} name={"settings"} type={"SimpleLineIcons"}/>
+             <Text style={styles.textStyle}>settings</Text>
         </Button>
         </View>
     );

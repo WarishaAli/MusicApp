@@ -45,7 +45,7 @@ class MusicPlayer extends React.Component<Props, State> {
 
     public componentDidMount(){
         // if(this.props.playNextSong !== undefined){
-            this._onFinishedPlaying = SoundPlayer.addEventListener("FinishedPlaying", this.props.playNext)
+            this._onFinishedPlaying = SoundPlayer.addEventListener("FinishedPlaying", this.playNextSong)
         // }
     }
     public componentWillUnmount() {
@@ -58,7 +58,7 @@ class MusicPlayer extends React.Component<Props, State> {
     }
     public loadUrl = () => {
         try{
-            SoundPlayer.loadUrl(this.props.currentSong.url);
+            SoundPlayer.loadUrl(this.props.currentSong.song_file);
         }
         catch(e){
             console.log("error loading song url", e);
@@ -66,9 +66,9 @@ class MusicPlayer extends React.Component<Props, State> {
         }
     }
     public playSong= () => {
-        if (this.props.currentSong.url){  
+        if (this.props.currentSong.song_file){
             try {
-            SoundPlayer.playUrl(this.props.currentSong.url)
+            SoundPlayer.playUrl(this.props.currentSong.song_file)
         } catch (e) {
             console.log(`cannot play the sound file`, e)
         };
@@ -91,15 +91,15 @@ class MusicPlayer extends React.Component<Props, State> {
             <Image
                 style={styles.imageView}
                 resizeMode={"cover"}
-                source={{uri: "https://www.voguehk.com/media/2019/08/Sep_Rihanna_CoverStory04_online-1-960x1280.jpg"}}></Image>
+                source={{uri: this.props.currentSong.songimage}}></Image>
         {/* </View> */}
         {this.props.currentSong && <View style={styles.textView}>
-            <Text style={styles.heading}>{this.props.currentSong.name || " "}</Text>
-            <Text style={styles.subHeading}>{this.props.currentSong.artist || ""}</Text>
+            <Text style={styles.heading}>{this.props.currentSong.song_name || " "}</Text>
+            <Text style={styles.subHeading}>{this.props.currentSong.song_category || ""}</Text>
         </View>}
         <View style={{flexDirection: "row", alignSelf: "center", flex: 0.5, marginLeft: 20}}>
         <Icon onPress={this.playPreviousSong} style={styles.icon} name={"stepbackward"} type={"AntDesign"}/>
-        {this.props.showPlay && <Icon onPress={this.pauseSong} style={[styles.icon,{fontSize: 30}]} name={"pause"} type={"AntDesign"}/>}
+        {this.props.showPlay && <Icon onPress={this.pauseSong} style={[styles.icon]} name={"pause"} type={"AntDesign"}/>}
         {!this.props.showPlay && <Icon onPress={this.playSong}style={[styles.icon]} name={"caretright"} type={"AntDesign"}/>}
         <Icon onPress={this.playNextSong} style={styles.icon} name={"stepforward"} type={"AntDesign"}/>
         </View>

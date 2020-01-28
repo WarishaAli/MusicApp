@@ -5,6 +5,7 @@ import PlaylistScreen from "../Containers/PlaylistScreen/PlaylistScreen";
 import SelectAllCategory from "../Containers/AllCategoriesScreen/AllCategoriesScreen";
 import BlogScreen from "../Containers/BlogScreen/BlogScreen";
 import SettingsScreen from "../Containers/SettingScreen/SettingsScreen";
+import AddSongScreen from "../Containers/AddSongScreen/AddSongScreen";
 
 const home = createStackNavigator({
   Home: {screen: HomeScreen},
@@ -18,11 +19,13 @@ const home = createStackNavigator({
   },
 });
 
+
 // Manifest of possible screens
 const PrimaryNav = createStackNavigator({
   HomeScreen: {screen: home},
   PlaylistScreen: {screen: PlaylistScreen},
-  BlogsScreen: {screen: BlogScreen},
+  AddSongScreen:{screen: AddSongScreen},
+  // BlogsScreen: {screen: BlogScreen},
   SettingScreen: {screen: SettingsScreen},
   // SelectAllCategory: {screen: SelectAllCategory},
 }, {

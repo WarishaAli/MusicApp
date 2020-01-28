@@ -3,7 +3,7 @@ import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
     roundView: {
-        backgroundColor: colors.lightMaroon,
+        backgroundColor: colors.steel,
         width: 100,
         height: 100,
         borderRadius: 50,

@@ -1,35 +1,35 @@
 /// <reference types="@types/webpack-env" />
 import { combineReducers } from "redux";
-import configureStore from "./CreateStore";
 import root from "../Epics/index";
-import { GithubReducer, ImmutableGithubState } from "./GithubReducers";
-import { NavigationReducer, NavigationState } from "./NavigationReducers";
-import {BottomBarReducer, BottomBarState} from "./BottomBarReducer";
-import SongsReducer, { SongsState } from "./SongsReducer";
-import LoginReducer, { LoginState } from "./LoginReducers";
 import Api from "../Services/Api";
+import { BottomBarReducer, BottomBarState } from "./BottomBarReducer";
 import CategoryReducers, { CategoryState } from "./CategoryReducers";
+import configureStore from "./CreateStore";
 import FavoriteReducers, { FavoriteState } from "./FavoritesReducer";
+import LoginReducer, { LoginState } from "./LoginReducers";
+import MySongReducers, { MySongState } from "./MySongsReducer";
+import ProfileReducers, { ProfileState } from "./ProfileReducers";
+import SongsReducer, { SongsState } from "./SongsReducer";
 
 /* ------------- Assemble The Reducers ------------- */
 export const reducers = combineReducers({
-  // nav: NavigationReducer,
-  // github: GithubReducer,
   bottomBar: BottomBarReducer,
   songs: SongsReducer,
   login: LoginReducer,
   category: CategoryReducers,
   favorites: FavoriteReducers,
+  mySongs: MySongReducers,
+  profile: ProfileReducers,
 });
 
 export interface RootState {
-  // github: ImmutableGithubState;
-  // nav: NavigationState;
   bottomBar: BottomBarState;
   songs: SongsState,
   login: LoginState,
   category: CategoryState,
   favorites: FavoriteState,
+  mySongs: MySongState,
+  profile: ProfileState,
 }
 const api: any = Api.create;
 const db: any = "";

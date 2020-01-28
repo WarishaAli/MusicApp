@@ -3,19 +3,19 @@ import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
     mainView:{
-        opacity: 0.9,
-        backgroundColor: colors.steel,
-        height: 60,
+        // opacity: 0.6,
+        backgroundColor: "#FDF5F9",
+        height: 55,
         flexDirection: "row",
         justifyContent: "space-between",
-        borderRadius: 10,
+        borderRadius: 20,
     },
     imageView: {
         borderRadius: 200,
         width: 50,
         height: 50,
         alignSelf: "center",
-        // backgroundColor: colors.snow,
+        // backgroundColor: colors.charcoal,
         marginHorizontal: 10,
     },
     textView: {
@@ -30,6 +30,7 @@ export default StyleSheet.create({
         color: colors.charcoal,
         fontSize: 18,
         textAlign: "left",
+        fontFamily: "serif"
     },
     subHeading: {
         color: colors.charcoal,
@@ -38,6 +39,7 @@ export default StyleSheet.create({
     icon:{
         color: colors.charcoal,
         flex: 0.2,
+        fontSize: 20
         // marginLeft: 5,
     }
 })

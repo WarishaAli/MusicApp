@@ -2,6 +2,14 @@ import {StyleSheet} from "react-native";
 import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
+    songName:{
+        color: colors.black,
+
+    },
+    songsCard:{
+        width: 140,
+        height: 120,
+    },
     heading: {
         fontSize: 20,
         fontWeight: "bold",
@@ -23,11 +31,13 @@ export default StyleSheet.create({
         opacity: 0.4,
     },
     subHeading: {
-        fontSize: 20,
+        fontSize: 18,
         // fontWeight: "bold",
         color: colors.coal,
-        marginVertical: 30,
-        // marginTop: 40
+        marginTop: 20,
+        marginBottom: 20,
+        // marginTop: 40,
+        fontFamily: "serif"
     },
     icon: {
         color: colors.snow, alignSelf: "flex-end"
@@ -45,16 +55,11 @@ export default StyleSheet.create({
         color: colors.snow, fontSize: 15, fontWeight: "normal", textAlign: "center",
     },
     cardItemStyle: {
-        // height: 50,
-        flex: 0.5,
-        marginTop: 10,
-        marginRight: 20,
-        backgroundColor: colors.silver,
-        borderRadius: 20,
-        
+        height: 60,
+        width: 130,    
     },
     cardImage: {
-        flex: 1, justifyContent: "flex-end", borderRadius: 0, zIndex: 2,
+        flex: 1,
     },
     musicPlayer:{
         marginBottom: 10,
@@ -64,11 +69,16 @@ export default StyleSheet.create({
     },
     listStyle:{
         // marginTop: 10,
+        // marginBottom: 20,
+        // paddingLeft: 2,
+        paddingRight: 20,
+        marginBottom: 10
     },
     noDataText:{
         alignSelf: "flex-start",
-        paddingTop: 40,
-        fontSize: 16,
+        // paddingTop: 40,
+        fontSize: 14,
         paddingHorizontal: 10,
+        marginBottom: 5,
     }
 });

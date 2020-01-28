@@ -2,6 +2,12 @@ import {StyleSheet} from "react-native";
 import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
+    imagePlaceholder: {
+        color: colors.snow,
+        alignSelf: "center",
+        fontSize: 10,
+        textAlign: "center",
+    },
     playlistName:{
         color: colors.snow,
         textAlign: "center",
@@ -61,6 +67,7 @@ export default StyleSheet.create({
         fontSize: 25,
         fontWeight: "bold",
         textAlign: "left",
+        fontFamily: "serif",
         // flex: 0.5,
         // paddingLeft: 10,
     },
@@ -95,8 +102,71 @@ export default StyleSheet.create({
         fontSize: 15,
     },
     songImg:{
+        width: 45,
+        height: 45,
+        borderRadius: 10,
+    },
+    heartIcon:{
+        fontSize: 18,
+        color: colors.lightMaroon,
+        marginTop: 5,
+        marginLeft: 10,
+    },
+    addSong:{
         width: 40,
         height: 40,
-        borderRadius: 10,
+        backgroundColor: colors.lightMaroon,
+        borderRadius: 40,
+        justifyContent: "center",
+        // marginBottom: 10,
+        position: "absolute",
+        bottom: 160,
+        right: 20,
+    },
+    addIcon: {
+        color: colors.snow,
+        alignSelf: "center",
+    },
+    addBtn:{
+        flexDirection: "row",
+        backgroundColor: colors.maroon,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 4,
+        margin: 0,
+        justifyContent: "center",
+    },
+    modalContent: {
+        paddingHorizontal: 20,
+        alignSelf: "center",
+    },
+    songImageView:{
+        width: 80,
+        height: 80,
+        backgroundColor: colors.silver,
+        borderRadius: 200,
+        marginTop: 30,
+        justifyContent: "center",
+    },
+    cameraView: {
+        width: 25, height: 25,
+        borderRadius: 30, backgroundColor: colors.snow,
+        justifyContent: "center",
+    },
+    camIcon: {
+        color: colors.lightMaroon,
+        position: "absolute",
+        fontSize: 15,
+        alignSelf: "center",
+    },
+    emptyImageIcon:{
+        color: colors.snow,
+        alignSelf: "center",
+        paddingHorizontal: 20,
+        fontSize: 20,
+        paddingTop: 30,
+    },
+    textFieldStyle:{
+        paddingHorizontal: 0,
     }
 })
