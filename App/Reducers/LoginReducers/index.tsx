@@ -22,7 +22,8 @@ const actions = {
     setIsLogin: createAction("SET_LOGIN", (params: boolean) => ({
         type: "SET_LOGIN", payload: params
     })),
-    logout: createAction("USER_LOGOUT")
+    logout: createAction("USER_LOGOUT"),
+    socialLogout: createAction("SOCIAL_LOGOUT"),
 }
 
 export const LoginActions = actions;

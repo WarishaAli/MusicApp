@@ -13,10 +13,7 @@ export type Props = OwnProps;
 export default class CommonHeader extends React.Component<Props> {
     public render(){
         return(
-            <Header style={styles.header}>
-                <View style={styles.leftStyle}>
-                {this.props.leftItem}
-                </View>
+            <Header noShadow={true} style={styles.header}>
                 <Text style={styles.text}>{this.props.title}</Text>
                 <View style={styles.rightStyle}>
                 {this.props.rightItem}

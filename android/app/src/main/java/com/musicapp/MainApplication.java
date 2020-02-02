@@ -3,6 +3,7 @@ package com.musicapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import io.github.elyx0.reactnativedocumentpicker.DocumentPickerPackage;
 import com.filechooser.FileChooserPackage;
@@ -31,6 +32,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNGoogleSigninPackage(),
             new FBSDKPackage(),
             new DocumentPickerPackage(),
             new FileChooserPackage(),

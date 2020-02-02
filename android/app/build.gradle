@@ -147,6 +147,7 @@ android {
 }
 
 dependencies {
+    implementation project(':@react-native-community_google-signin')
     implementation project(':react-native-fbsdk')
     implementation project(':react-native-document-picker')
     implementation project(':react-native-file-chooser')
@@ -164,7 +165,9 @@ dependencies {
         compile 'org.webkit:android-jsc:+'
     }
     implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
 }
+apply plugin: 'com.google.gms.google-services' 
 
 // Run this once to be able to run the application with BUCK
 // puts all compile dependencies into folder libs for BUCK to use

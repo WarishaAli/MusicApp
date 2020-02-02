@@ -18,7 +18,9 @@ const actions = {
     setSong: createAction("SET_SONG", (song: Songs) => ({
         type: "SET_SONG", payload: song,
     })),
-    setNextSong: createAction("SET_NEXT_SONG"),
+    setNextSong: createAction("SET_NEXT_SONG", (isAuto: boolean) => ({
+        type: "SET_NEXT_SONG", payload: isAuto,
+    })),
     setPreviousSong: createAction("SET_PREV_SONG"),
     void: createAction("VOID_ACTION"),
 }

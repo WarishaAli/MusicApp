@@ -17,11 +17,14 @@ import { RootState } from "../../Reducers";
 import { IUserData } from "../../Lib/Interfaces";
 import { ProfileAction } from "../../Reducers/ProfileReducers";
 import { LoginActions } from "../../Reducers/LoginReducers";
+import genresData from "../../Lib/GenresData";
+import { SongsActions } from "../../Reducers/SongsReducer";
 
 export interface DispatchProps {
     selectBottomTab: (selectedTab: BottomBarBtns) => void;
     updateProfile: (params: IUserData) => void;
     logout: () => void;
+    selectSong: (song_file: string) => void;
 }
 
 export interface State {
@@ -46,10 +49,10 @@ class SettingScreen extends React.Component<Props, State>{
         this.state = {
             visible: false,
             profileImage: {uri: "", type: "image/jpeg", name: ""},
-            bio: this.props.profileData.biography || "Say something about yourself",
-            gender: this.props.profileData.sex || "Specify your gender",
-            userName: this.props.profileData.name || "your username",
-            emailId: this.props.profileData.email_id,
+            bio: this.props.profileData ? this.props.profileData.biography : "Say something about yourself",
+            gender: this.props.profileData ? this.props.profileData.sex : "Specify your gender",
+            userName: this.props.profileData ? this.props.profileData.name : "your username",
+            emailId: this.props.profileData ? this.props.profileData.email_id : "your email id",
             imgPosition: { x: 0, y: 0 }
         }
     }
@@ -151,11 +154,11 @@ class SettingScreen extends React.Component<Props, State>{
     public render() {
         return (
             <Container>
-                <CommonHeader title={"Profile settings"} />
-                {this.props.profileData && <Content style={{ maxHeight: "80%" }}>
+                {/* <CommonHeader title={"Profile settings"} /> */}
+                {this.props.profileData ? <Content style={{ maxHeight: "80%" }}>
                     {this.renderTopProfileView()}
                     {this.renderListView()}
-                </Content>}
+                </Content> : <Text style={{padding: 30, alignSelf: "center", marginTop: 50}}>Unfortunately, your profile data is not available at the moment! Please try again later</Text>}
                 <ModalView content={
                     <View style={styles.modalContent}>
                         <Image source={{ uri: this.state.profileImage.uri}} style={styles.roundView} onLayout={this.onLayoutImg} />
@@ -183,7 +186,8 @@ class SettingScreen extends React.Component<Props, State>{
 const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     selectBottomTab: (tab) => dispatch(BottomBarActions.setSelectedTab(tab)),
     updateProfile: (params: IUserData) => dispatch(ProfileAction.updateProfileRequest(params)),
-    logout: () => dispatch(LoginActions.logout())
+    logout: () => dispatch(LoginActions.logout()),
+    selectSong: (song) => dispatch(SongsActions.setSong(song)),
 })
 const mapStateToProps = (state: RootState): StateProps => ({
     profileData: state.profile.profileData,

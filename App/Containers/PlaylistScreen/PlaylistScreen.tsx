@@ -21,6 +21,7 @@ import ModalView from "../../Components/ModalView/ModalView";
 import ImagePicker from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import { ISongUpload } from "../../Lib/Interfaces";
+import genresData from "../../Lib/GenresData";
 
 export interface OwnProps {
     comingFrom: PlaylistTypes;
@@ -184,45 +185,8 @@ class PlaylistScreen extends React.Component<Props, State>{
         songImage: this.state.songImage, status: this.state.songStatus === 0 ? "inactive" : "active",
         })
     }
-   
-    public render() {
-        return (
-            <Container>
-                <CommonHeader title={"Stream songs"}
-                    leftItem={
-                  this.state.playlistType === PlaylistTypes.EXPLORE &&  <TouchableOpacity onPress={() => this.props.navigation.pop()}>
-                   <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.snow }}></Icon>
-                </TouchableOpacity>
-                    }
-                />
-                <View style={{flexDirection: "row"}}>
-                <Image source={{uri: this.state.categoryData.thumbnail}} style={{width: 100, height: 100}}></Image>
-                <View style={styles.headerView}>
-                    <Text style={styles.header}>{this.getHeading()}</Text>
-                    <Button style={styles.listenBtn} onPress={() => this.playSong(this.props.selectedPlaylist.songs[0])}>
-                        <Icon name={"playcircleo"} type={"AntDesign"} style={{ fontSize: 15, padding: 0, margin: 0 }} />
-                        <Text style={styles.listenTxt}>Play All</Text>
-                    </Button>
-                </View>
-                </View>
-               
-                <ScrollView style={{ paddingHorizontal: 10, paddingTop: 10, maxHeight: "65%"}}>
-                    {this.props.selectedPlaylist &&
-                        <FlatList scrollEnabled={true} style={{ paddingHorizontal: 15, paddingBottom: 40 }}
-                            data={this.props.selectedPlaylist} renderItem={this.renderSongs}
-                            keyExtractor={(item) => item.songid}
-                            />}
-                </ScrollView>
-                {this.state.playlistType === PlaylistTypes.MYSONGS && <TouchableOpacity style={styles.addSong}
-                    onPress={() => this.setState({showModal: true})}
-                >
-                    <Icon name={"add"}style={styles.addIcon} ></Icon>
-                    </TouchableOpacity>}
-                <MusicPlayer
-                    style={this.state.playlistType === PlaylistTypes.EXPLORE ? styles.singleCatStyle : styles.playlistStyle}
-                />
-                 <ModalView content={
-                    <View style={styles.modalContent}>
+    public modalContent = () => (
+        <View style={styles.modalContent}>
                         {this.state.songImage ? <Image source={{ uri: this.state.songImage.uri}} style={styles.songImageView} onLayout={this.onLayoutImg} />
                         : <View style={[styles.songImageView,{backgroundColor: colors.maroon}]} onLayout={this.onLayoutImg}>
                             <Text style={styles.imagePlaceholder}>Add a picture for your song</Text>
@@ -264,6 +228,46 @@ class PlaylistScreen extends React.Component<Props, State>{
                         <View style={[styles.caretView, {flex: 0.08, backgroundColor: colors.maroon, height: 0.1}]}></View>
                         {/* <TextInput value={this.state.songFile} onChangeText={(text) => this.setState({ gender: text })} underlineColorAndroid={colors.maroon} /> */}
                     </View>
+    )
+   
+    public render() {
+        return (
+            <Container>
+                {/* <CommonHeader title={"Stream songs"}
+                    leftItem={
+                  this.state.playlistType === PlaylistTypes.EXPLORE &&  <TouchableOpacity onPress={() => this.props.navigation.pop()}>
+                   <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.snow }}></Icon>
+                </TouchableOpacity>
+                    }
+                /> */}
+                {/* <View style={{flexDirection: "row"}}> */}
+                {/* <Image source={{uri: this.state.categoryData.thumbnail}} style={{width: 100, height: 100}}></Image> */}
+                <View style={styles.headerView}>
+                    <Text style={styles.header}>{this.getHeading()}</Text>
+                    <Button style={styles.listenBtn} onPress={() => this.playSong(this.props.selectedPlaylist.songs[0])}>
+                        <Icon name={"playcircleo"} type={"AntDesign"} style={{ fontSize: 15, padding: 0, margin: 0 }} />
+                        <Text style={styles.listenTxt}>Play All</Text>
+                    </Button>
+                </View>
+                {/* </View> */}
+               
+                <ScrollView style={{ paddingHorizontal: 10, paddingTop: 10, maxHeight: "65%"}}>
+                    {this.props.selectedPlaylist &&
+                        <FlatList scrollEnabled={true} style={{ paddingHorizontal: 15, paddingBottom: 40}}
+                            data={this.props.selectedPlaylist} renderItem={this.renderSongs}
+                            keyExtractor={(item) => item.songid}
+                            />}
+                </ScrollView>
+                {this.state.playlistType === PlaylistTypes.MYSONGS && <TouchableOpacity style={styles.addSong}
+                    onPress={() => this.setState({showModal: true})}
+                >
+                    <Icon name={"add"}style={styles.addIcon} ></Icon>
+                    </TouchableOpacity>}
+                <MusicPlayer
+                    style={this.state.playlistType === PlaylistTypes.EXPLORE ? styles.singleCatStyle : styles.playlistStyle}
+                />
+                 <ModalView content={
+                    this.modalContent()
                 }
                     visible={this.state.showModal}
                     title={"Upload your song"}

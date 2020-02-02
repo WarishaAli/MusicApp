@@ -26,6 +26,7 @@ const colors = {
   maroon: "#8b0404",
   black: "#000000",
   lightMaroon: "#b22222",
+  lightPink: "#FDF5F9",
 //9C0000
 };
 

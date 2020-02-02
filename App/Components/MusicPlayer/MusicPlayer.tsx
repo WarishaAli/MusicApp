@@ -17,7 +17,7 @@ export interface OwnProps{
 
 export interface DispatchProps{
     playMusic: (shouldPlay: boolean) => void;
-    playNext: () => void;
+    playNext: (isAuto: boolean) => void;
     playPrev: () => void;
     showPlaying: (playing: boolean) => void;
 }
@@ -44,9 +44,10 @@ class MusicPlayer extends React.Component<Props, State> {
     public _onFinishedPlaying: any= null;
 
     public componentDidMount(){
-        // if(this.props.playNextSong !== undefined){
-            this._onFinishedPlaying = SoundPlayer.addEventListener("FinishedPlaying", this.playNextSong)
-        // }
+            this._onFinishedPlaying = SoundPlayer.addEventListener("FinishedPlaying", (result: any) => {
+                console.log("at song finished playing", result)
+                this.playNextSong(true);
+            })
     }
     public componentWillUnmount() {
         this._onFinishedPlaying.remove();
@@ -78,8 +79,8 @@ class MusicPlayer extends React.Component<Props, State> {
         SoundPlayer.pause();
         this.props.showPlaying(false);
     }
-    public playNextSong = () => {
-        this.props.playNext();
+    public playNextSong = (isAuto: boolean) => {
+        this.props.playNext(isAuto);
     }
     public playPreviousSong = () => {
         this.props.playPrev();
@@ -101,7 +102,7 @@ class MusicPlayer extends React.Component<Props, State> {
         <Icon onPress={this.playPreviousSong} style={styles.icon} name={"stepbackward"} type={"AntDesign"}/>
         {this.props.showPlay && <Icon onPress={this.pauseSong} style={[styles.icon]} name={"pause"} type={"AntDesign"}/>}
         {!this.props.showPlay && <Icon onPress={this.playSong}style={[styles.icon]} name={"caretright"} type={"AntDesign"}/>}
-        <Icon onPress={this.playNextSong} style={styles.icon} name={"stepforward"} type={"AntDesign"}/>
+        <Icon onPress={() => this.playNextSong(false)} style={styles.icon} name={"stepforward"} type={"AntDesign"}/>
         </View>
     </View>
         )
@@ -109,7 +110,7 @@ class MusicPlayer extends React.Component<Props, State> {
 };
 export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     playMusic: (shouldPlay) => dispatch(SongsActions.setIsPlaying(shouldPlay)),
-    playNext: () => dispatch(SongsActions.setNextSong()),
+    playNext: (isAuto: boolean) => dispatch(SongsActions.setNextSong(isAuto)),
     playPrev: () => dispatch(SongsActions.setPreviousSong()),
     showPlaying: (playing) => dispatch(SongsActions.showPlaying(playing))
 });

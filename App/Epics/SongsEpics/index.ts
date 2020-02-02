@@ -7,14 +7,14 @@ import { of } from "rxjs";
 
 export const setNextSongEpic: Epic = (action$, state$) => action$.pipe(
     ofType(getType(SongsActions.setNextSong)),
-    mergeMap(() => {
+    mergeMap((action) => {
         const currentPlaylist = state$.value.songs.playlist;
         const currentSong = state$.value.songs.song;
-        console.log(currentSong, currentPlaylist);
+        // console.log(currentSong, currentPlaylist);
         const currentIndex = findCurrentSongIndex(currentPlaylist, currentSong);
         console.log(currentIndex);
         if(currentIndex + 1 <= currentPlaylist.length-1){
-            return of(SongsActions.setSong(currentPlaylist[currentIndex+1]));
+            return of(SongsActions.setSong(currentPlaylist[ currentIndex+1]));
         } else{
             return of(SongsActions.void());
         }

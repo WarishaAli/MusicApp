@@ -2,13 +2,19 @@ import {StyleSheet} from "react-native";
 import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
+    searchIcon:{
+        fontSize: 18,
+        color: colors.lightMaroon
+    },
     songName:{
         color: colors.black,
+        fontFamily: "serif",
 
     },
     songsCard:{
         width: 140,
         height: 120,
+        borderRadius: 5,
     },
     heading: {
         fontSize: 20,
@@ -31,9 +37,9 @@ export default StyleSheet.create({
         opacity: 0.4,
     },
     subHeading: {
-        fontSize: 18,
-        // fontWeight: "bold",
-        color: colors.coal,
+        fontSize: 22,
+        fontWeight: "bold",
+        color: colors.charcoal,
         marginTop: 20,
         marginBottom: 20,
         // marginTop: 40,
@@ -60,6 +66,7 @@ export default StyleSheet.create({
     },
     cardImage: {
         flex: 1,
+        justifyContent: "center",
     },
     musicPlayer:{
         marginBottom: 10,

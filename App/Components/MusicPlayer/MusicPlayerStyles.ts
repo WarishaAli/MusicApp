@@ -4,11 +4,12 @@ import colors from "../../Themes/Colors";
 export default StyleSheet.create({
     mainView:{
         // opacity: 0.6,
-        backgroundColor: "#FDF5F9",
-        height: 55,
+        backgroundColor: colors.lightPink,
+        // height: 55,
         flexDirection: "row",
         justifyContent: "space-between",
         borderRadius: 20,
+        flex: 1,
     },
     imageView: {
         borderRadius: 200,

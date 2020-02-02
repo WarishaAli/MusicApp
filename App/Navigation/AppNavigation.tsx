@@ -6,11 +6,13 @@ import SelectAllCategory from "../Containers/AllCategoriesScreen/AllCategoriesSc
 import BlogScreen from "../Containers/BlogScreen/BlogScreen";
 import SettingsScreen from "../Containers/SettingScreen/SettingsScreen";
 import AddSongScreen from "../Containers/AddSongScreen/AddSongScreen";
+import MusicPlayScreen from "../Containers/MusicPlayScreen/MusicPlayScreen";
 
 const home = createStackNavigator({
   Home: {screen: HomeScreen},
   Playlist: {screen: PlaylistScreen},
   SelectAllCategory: {screen: SelectAllCategory},
+  MusicPlayScreen: {screen: MusicPlayScreen}
 },{
   headerMode: "none",
   initialRouteName: "Home",

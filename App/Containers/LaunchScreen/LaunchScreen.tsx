@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Image, ScrollView, Text, View, ImageBackground } from "react-native";
 import {Container, Content} from "native-base";
-import { LoginButton, AccessToken } from 'react-native-fbsdk';
+import { LoginButton, AccessToken, GraphRequest,GraphRequestManager } from 'react-native-fbsdk';
 
 import { Images } from "../../Themes";
 
@@ -14,9 +14,13 @@ import AppLogo from "../../Components/AppLogo/AppLogo";
 import { NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
 import { LoginActions } from "../../Reducers/LoginReducers";
+import { IUserData } from "../../Lib/Interfaces";
+import { ProfileAction } from "../../Reducers/ProfileReducers";
 
 export interface DispatchProps{
   fbLogin: (email: undefined, pwd: undefined, socialType: "facebook", socialId: string) => void;
+  setProfileData: (params: IUserData) => void;
+  logout: () => void;
 }
 
 export type Props = DispatchProps & NavigationScreenProps;
@@ -37,8 +41,22 @@ export type Props = DispatchProps & NavigationScreenProps;
       console.log("at else")
       AccessToken.getCurrentAccessToken().then(
         (data) => {
-          this.props.fbLogin(undefined, undefined, "facebook", data.accessToken.toString());
-          console.log(data.accessToken.toString())
+          let req = new GraphRequest('/me', {
+            httpMethod: 'GET',
+            version: 'v2.5',
+            parameters: {
+                'fields': {
+                    'string' : 'email,name,friends, picture,'
+                }
+            }
+        }, (err, res) => {
+            console.log("graph request result", err, res);
+            if(!err){
+              this.props.fbLogin(undefined, undefined, "facebook", data.accessToken.toString());
+              this.props.setProfileData({name: res.name, image: res.picture.data.url})
+            }
+        });
+        new GraphRequestManager().addRequest(req).start();
         }
       )
     }
@@ -59,7 +77,7 @@ export type Props = DispatchProps & NavigationScreenProps;
              this.fbLogin(error, result)
             }
           }
-          onLogoutFinished={() => console.log("logout.")}/>
+          onLogoutFinished={this.props.logout}/>
        </View>
        {/* <View style={{flex: 0.4, alignSelf: "flex-end"}}>
        <LargeButton text={"login with google"} style={{ height: 30}}></LargeButton></View> */}
@@ -77,5 +95,7 @@ export type Props = DispatchProps & NavigationScreenProps;
 }
 const mapDispatchToProps = (dispatch):DispatchProps => ({
   fbLogin: (email, pwd, socialType, socialId) => dispatch(LoginActions.loginRequest(email, pwd, socialType, socialId)),
+  setProfileData: (params: IUserData) => dispatch(ProfileAction.getProfileSuccess(params)),
+  logout: () => dispatch(LoginActions.socialLogout()),
 })
 export default connect(null, mapDispatchToProps) (LaunchScreen);

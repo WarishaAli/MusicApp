@@ -6,12 +6,12 @@ const genresData = [
             {
                 name: "Sample Music 1.1",
                 artist: "Sound Helix",
-                url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+                song_file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
             },
             {
                 name: "Sample Music 2.1",
                 artist: "Sound Helix",
-                url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+                song_file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
             },
             {
                 name: "Sample Music 3.1",

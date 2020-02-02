@@ -59,13 +59,15 @@ class HomeScreen extends React.Component<Props, State> {
             onPress={() => this.props.navigation.push("SelectAllCategory", { params: { title: title, data: data } })}
             style={{ flexDirection: "row"}}>
             <Text style={[styles.subHeading]}>{title}</Text>
-            <Icon name={"ios-arrow-forward"} type={"Ionicons"} style={{ fontSize: 15, padding: 0, marginLeft: 7, alignSelf: "center", marginTop: 2, color: colors.charcoal}} />
+            <Icon name={"ios-arrow-forward"} type={"Ionicons"} style={{ fontSize: 18, padding: 0, marginLeft: 7, alignSelf: "center", marginTop: 2, color: colors.charcoal}} />
         </TouchableOpacity>
     );
     public renderGenreList = (data: any, noDataText: string) => {
         return data ? (
             <FlatList data={data.length > 15 ? data.slice(0,10) : data} renderItem={noDataText === "categories" ? this.renderGenreView: this.renderFeauteredSongs} style={styles.listStyle} horizontal={true}
-            showsHorizontalScrollIndicator={false} keyExtractor={(item) => noDataText === "categories" ? item.cat_id : item.songid}/>
+            showsHorizontalScrollIndicator={false} 
+            // keyExtractor={(item) => noDataText === "categories" ? item.cat_id : item.songid}
+            />
         ) : (<Text style={styles.noDataText}>
             Currently there are no {noDataText} to display!
         </Text>)
@@ -73,24 +75,28 @@ class HomeScreen extends React.Component<Props, State> {
 
     public renderFeauteredSongs = ({ item }) => {
         return (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.props.navigation.push("MusicPlayScreen", {songData: item})}>
                 <Card style={styles.songsCard}>
-                    <ImageBackground style={styles.cardImage} source={{uri: item.songimage}}></ImageBackground>
+                    <ImageBackground style={styles.cardImage} source={{uri: item.songimage}} imageStyle={{borderRadius: 5}}></ImageBackground>
                 </Card>
                 <Text style={styles.songName}>{item.song_name}</Text>
-                <Text>{item.song_category}</Text>
+                <Text style={{fontSize: 12}}>{item.song_category}</Text>
             </TouchableOpacity>
         )
     }
     public renderGenreView = ({ item }) => {
         return (
-            <Card style={styles.cardItemStyle}>
-                <ImageBackground style={styles.cardImage} source={Images.categoryBackground} resizeMode={"cover"}>
-                    <TouchableOpacity onPress={() => { this.selectSingleCategory(item) }}>
-                        <Text style={[styles.subHeading, { color: colors.snow, alignSelf: "center", fontSize: 16, zIndex: 4, marginTop: 20 }]}>{item.song_category}</Text>
-                    </TouchableOpacity>
+            <TouchableOpacity 
+            onPress={() => { this.selectSingleCategory(item) }}>
+                <Card style={styles.songsCard}>
+                <ImageBackground style={styles.cardImage} source={{uri: item.thumbnail}} resizeMode={"cover"} imageStyle={{borderRadius: 5}}>
+                    {/* <TouchableOpacity onPress={() => { this.selectSingleCategory(item) }}> */}
+                        {/* <Text style={[styles.subHeading, { color: colors.snow, alignSelf: "center", fontSize: 16, zIndex: 4, marginTop: 20 }]}>{item.song_category}</Text> */}
+                    {/* </TouchableOpacity> */}
                 </ImageBackground>
             </Card>
+            </TouchableOpacity>
+            
         )
     }
     // public setData = (dataSet: any) => {
@@ -99,7 +105,9 @@ class HomeScreen extends React.Component<Props, State> {
     public render() {
         return (
             <Container style={{ backgroundColor: colors.snow }} >
-                <CommonHeader title={"Hiphop Streets"} />
+                <CommonHeader title={"Search"}
+                rightItem={<Icon name={"search"} type={"Feather"} style={styles.searchIcon}></Icon>}
+                />
                 <ScrollView style={{ maxHeight: "70%", marginLeft: 15 }}>
                     {this.renderTextIcon("Music by genre", this.props.category)}
                     {this.renderGenreList(this.props.category, "categories")}

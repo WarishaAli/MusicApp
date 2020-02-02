@@ -116,4 +116,24 @@ export const logoutEpic: Epic = (action$, state$, {api}: IDependencies) => actio
       })
     )
   })
+);
+
+export const socialLogout: Epic = (action$, state$, {api} : IDependencies) => action$.pipe(
+  ofType(getType(LoginActions.socialLogout)),
+  mergeMap(async (action: any) => {
+    try {
+      const value = await AsyncStorage.getItem(LOGIN_KEY);
+      console.log("at social logout", value);
+      if (value !== null) {
+        try{
+          await AsyncStorage.removeItem(LOGIN_KEY)
+      }catch{
+        console.log("logout error")
+      }
+      }
+    } catch (e) {
+      console.log(e, "error getting value from async");
+      return of(SongsActions.void())
+    }
+  })
 )
