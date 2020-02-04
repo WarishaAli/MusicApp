@@ -1,6 +1,6 @@
 import { Card, Container, Icon } from "native-base";
 import React from "react";
-import { FlatList, ImageBackground, ScrollView, Text, TouchableOpacity } from "react-native";
+import { FlatList, ImageBackground, ScrollView, Text, TouchableOpacity, Alert } from "react-native";
 import { NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
 import BottomBar from "../../Components/BottomBar";
@@ -16,6 +16,8 @@ import { Images } from "../../Themes";
 import colors from "../../Themes/Colors";
 import { BottomBarBtns } from "../../Types/BottomBar";
 import styles from "./HomeScreenStyles";
+import SoundPlayer from "react-native-sound-player";
+import { ISongData } from "../MusicPlayScreen/MusicPlayScreen";
 
 export interface State {
     croppedFeaturedSongs: any;
@@ -28,6 +30,10 @@ export interface DispatchProps {
     setPlaylist: (list: Playlist) => void;
     getCategories: () => void;
     getHomeData: () => void;
+    playSong: (song: ISongData) => void;
+    shouldPlay: (play: boolean) => void;
+    showPlay: (play: boolean) => void;
+
 }
 
 export interface StateProps {
@@ -36,6 +42,7 @@ export interface StateProps {
     featuredSongs: any;
     featuredVideos: any;
     featuredPodcasts: any;
+    isSongPlaying: boolean;
 }
 export type Props = OwnProps & NavigationScreenProps & DispatchProps & StateProps;
 class HomeScreen extends React.Component<Props, State> {
@@ -57,46 +64,65 @@ class HomeScreen extends React.Component<Props, State> {
     public renderTextIcon = (title: string, data: any) => (
         <TouchableOpacity
             onPress={() => this.props.navigation.push("SelectAllCategory", { params: { title: title, data: data } })}
-            style={{ flexDirection: "row"}}>
+            style={{ flexDirection: "row" }}>
             <Text style={[styles.subHeading]}>{title}</Text>
-            <Icon name={"ios-arrow-forward"} type={"Ionicons"} style={{ fontSize: 18, padding: 0, marginLeft: 7, alignSelf: "center", marginTop: 2, color: colors.charcoal}} />
+            <Icon name={"ios-arrow-forward"} type={"Ionicons"} style={{ fontSize: 18, padding: 0, marginLeft: 7, alignSelf: "center", marginTop: 2, color: colors.charcoal }} />
         </TouchableOpacity>
     );
     public renderGenreList = (data: any, noDataText: string) => {
         return data ? (
-            <FlatList data={data.length > 15 ? data.slice(0,10) : data} renderItem={noDataText === "categories" ? this.renderGenreView: this.renderFeauteredSongs} style={styles.listStyle} horizontal={true}
-            showsHorizontalScrollIndicator={false} 
+            <FlatList data={data.length > 15 ? data.slice(0, 10) : data} renderItem={noDataText === "categories" ? this.renderGenreView : this.renderFeauteredSongs} style={styles.listStyle} horizontal={true}
+                showsHorizontalScrollIndicator={false}
             // keyExtractor={(item) => noDataText === "categories" ? item.cat_id : item.songid}
             />
         ) : (<Text style={styles.noDataText}>
             Currently there are no {noDataText} to display!
         </Text>)
-    } 
+    }
+
+    public getSongInfo = async (item) => {
+        try {
+            const info = await SoundPlayer.getInfo() // Also, you need to await this because it is async
+            console.log('getInfo', info.duration / 60, info.currentTime / 60) // {duration: 12.416, currentTime: 7.691}
+            this.props.navigation.push("MusicPlayScreen", { songData: info })
+        } catch (e) {
+            console.log('There is no song playing', e)
+        }
+    }
+    public playSong = (item) => {
+        this.props.playSong(item);
+        this.props.shouldPlay(true);
+        this.props.setPlaylist(this.props.featuredSongs);
+    }
+    public openSongScreen = async (item) => {
+       const a = await this.playSong(item);
+        this.getSongInfo(item);
+    }
 
     public renderFeauteredSongs = ({ item }) => {
         return (
-            <TouchableOpacity onPress={() => this.props.navigation.push("MusicPlayScreen", {songData: item})}>
+            <TouchableOpacity onPress={() => this.openSongScreen(item)}>
                 <Card style={styles.songsCard}>
-                    <ImageBackground style={styles.cardImage} source={{uri: item.songimage}} imageStyle={{borderRadius: 5}}></ImageBackground>
+                    <ImageBackground style={styles.cardImage} source={{ uri: item.songimage }} imageStyle={{ borderRadius: 5 }}></ImageBackground>
                 </Card>
                 <Text style={styles.songName}>{item.song_name}</Text>
-                <Text style={{fontSize: 12}}>{item.song_category}</Text>
+                <Text style={{ fontSize: 12 }}>{item.song_category}</Text>
             </TouchableOpacity>
         )
     }
     public renderGenreView = ({ item }) => {
         return (
-            <TouchableOpacity 
-            onPress={() => { this.selectSingleCategory(item) }}>
+            <TouchableOpacity
+                onPress={() => { this.selectSingleCategory(item) }}>
                 <Card style={styles.songsCard}>
-                <ImageBackground style={styles.cardImage} source={{uri: item.thumbnail}} resizeMode={"cover"} imageStyle={{borderRadius: 5}}>
-                    {/* <TouchableOpacity onPress={() => { this.selectSingleCategory(item) }}> */}
+                    <ImageBackground style={styles.cardImage} source={{ uri: item.thumbnail }} resizeMode={"cover"} imageStyle={{ borderRadius: 10}}>
+                        {/* <TouchableOpacity onPress={() => { this.selectSingleCategory(item) }}> */}
                         {/* <Text style={[styles.subHeading, { color: colors.snow, alignSelf: "center", fontSize: 16, zIndex: 4, marginTop: 20 }]}>{item.song_category}</Text> */}
-                    {/* </TouchableOpacity> */}
-                </ImageBackground>
-            </Card>
+                        {/* </TouchableOpacity> */}
+                    </ImageBackground>
+                </Card>
             </TouchableOpacity>
-            
+
         )
     }
     // public setData = (dataSet: any) => {
@@ -106,9 +132,9 @@ class HomeScreen extends React.Component<Props, State> {
         return (
             <Container style={{ backgroundColor: colors.snow }} >
                 <CommonHeader title={"Search"}
-                rightItem={<Icon name={"search"} type={"Feather"} style={styles.searchIcon}></Icon>}
+                    rightItem={<Icon name={"search"} type={"Feather"} style={styles.searchIcon}></Icon>}
                 />
-                <ScrollView style={{ maxHeight: "70%", marginLeft: 15 }}>
+                <ScrollView style={{ marginLeft: 15, flex: 0.9, marginBottom: 70 }}>
                     {this.renderTextIcon("Music by genre", this.props.category)}
                     {this.renderGenreList(this.props.category, "categories")}
                     {this.renderTextIcon("Featured songs", this.props.featuredSongs)}
@@ -120,7 +146,7 @@ class HomeScreen extends React.Component<Props, State> {
                 </ScrollView>
 
 
-                <MusicPlayer style={styles.musicPlayer} />
+                {<MusicPlayer style={styles.musicPlayer} hide={!this.props.isSongPlaying} />}
                 <BottomBar navigation={this.props.navigation} />
             </Container>
         )
@@ -131,6 +157,10 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     setPlaylist: (list) => dispatch(SongsActions.setPlaylist(list)),
     getCategories: () => dispatch(CategoryAction.getCategoryRequest()),
     getHomeData: () => dispatch(CategoryAction.getHomeDataReq()),
+    playSong: (song) => dispatch(SongsActions.setSong(song)),
+    shouldPlay: (play) => dispatch(SongsActions.setIsPlaying(play)),
+    showPlay: (showPlay) => dispatch(SongsActions.showPlaying(showPlay)),
+
 })
 
 export const mapStateToProps = (state: RootState): StateProps => ({
@@ -139,5 +169,6 @@ export const mapStateToProps = (state: RootState): StateProps => ({
     featuredSongs: state.category.homeData ? state.category.homeData.featuredSongs : undefined,
     featuredVideos: state.category.homeData ? state.category.homeData.featuredVideos : undefined,
     featuredPodcasts: state.category.homeData ? state.category.homeData.podcastShows : undefined,
+    isSongPlaying: state.songs.isPlaying
 })
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

@@ -4,6 +4,7 @@ import { mergeMap } from "rxjs/operators"
 import { getType } from "typesafe-actions"
 import { IDependencies } from "../../Reducers/CreateStore"
 import { ProfileAction } from "../../Reducers/ProfileReducers"
+import { Alert } from "react-native"
 
 
 export const getProfileEpic: Epic = (action$, state$, { api }: IDependencies) => action$.pipe(
@@ -31,6 +32,7 @@ export const updateProfileEpic: Epic = (action$, state$, { api }: IDependencies)
                 if (response.ok) {
                     return of(ProfileAction.updateProfileSuccess(response.data.useobject))
                 } else {
+                    Alert.alert("Error", "Unfortunately an error occured updating your profile, please check your internet connection or try again later");
                     return of(ProfileAction.updateProfileFailure())
                 }
             })

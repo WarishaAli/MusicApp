@@ -1,13 +1,13 @@
+import { Container, Icon, ListItem } from "native-base";
 import React from "react";
-import { Container, Icon, Col, CardItem, ListItem} from "native-base";
-import { connect } from "react-redux";
-import {View, TouchableOpacity, Text, BackHandler} from "react-native";
-import styles from "./SettingsScreenStyles";
-import BottomBar from "../../Components/BottomBar";
+import { Text, TouchableOpacity, View } from "react-native";
 import { NavigationScreenProps } from "react-navigation";
-import { BottomBarBtns } from "../../Types/BottomBar";
+import { connect } from "react-redux";
+import BottomBar from "../../Components/BottomBar";
 import { BottomBarActions } from "../../Reducers/BottomBarReducer";
 import colors from "../../Themes/Colors";
+import { BottomBarBtns } from "../../Types/BottomBar";
+import styles from "./SettingsScreenStyles";
 
 export interface DispatchProps{
     selectBottomTab: (selectedTab: BottomBarBtns) => void;

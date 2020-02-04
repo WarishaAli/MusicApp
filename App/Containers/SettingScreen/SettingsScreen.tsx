@@ -1,24 +1,21 @@
 import { Card, Col, Container, Content, Icon } from "native-base";
 import React from "react";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+import ImagePicker from 'react-native-image-picker';
 import { FlatList, NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
 import BottomBar from "../../Components/BottomBar";
-import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 import ModalView from "../../Components/ModalView/ModalView";
+import { IUserData } from "../../Lib/Interfaces";
 import { SettingsData } from "../../Lib/SettingsData";
+import { RootState } from "../../Reducers";
 import { BottomBarActions } from "../../Reducers/BottomBarReducer";
+import { LoginActions } from "../../Reducers/LoginReducers";
+import { ProfileAction } from "../../Reducers/ProfileReducers";
+import { SongsActions } from "../../Reducers/SongsReducer";
 import colors from "../../Themes/Colors";
 import { BottomBarBtns } from "../../Types/BottomBar";
 import styles from "./SettingsScreenStyles";
-import ImagePicker from 'react-native-image-picker';
-import { dispatch } from "rxjs/internal/observable/pairs";
-import { RootState } from "../../Reducers";
-import { IUserData } from "../../Lib/Interfaces";
-import { ProfileAction } from "../../Reducers/ProfileReducers";
-import { LoginActions } from "../../Reducers/LoginReducers";
-import genresData from "../../Lib/GenresData";
-import { SongsActions } from "../../Reducers/SongsReducer";
 
 export interface DispatchProps {
     selectBottomTab: (selectedTab: BottomBarBtns) => void;

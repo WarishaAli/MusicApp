@@ -12,9 +12,16 @@ export default StyleSheet.create({
 
     },
     songsCard:{
-        width: 140,
-        height: 120,
-        borderRadius: 5,
+        width: 150,
+        height: 210,
+        borderRadius: 10,
+        marginRight: 10,
+        shadowColor: colors.steel,
+        shadowRadius: 12,
+        shadowOffset:{width: 5, height: 5},
+        // borderBottomWidth: 5,
+        // borderBottomColor: colors.steel
+        // marginHorizontal: 15,
     },
     heading: {
         fontSize: 20,
@@ -67,6 +74,7 @@ export default StyleSheet.create({
     cardImage: {
         flex: 1,
         justifyContent: "center",
+        // marginHorizontal: 10
     },
     musicPlayer:{
         marginBottom: 10,

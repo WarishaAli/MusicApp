@@ -1,12 +1,15 @@
 import { Button, Container, Icon, Row } from "native-base";
 import React from "react";
-import { Image, Text, TouchableOpacity, View, Picker } from "react-native";
+import { Image, Picker, Text, TouchableOpacity, View } from "react-native";
+import DocumentPicker from 'react-native-document-picker';
 import { ScrollView, TextInput } from "react-native-gesture-handler";
+import ImagePicker from 'react-native-image-picker';
 import { FlatList, NavigationScreenProps } from "react-navigation";
 import { connect, Dispatch } from "react-redux";
 import BottomBar from "../../Components/BottomBar";
-import CommonHeader from "../../Components/CommonHeader/CommonHeader";
+import ModalView from "../../Components/ModalView/ModalView";
 import MusicPlayer from "../../Components/MusicPlayer/MusicPlayer";
+import { ISongUpload } from "../../Lib/Interfaces";
 import { Playlist, PlaylistTypes, Songs } from "../../Lib/PlaylistTypes";
 import { BottomBarActions } from "../../Reducers/BottomBarReducer";
 import { CategoryAction } from "../../Reducers/CategoryReducers";
@@ -17,11 +20,7 @@ import { SongsActions } from "../../Reducers/SongsReducer";
 import colors from "../../Themes/Colors";
 import { BottomBarBtns } from "../../Types/BottomBar";
 import styles from "./PlaylistScreenStyles";
-import ModalView from "../../Components/ModalView/ModalView";
-import ImagePicker from 'react-native-image-picker';
-import DocumentPicker from 'react-native-document-picker';
-import { ISongUpload } from "../../Lib/Interfaces";
-import genresData from "../../Lib/GenresData";
+import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 
 export interface OwnProps {
     comingFrom: PlaylistTypes;
@@ -95,7 +94,7 @@ class PlaylistScreen extends React.Component<Props, State>{
         // this.state.playlistType === PlaylistTypes.PLAYLIST && this.props.setBottomTab(BottomBarBtns.PLAYLIST);
         // await this.props.selectPlaylist(playlists[0]);
         // this.props.selectSong(this.props.selectedPlaylist.songs[0]);
-        this.props.playMusic(false);
+        // this.props.playMusic(false);
     }
     public playSong = (item: any) => {
         this.props.playMusic(true);
@@ -233,13 +232,13 @@ class PlaylistScreen extends React.Component<Props, State>{
     public render() {
         return (
             <Container>
-                {/* <CommonHeader title={"Stream songs"}
+                <CommonHeader title={"Stream songs"}
                     leftItem={
                   this.state.playlistType === PlaylistTypes.EXPLORE &&  <TouchableOpacity onPress={() => this.props.navigation.pop()}>
                    <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.snow }}></Icon>
                 </TouchableOpacity>
                     }
-                /> */}
+                />
                 {/* <View style={{flexDirection: "row"}}> */}
                 {/* <Image source={{uri: this.state.categoryData.thumbnail}} style={{width: 100, height: 100}}></Image> */}
                 <View style={styles.headerView}>
@@ -265,6 +264,7 @@ class PlaylistScreen extends React.Component<Props, State>{
                     </TouchableOpacity>}
                 <MusicPlayer
                     style={this.state.playlistType === PlaylistTypes.EXPLORE ? styles.singleCatStyle : styles.playlistStyle}
+                    hide={false}
                 />
                  <ModalView content={
                     this.modalContent()

@@ -147,10 +147,10 @@ android {
 }
 
 dependencies {
+    implementation project(':@react-native-community_slider')
     implementation project(':@react-native-community_google-signin')
     implementation project(':react-native-fbsdk')
     implementation project(':react-native-document-picker')
-    implementation project(':react-native-file-chooser')
     implementation project(':react-native-image-picker')
     implementation project(':react-native-device-info')
     implementation project(':@react-native-community_async-storage')

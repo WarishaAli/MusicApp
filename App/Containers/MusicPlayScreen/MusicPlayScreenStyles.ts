@@ -3,7 +3,7 @@ import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
     icon:{
-        color: colors.charcoal,
+        color: colors.black,
         fontSize: 30,
         marginTop: 4,
     },
@@ -23,14 +23,14 @@ export default StyleSheet.create({
     },
     heartIcon:{
         fontSize: 18,
-        color: colors.charcoal,
+        color: colors.black,
         marginLeft: 50,
         paddingTop: 8,
     },
     songNameText:{
         fontSize: 20,
         // fontWeight: "bold",
-        color: colors.charcoal,
+        color: colors.black,
         fontFamily: "serif",
         // alignSelf: "center",
     }

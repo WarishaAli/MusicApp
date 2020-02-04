@@ -28,15 +28,15 @@ export const uploadMySongEpic: Epic = (action$, state$, {api} : IDependencies) =
     mergeMap((action) =>{
         return api.hiphop.uploadSong(state$.value.login.userData.access_token, action.payload).pipe(
             mergeMap((response) => {
-                console.log("my songs response", response)
-                if(response.data){
-                response.data.object.error && Alert.alert("Error", response.data.object.error);
-                }
+                console.log("my songs response", response);
+                // if(response.data){
+                // response.data.object.error && Alert.alert("Error", response.data.object.error);
+                // };
                 if(response.ok){
                     return of(MySongAction.uploadMySongSuccess(), MySongAction.getMySongsRequest())
                 } else{
+                    Alert.alert("Error", "An error occured uploading your song, please check your internet connection or try again later")
                     console.log("at error");
-                    
                     return of(MySongAction.uploadMySongFailure())
                 }
             })

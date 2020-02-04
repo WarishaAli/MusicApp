@@ -2,8 +2,15 @@ import {StyleSheet} from "react-native";
 import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
+    musicPlayer:{
+        // marginBottom: 10,
+        position: "absolute",
+        bottom: 20,
+        width: "100%",
+    },
     cardItemStyle: {
-        height: 120,
+        height: 210,
+        // width: 80,
         flex: 0.5,
         marginTop: 20,
         marginHorizontal: 2

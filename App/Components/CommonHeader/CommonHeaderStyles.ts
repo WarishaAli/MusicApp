@@ -26,6 +26,7 @@ export default StyleSheet.create({
     },
     leftStyle:{
         marginLeft: 10,
+        flexDirection: "row",
     },
     rightStyle:{
         marginRight: 20,

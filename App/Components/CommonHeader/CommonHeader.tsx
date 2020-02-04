@@ -14,7 +14,10 @@ export default class CommonHeader extends React.Component<Props> {
     public render(){
         return(
             <Header noShadow={true} style={styles.header}>
+                <View style={styles.leftStyle}>
+                {this.props.leftItem}
                 <Text style={styles.text}>{this.props.title}</Text>
+                </View>
                 <View style={styles.rightStyle}>
                 {this.props.rightItem}
                 </View>
