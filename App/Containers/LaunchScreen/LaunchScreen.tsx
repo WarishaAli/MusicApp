@@ -1,21 +1,19 @@
+import { Container } from "native-base";
 import React, { Component } from "react";
-import { Image, ScrollView, Text, View, ImageBackground } from "react-native";
-import {Container, Content} from "native-base";
-import { LoginButton, AccessToken, GraphRequest,GraphRequestManager } from 'react-native-fbsdk';
-
-import { Images } from "../../Themes";
-
-// Styles
-import styles from "./LaunchScreenStyles";
-import colors from "../../Themes/Colors";
-import LargeButton from "../../Components/LargeButton";
-import LargeTransparentButton from "../../Components/LargeTransparentButton";
-import AppLogo from "../../Components/AppLogo/AppLogo";
+import { ImageBackground, ScrollView, Text, View } from "react-native";
+import { AccessToken, GraphRequest, GraphRequestManager, LoginButton } from 'react-native-fbsdk';
 import { NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
-import { LoginActions } from "../../Reducers/LoginReducers";
+import LargeTransparentButton from "../../Components/LargeTransparentButton";
 import { IUserData } from "../../Lib/Interfaces";
+import { LoginActions } from "../../Reducers/LoginReducers";
 import { ProfileAction } from "../../Reducers/ProfileReducers";
+import { Images } from "../../Themes";
+import colors from "../../Themes/Colors";
+// Styles
+import styles from "./LaunchScreenStyles";
+
+
 
 export interface DispatchProps{
   fbLogin: (email: undefined, pwd: undefined, socialType: "facebook", socialId: string) => void;
@@ -68,13 +66,39 @@ export type Props = DispatchProps & NavigationScreenProps;
        <ImageBackground style={{flex: 1}}source={Images.backgroundImg}>
        {/* <AppLogo style={{marginTop: 200}} appNameStyle={{color: colors.snow}} appSloganStyle={{color: colors.lightPink}} iconStyle={{color: colors.snow}}/> */}
        <ScrollView style={{width: "100%", position: "absolute", bottom: 20}}>
-       <Text style={styles.accountText}>Don't have an account? <Text onPress={this.openSignup} style={{color: colors.maroon}}>Sign up</Text></Text>
+       <Text style={styles.accountText}>Don't have an account? <Text onPress={this.openSignup} style={{color: colors.maroon, fontWeight: "bold"}}>Sign up</Text></Text>
        {/* <View style={{flexDirection: "row",  paddingHorizontal: 5, paddingVertical: 10, justifyContent: "space-between"}}> */}
-       <View style={{alignSelf: "center", flex: 1, paddingVertical: 10}}>
+       <View style={{alignSelf: "center", flex: 1, paddingVertical: 10, marginTop: 10}}>
        <LoginButton
           onLoginFinished={
             (error, result) => {
-             this.fbLogin(error, result)
+              if (error) {
+                console.log("login has error: " + error);
+              } else if (result.isCancelled) {
+                console.log("login is cancelled.");
+              } else {
+                console.log("at else")
+                AccessToken.getCurrentAccessToken().then(
+                  (data) => {
+                    let req = new GraphRequest('/me', {
+                      accessToken: data.accessToken.toString(),
+                      parameters: {
+                        fields: {
+                          string: 'email,name,first_name,last_name,picture'
+                        }
+                      }
+                    }, (err, res) => {
+                      console.log("graph request result", err, res);
+                      if(err === undefined || err === null){
+                        // this.props.fbLogin(undefined, undefined, "facebook", data.accessToken.toString());
+                        this.props.setProfileData({name: res.name, image: res.picture.data.url, sex: res.gender})
+                      }
+                  });
+                  new GraphRequestManager().addRequest(req).start();
+                  this.props.fbLogin(undefined, undefined, "facebook", data.accessToken.toString());
+                  }
+                )
+              }
             }
           }
           onLogoutFinished={this.props.logout}/>

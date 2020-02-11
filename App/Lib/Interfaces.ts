@@ -1,3 +1,5 @@
+import { UserRole } from "../Containers/SignupScreen/SignupScreen";
+
 export interface IUserData{
     userId: string;
     userName: string;
@@ -6,6 +8,7 @@ export interface IUserData{
     gender?: string;
     biography?: string;
     image?:string;
+    user_cat? :UserRole;
 }
 export interface IUserRequest{
     socialType: string;

@@ -8,6 +8,7 @@ import { StartupActions } from "../../Reducers/StartupReducers";
 // Styles
 import styles from "./RootContainerStyles";
 import { NavigationScreenProps } from "react-navigation";
+import LoaderComponent from "../../Components/LoaderComponent/LoaderComponent";
 
 interface OwnProps {
   startup: () => void;
@@ -32,12 +33,13 @@ export class RootContainer extends React.Component<Props, State> {
       <View style={styles.applicationView}>
         <StatusBar barStyle="light-content" />
         <ReduxNavigation />
+        <LoaderComponent />
       </View>
     );
   }
 }
 
-const mapDispatchToProps = (dispatch: any): Props => ({
+const mapDispatchToProps = (dispatch: any): OwnProps => ({
   startup: () => dispatch(StartupActions.startup()),
 });
 

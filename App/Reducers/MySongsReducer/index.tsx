@@ -31,6 +31,7 @@ export const MySongAction = actions;
 
 export interface MySongState {
     mySongs: Array<Songs> | undefined;
+    fetching: boolean;
 }
 
 export type mySongActions = PayloadAction<string, any>;
@@ -38,17 +39,42 @@ export type mySongActions = PayloadAction<string, any>;
 export type ImmutableMySongState = SI.ImmutableObject<MySongState>;
 
 export const INITIAL_STATE: ImmutableMySongState = SI.from({
-    mySongs: undefined
+    mySongs: undefined,
+    fetching: false,
 });
 
 export const getMySongsSuccess: Reducer<ImmutableMySongState> = (state, action) => state.merge({
-    mySongs: action.payload,
+    mySongs: action.payload, fetching: false,
 })
 
+export const uploadMySongSuccess: Reducer<ImmutableMySongState> = (state, action) => state.merge({
+    fetching: false,
+})
 
+export const getMySongsFailure: Reducer<ImmutableMySongState> = (state) => state.merge({
+    fetching: false,
+})
+
+export const uploadMySongFailure: Reducer<ImmutableMySongState> = (state) => state.merge({
+    fetching: false,
+})
+
+export const getMySongsRequest: Reducer<ImmutableMySongState> = (state, action) => state.merge({
+    fetching: true,
+})
+
+export const uploadMySongReq: Reducer<ImmutableMySongState> = (state, action) => state.merge({
+    fetching: true,
+})
 const reducerMap: ReducerMap<typeof actions, ImmutableMySongState> = {
     getMySongsSuccess,
+    getMySongsRequest,
+    uploadMySongReq,
+    uploadMySongSuccess,
+    getMySongsFailure,
+    uploadMySongFailure,
 };
+
 
 export const MySongReducers = mapReducers(INITIAL_STATE, reducerMap, actions);
 

@@ -15,6 +15,7 @@ import { async } from "rxjs/internal/scheduler/async";
 export interface OwnProps {
     style?: ViewStyle;
     hide: boolean;
+    navigation: NavigationScreenProps;
     // playNextSong? : () => void;
 };
 
@@ -79,7 +80,7 @@ class MusicPlayer extends React.Component<Props, State> {
             } catch (e) {
                 console.log(`cannot play the sound file`, e)
             };
-            this.props.showPlaying(true);
+            // this.props.showPlaying(true);
         }
     };
     public pauseSong = () => {
@@ -104,7 +105,8 @@ class MusicPlayer extends React.Component<Props, State> {
     public render() {
         return (
             <TouchableOpacity
-            onPress={this.openSongScrenn}
+            activeOpacity={0}
+            onPress={this.props.hide ? () => null : this.openSongScrenn}
             style={[styles.mainView, this.props.style, { opacity: this.props.hide ? 0 : 1 }]}>
                 {/* <View style={styles.imageView}> */}
                 <Image
@@ -116,7 +118,7 @@ class MusicPlayer extends React.Component<Props, State> {
                     <Text style={styles.heading}>{this.props.currentSong.song_name || " "}</Text>
                     <Text style={styles.subHeading}>{this.props.currentSong.song_category || ""}</Text>
                 </View>}
-                {!this.props.hide && <View style={{ flexDirection: "row", alignSelf: "center", flex: 0.5, marginLeft: 20 }}>
+                { <View style={{ flexDirection: "row", alignSelf: "center", flex: 0.5, marginLeft: 20 }}>
                     <Icon onPress={this.playPreviousSong} style={styles.icon} name={"stepbackward"} type={"AntDesign"} />
                     {this.props.showPlay && <Icon onPress={this.pauseSong} style={[styles.icon]} name={"pause"} type={"AntDesign"} />}
                     {!this.props.showPlay && <Icon onPress={this.playSong} style={[styles.icon]} name={"caretright"} type={"AntDesign"} />}

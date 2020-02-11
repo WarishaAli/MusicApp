@@ -2,8 +2,13 @@ import {StyleSheet} from "react-native";
 import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
+    timeText:{
+        fontSize: 12,
+        color: colors.steel
+    },
+    
     icon:{
-        color: colors.black,
+        color: colors.charcoal,
         fontSize: 30,
         marginTop: 4,
     },
@@ -14,12 +19,12 @@ export default StyleSheet.create({
     image:{
         height: 250,
         width: 250,
-        borderRadius: 10,
+        borderRadius: 250,
         alignSelf: "center",
     },
     holderView:{
-        marginTop: 80,
-        paddingHorizontal: 50,
+        marginTop: 50,
+        paddingHorizontal: 30,
     },
     heartIcon:{
         fontSize: 18,
@@ -28,10 +33,11 @@ export default StyleSheet.create({
         paddingTop: 8,
     },
     songNameText:{
-        fontSize: 20,
-        // fontWeight: "bold",
-        color: colors.black,
+        marginTop: 10,
+        fontSize: 25,
+        fontWeight: "bold",
+        color: colors.charcoal,
         fontFamily: "serif",
-        // alignSelf: "center",
+        alignSelf: "center",
     }
 })

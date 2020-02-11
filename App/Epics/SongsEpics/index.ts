@@ -12,7 +12,7 @@ export const setNextSongEpic: Epic = (action$, state$) => action$.pipe(
         const currentSong = state$.value.songs.song;
         // console.log(currentSong, currentPlaylist);
         const currentIndex = findCurrentSongIndex(currentPlaylist, currentSong);
-        console.log(currentIndex);
+        // console.log(currentIndex);
         if(currentIndex + 1 <= currentPlaylist.length-1){
             return of(SongsActions.setSong(currentPlaylist[ currentIndex+1]));
         } else{

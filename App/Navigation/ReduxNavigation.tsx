@@ -5,12 +5,14 @@ import AppNavigation from "./AppNavigation";
 import LoginNavigation from "./LoginNavigation";
 import { RootState } from "../Reducers";
 import { LoginActions } from "../Reducers/LoginReducers";
+import { Alert } from "react-native";
 
 export interface StateProps{
   isLogin: boolean;
 }
 export interface DispatchProps{
   checkLogin: () => void;
+  checkUserRole: (callback: () => void) => void;
 }
 export type Props = StateProps & DispatchProps;
 
@@ -23,6 +25,7 @@ class ReduxNavigation extends React.Component<Props> {
   // });
   public componentDidMount(){
     this.props.checkLogin();
+    this.props.checkUserRole(() => Alert.alert("Error", "no user role"))
   }
   public render (){
     // console.log("at redux comp", this.props.isLogin);
@@ -34,6 +37,7 @@ class ReduxNavigation extends React.Component<Props> {
 
 const mapDispatchToProps = (dispatch: Dispatch):DispatchProps => ({
   checkLogin: () => dispatch(LoginActions.checkIsLogin()),
+  checkUserRole: (callback) => dispatch(LoginActions.checkUserRole(callback)),
 })
 
 const mapStateToProps = (state: RootState) => ({

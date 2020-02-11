@@ -15,7 +15,7 @@ const AppLogo: React.SFC<Props> = ({style, appNameStyle, appSloganStyle, iconSty
     <View style={[styles.centerView, style]}>
        {/* <Icon style={[styles.guitarIcon, iconStyle]} name={"guitar"} type={"FontAwesome5"} /> */}
        <Image resizeMode={"cover"} source={Images.appLogo} style={styles.logoStyle}/>
-       <Text style={[styles.appNameText, appNameStyle]}>HipHop Streets</Text>
+       <Text style={[styles.appNameText, appNameStyle]}>Hiphop Streets</Text>
        {/* <Text style={[styles.appSloganText, appSloganStyle]}>Scream it louder</Text> */}
        </View>
 )

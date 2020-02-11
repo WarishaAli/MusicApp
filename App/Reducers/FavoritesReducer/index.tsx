@@ -40,6 +40,7 @@ export const FavoriteAction = actions;
 
 export interface FavoriteState {
     favoritesData: Array<IFavoriteResponse> | undefined;
+    fetching: boolean;
 }
 
 export type FavoriteActions = PayloadAction<string, any>;
@@ -48,18 +49,43 @@ export type ImmutableFavoriteState = SI.ImmutableObject<FavoriteState>;
 
 export const INITIAL_STATE: ImmutableFavoriteState = SI.from({
     favoritesData: undefined,
+    fetching: false,
 });
+
+export const getFavoriteRequest: Reducer<ImmutableFavoriteState> = (state, action) => state.merge({
+    fetching: true,
+})
+
+export const makeFavoriteRequest: Reducer<ImmutableFavoriteState> = (state, action) => state.merge({
+    fetching: true,
+})
+
+export const makeFavoriteSuccess: Reducer<ImmutableFavoriteState> = (state, action) => state.merge({
+    fetching: false
+})
 
 export const getFavoriteSuccess: Reducer<ImmutableFavoriteState> = (state, action) => state.merge({
-    favoritesData: action.payload,
+    favoritesData: action.payload, fetching: false,
 });
 
+export const getFavoriteFailure: Reducer<ImmutableFavoriteState> = (state) => state.merge({
+    fetching: false,
+})
+
+export const makeFavoriteFailure: Reducer<ImmutableFavoriteState> = (state) => state.merge({
+    fetching: false,
+})
 // export const makeFavoriteSuccess: Reducer<ImmutableFavoriteState> = (state, action) => state.merge({
 
 // })
 
 const reducerMap: ReducerMap<typeof actions, ImmutableFavoriteState> = {
     getFavoriteSuccess,
+    getFavoriteRequest,
+    makeFavoriteRequest,
+    makeFavoriteSuccess,
+    getFavoriteFailure,
+    makeFavoriteFailure,
 };
 
 export const FavoriteReducers = mapReducers(INITIAL_STATE, reducerMap, actions);

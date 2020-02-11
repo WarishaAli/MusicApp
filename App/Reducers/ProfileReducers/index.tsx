@@ -30,6 +30,7 @@ export const ProfileAction = actions;
 
 export interface ProfileState {
     profileData: IUserData | undefined;
+    fetching: boolean;
 }
 
 export type ProfileActions = PayloadAction<string, any>;
@@ -38,18 +39,37 @@ export type ImmutableProfileState = SI.ImmutableObject<ProfileState>;
 
 export const INITIAL_STATE: ImmutableProfileState = SI.from({
     profileData: undefined,
+    fetching: false,
 });
 
 export const getProfileSuccess: Reducer<ImmutableProfileState> = (state, action) => state.merge({
-    profileData: action.payload,
+    profileData: action.payload, fetching: false
 })
 export const updateProfileSuccess: Reducer<ImmutableProfileState> = (state, action) => state.merge({
-    profileData: action.payload,
+    profileData: action.payload, fetching: false,
+})
+export const getProfileRequest: Reducer<ImmutableProfileState> = (state, action) => state.merge({
+    fetching: true,
 })
 
+export const updateProfileRequest: Reducer<ImmutableProfileState> = (state) => state.merge({
+    fetching: true,
+})
+
+export const updateProfileFailure: Reducer<ImmutableProfileState> = (state) => state.merge({
+    fetching: false,
+})
+
+export const getProfileFailure: Reducer<ImmutableProfileState> = (state) => state.merge({
+    fetching: false,
+})
 const reducerMap: ReducerMap<typeof actions, ImmutableProfileState> = {
     getProfileSuccess,
     updateProfileSuccess,
+    getProfileRequest,
+    updateProfileRequest,
+    getProfileFailure,
+    updateProfileFailure,
 };
 
 export const ProfileReducers = mapReducers(INITIAL_STATE, reducerMap, actions);

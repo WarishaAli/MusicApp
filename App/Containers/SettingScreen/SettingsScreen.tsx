@@ -1,6 +1,6 @@
 import { Card, Col, Container, Content, Icon } from "native-base";
 import React from "react";
-import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
 import ImagePicker from 'react-native-image-picker';
 import { FlatList, NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
@@ -16,6 +16,8 @@ import { SongsActions } from "../../Reducers/SongsReducer";
 import colors from "../../Themes/Colors";
 import { BottomBarBtns } from "../../Types/BottomBar";
 import styles from "./SettingsScreenStyles";
+import CommonHeader from "../../Components/CommonHeader/CommonHeader";
+import Share from "react-native-share";
 
 export interface DispatchProps {
     selectBottomTab: (selectedTab: BottomBarBtns) => void;
@@ -102,8 +104,21 @@ class SettingScreen extends React.Component<Props, State>{
         </View>
     )
     public logout = (title: string) => {
-        title==="Logout" ? this.props.logout() : (null);
+       if( title==="Logout"){
+            Alert.alert("Confirmation", "Are you sure you want to log out?", [
+                {
+                    text: "Yes",
+                    onPress: this.props.logout,
+                },
+                {
+                    text: "Cancel",
+                }
+            ])
+       }else{
+        return null;
+       }
     }
+
     public renderSettingsItems = ({ item }) => (
 
         <View style={styles.itemRow}>
@@ -151,11 +166,15 @@ class SettingScreen extends React.Component<Props, State>{
     public render() {
         return (
             <Container>
-                {/* <CommonHeader title={"Profile settings"} /> */}
-                {this.props.profileData ? <Content style={{ maxHeight: "80%" }}>
-                    {this.renderTopProfileView()}
+                <CommonHeader title={"Profile & Settings"} />
+                {/* {this.props.profileData ?  */}
+                <Content style={{ maxHeight: "80%" }}>
+                    {this.props.profileData && this.renderTopProfileView()}
                     {this.renderListView()}
-                </Content> : <Text style={{padding: 30, alignSelf: "center", marginTop: 50}}>Unfortunately, your profile data is not available at the moment! Please try again later</Text>}
+                </Content> 
+                {/* : */}
+                 {/* <Text style={{padding: 30, alignSelf: "center", marginTop: 50}}>Unfortunately, your profile data is not available at the moment! Please try again later</Text> */}
+                 {/* } */}
                 <ModalView content={
                     <View style={styles.modalContent}>
                         <Image source={{ uri: this.state.profileImage.uri}} style={styles.roundView} onLayout={this.onLayoutImg} />
@@ -164,10 +183,10 @@ class SettingScreen extends React.Component<Props, State>{
                         >
                             <Icon name={"camera"} type={"FontAwesome"} style={styles.camIcon}></Icon>
                         </TouchableOpacity>
-                        <TextInput value={this.state.userName} onChangeText={(text) => this.setState({ userName: text })} underlineColorAndroid={colors.maroon} />
-                        <TextInput value={this.state.emailId} onChangeText={(text) => this.setState({ emailId: text })} underlineColorAndroid={colors.maroon} />
-                        <TextInput value={this.state.bio} onChangeText={(text) => this.setState({ bio: text })} underlineColorAndroid={colors.maroon} />
-                        <TextInput value={this.state.gender} onChangeText={(text) => this.setState({ gender: text })} underlineColorAndroid={colors.maroon} />
+                        <TextInput value={this.state.userName} onChangeText={(text) => this.setState({ userName: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your username"} />
+                        <TextInput value={this.state.emailId} onChangeText={(text) => this.setState({ emailId: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your email id"}/>
+                        <TextInput value={this.state.bio} onChangeText={(text) => this.setState({ bio: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your biography"} />
+                        <TextInput value={this.state.gender} onChangeText={(text) => this.setState({ gender: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your gender"}/>
                     </View>
                 }
                     visible={this.state.visible}

@@ -2,19 +2,31 @@ import {StyleSheet} from "react-native";
 import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
+    cardOverlayView:{
+        position: "absolute",
+        bottom: 0,
+        backgroundColor: colors.lightPink,
+        width: "100%",
+        height: 60,
+        justifyContent: "center",
+        // borderRadius: 8,
+    },
     searchIcon:{
         fontSize: 18,
         color: colors.lightMaroon
     },
     songName:{
-        color: colors.black,
+        color: colors.charcoal,
         fontFamily: "serif",
+        alignSelf: "center",
+        fontSize: 18,
+
 
     },
     songsCard:{
         width: 150,
         height: 210,
-        borderRadius: 10,
+        // borderRadius: 10,
         marginRight: 10,
         shadowColor: colors.steel,
         shadowRadius: 12,

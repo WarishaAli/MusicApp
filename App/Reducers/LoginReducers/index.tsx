@@ -1,15 +1,16 @@
 import { createAction, PayloadAction } from "typesafe-actions";
 import * as SI from "seamless-immutable";
-import {Reducer } from "redux";
+import { Reducer } from "redux";
 import { mapReducers, ReducerMap } from "../../Lib/ReduxHelpers";
-import {IUserData, IUserRequest} from "../../Lib/Interfaces";
+import { IUserData, IUserRequest } from "../../Lib/Interfaces";
+import { UserRole } from "../../Containers/SignupScreen/SignupScreen";
 
 const actions = {
-    signup: createAction("SIGNUP_REQUEST", (username: string, email: string, pwd: string) => ({
-        type: "SIGNUP_REQUEST", payload: {username, email, pwd}
+    signup: createAction("SIGNUP_REQUEST", (username: string, email: string, pwd: string, userRole: UserRole) => ({
+        type: "SIGNUP_REQUEST", payload: { username, email, pwd, userRole }
     })),
-    loginRequest: createAction("LOGIN_REQUEST", (email: string, pwd: string, socialType: string, socialId? : string) => ({
-        type: "LOGIN_REQUEST", payload: {email, pwd, socialType, socialId}
+    loginRequest: createAction("LOGIN_REQUEST", (email: string | undefined, pwd: string | undefined, socialType: string, socialId?: string) => ({
+        type: "LOGIN_REQUEST", payload: { email, pwd, socialType, socialId }
     })),
     loginSuccess: createAction("LOGIN_SUCCESS", (params: IUserData) => ({
         type: "LOGIN_SUCCESS", payload: params
@@ -18,45 +19,78 @@ const actions = {
         type: "LOGIN_FAILURE"
     })),
     checkIsLogin: createAction("CHECK_LOGIN"),
-    
+
     setIsLogin: createAction("SET_LOGIN", (params: boolean) => ({
         type: "SET_LOGIN", payload: params
     })),
     logout: createAction("USER_LOGOUT"),
+    
     socialLogout: createAction("SOCIAL_LOGOUT"),
+
+    checkUserRole: createAction("CHECK_USER_ROLE", (callback: () => void) => ({
+        type: "CHECK_USER_ROLE", payload: callback,
+    })),
+
+    setUserRole: createAction("SET_USER_ROLE", (userRole: UserRole,) => ({
+        type: "SET_USER_ROLE", payload: userRole,
+    })),
 }
 
 export const LoginActions = actions;
 
 export interface LoginState {
     userData: IUserData | undefined,
-    isLogin: boolean
-  
+    isLogin: boolean,
+    userRole: UserRole | undefined,
+    fetching: boolean,
+
 }
 export type LoginAction = PayloadAction<string, LoginState>;
 
 export type ImmutableLoginState = SI.ImmutableObject<LoginState>;
 
-export const INITIAL_STATE : ImmutableLoginState = SI.from({
+export const INITIAL_STATE: ImmutableLoginState = SI.from({
     userData: undefined,
-    isLogin: false
+    isLogin: false,
+    userRole: undefined,
+    fetching: false,
 })
 
-export const loginSuccess : Reducer<ImmutableLoginState> = (state, action) => 
-    state.merge({userData: action.payload, isLogin: true});
+export const loginSuccess: Reducer<ImmutableLoginState> = (state, action) =>
+    state.merge({ userData: action.payload, isLogin: true, fetching: false});
 
 export const loginFailure: Reducer<ImmutableLoginState> = (state) => state.merge({
-    userData: undefined, isLogin: false
+    userData: undefined, isLogin: false, fetching: false,
 });
 
-export const setIsLogin: Reducer<ImmutableLoginState>=(state, action) => state.merge({
-    isLogin: action.payload,
-})
+export const setIsLogin: Reducer<ImmutableLoginState> = (state, action) => state.merge({
+    isLogin: action.payload, fetching: false,
+});
+
+export const signup: Reducer<ImmutableLoginState> = (state, action) => state.merge({
+    fetching: true,
+});
+
+export const loginRequest: Reducer<ImmutableLoginState> = (state, action) => state.merge({
+    fetching: true,
+});
+
+
+export const logout: Reducer<ImmutableLoginState> = (state, action) => state.merge({
+    fetching: true,
+});
+
+
+
+
 
 const reducerMap: ReducerMap<typeof actions, ImmutableLoginState> = {
-   loginSuccess,
-   loginFailure,
-   setIsLogin,
+    loginSuccess,
+    loginFailure,
+    setIsLogin,
+    loginRequest,
+    logout,
+    signup,
 }
 
 export const LoginReducer = mapReducers(INITIAL_STATE, reducerMap, actions);

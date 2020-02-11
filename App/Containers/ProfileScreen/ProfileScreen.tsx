@@ -8,6 +8,7 @@ import { BottomBarActions } from "../../Reducers/BottomBarReducer";
 import colors from "../../Themes/Colors";
 import { BottomBarBtns } from "../../Types/BottomBar";
 import styles from "./SettingsScreenStyles";
+import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 
 export interface DispatchProps{
     selectBottomTab: (selectedTab: BottomBarBtns) => void;
@@ -46,6 +47,7 @@ class SettingScreen extends React.Component<Props>{
     public render() {
         return(
             <Container>
+                <CommonHeader title={"Profile & Settings"}></CommonHeader>
                 {<View style={{paddingTop: 5, paddingHorizontal: 18}}>
                         {this.renderItem(true, "View Profile", this.openProfile)}
                         {this.renderItem(false, "About Us", this.openAboutUs, "infocirlceo")}

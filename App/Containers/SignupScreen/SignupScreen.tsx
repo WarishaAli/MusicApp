@@ -1,24 +1,30 @@
 import React from "react";
-import { Container, Content } from "native-base";
+import { Container, Content, CheckBox } from "native-base";
 import styles from "./SignupScreenStyles";
 import InputText from "../../Components/InputText/InputText";
 import AppLogo from "../../Components/AppLogo/AppLogo";
 import colors from "../../Themes/Colors";
 import LargeButton from "../../Components/LargeButton";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import { NavigationScreenProps } from "react-navigation";
 import { LoginActions } from "../../Reducers/LoginReducers";
 import { connect } from "react-redux";
+
+export enum UserRole{
+    NORMAL = "normal",
+    ARTIST = "artist",
+}
 
 export interface State {
     email: string;
     password: string;
     confirmPwd: string;
     username: string;
+    userRole: UserRole;
 }
 
 export interface DispatchProps {
-    signup: (username: string, email: string, pwd: string) => void;
+    signup: (username: string, email: string, pwd: string, userRole: UserRole) => void;
 }
 export type Props = DispatchProps & NavigationScreenProps;
 
@@ -30,6 +36,7 @@ class SignupScreen extends React.Component<Props, State> {
             email: "",
             password: "",
             username: "",
+            userRole: UserRole.NORMAL,
         }
     }
     public openLogin = () => {
@@ -50,15 +57,30 @@ class SignupScreen extends React.Component<Props, State> {
         this.setState({ confirmPwd: text })
     }
     public signup = () => {
-        this.props.signup(this.state.username, this.state.email, this.state.password);
+        this.props.signup(this.state.username, this.state.email, this.state.password, this.state.userRole);
     }
     public render() {
         return (
             <Container style={styles.mainContainer}>
-                <Content>
-                    <AppLogo iconStyle={{ color: colors.lightPink }} appNameStyle={{ color: colors.coal }} appSloganStyle={{ color: colors.lightPink }} />
+                <Content showsVerticalScrollIndicator={false}>
+                    <AppLogo iconStyle={{ color: colors.lightPink }}  appSloganStyle={{ color: colors.lightPink }} />
                     <InputText placeHolder={"Full Name"} onChangeText={this.setUsername} />
                     <InputText style={{ marginTop: 20 }} placeHolder={"Email"} onChangeText={this.setEmail} />
+                    <View style={{backgroundColor: colors.silver, marginTop: 20, padding: 5}}>
+                        <Text style={{padding: 10, color: colors.charcoal}}>User Role</Text>
+                        <View style={{flexDirection: "row"}}>
+                        <View style={{flexDirection: "row", padding:10}}>
+                        <CheckBox color={colors.steel} checked={this.state.userRole === UserRole.NORMAL} onPress={() => this.setState({userRole: UserRole.NORMAL})}/>
+        <Text style={{marginLeft: 20}}>{UserRole.NORMAL}</Text>
+                        </View>
+                        <View style={{flexDirection: "row", padding:10}}>
+                        <CheckBox color={colors.steel} checked={this.state.userRole === UserRole.ARTIST}
+                        onPress={() => this.setState({userRole: UserRole.ARTIST})}/>
+        <Text style={{marginLeft: 20}}>{UserRole.ARTIST}</Text>
+                        </View>
+                        </View>
+
+                    </View>
                     <InputText style={{ marginTop: 20 }} placeHolder={"Password"} onChangeText={this.setPwd} secureTextEntry={true} />
                     <InputText style={{ marginTop: 20 }} placeHolder={"Confirm Password"} onChangeText={this.confirmPwd}  secureTextEntry={true}/>
                     <LargeButton style={{ marginTop: 20 }} text={"SIGNUP"} onPress={this.signup}
@@ -73,7 +95,7 @@ class SignupScreen extends React.Component<Props, State> {
 }
 
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-    signup: (username, email, pwd) => dispatch(LoginActions.signup(username, email, pwd))
+    signup: (username, email, pwd, userRole) => dispatch(LoginActions.signup(username, email, pwd, userRole))
 })
 
 export default connect(null, mapDispatchToProps) (SignupScreen);

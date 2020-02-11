@@ -2,6 +2,18 @@ import {StyleSheet} from "react-native";
 import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
+    shareView:{
+        marginLeft: 20
+    },
+    likeTxt:{
+        fontSize: 12,
+        color: colors.steel
+    },
+    iconView:{
+        marginLeft: 10,
+        marginTop: 2,
+
+    },
     imagePlaceholder: {
         color: colors.snow,
         alignSelf: "center",
@@ -107,10 +119,10 @@ export default StyleSheet.create({
         borderRadius: 10,
     },
     heartIcon:{
-        fontSize: 18,
+        fontSize: 19,
         color: colors.lightMaroon,
-        marginTop: 5,
-        marginLeft: 10,
+        // marginTop: 5,
+        // marginLeft: 10,
     },
     addSong:{
         width: 40,
@@ -120,8 +132,9 @@ export default StyleSheet.create({
         justifyContent: "center",
         // marginBottom: 10,
         position: "absolute",
-        bottom: 160,
+        bottom: 150,
         right: 20,
+        zIndex: 4
     },
     addIcon: {
         color: colors.snow,

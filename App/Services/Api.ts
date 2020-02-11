@@ -4,6 +4,7 @@ import { Observable } from "rxjs";
 import { ApiResponse } from "apisauce";
 import createHipHopApi from "./HipHopApis";
 import { IUserData, IUserRequest, ISongUpload } from "../Lib/Interfaces";
+import { UserRole } from "../Containers/SignupScreen/SignupScreen";
 
 export default {
     create: {
@@ -16,7 +17,7 @@ export interface Api{
 };
 
 export interface HipHopApi {
-    signup: (username: string, email: string, pwd: string) => Observable<ApiResponse<IUserData>>;
+    signup: (username: string, email: string, pwd: string, userRole: UserRole) => Observable<ApiResponse<IUserData>>;
     login: (email: string, pwd: string, socialType: string, socialId: string) => Observable<ApiResponse<IUserData>>;
     getSongByCat: (category: string) => Observable<ApiResponse<any>>;
     getCategories: () => Observable<ApiResponse<any>>;

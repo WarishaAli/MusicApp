@@ -12,7 +12,7 @@ export const getProfileEpic: Epic = (action$, state$, { api }: IDependencies) =>
     mergeMap((action) => {
         return api.hiphop.getProfile(state$.value.login.userData.access_token).pipe(
             mergeMap((response) => {
-                console.log("profile response", response)
+                // console.log("profile response", response)
                 if (response.ok) {
                     return of(ProfileAction.getProfileSuccess(response.data.userobject))
                 } else {
@@ -28,7 +28,7 @@ export const updateProfileEpic: Epic = (action$, state$, { api }: IDependencies)
     mergeMap((action) => {
         return api.hiphop.updateProfile(state$.value.login.userData.access_token, action.payload).pipe(
             mergeMap((response) => {
-                console.log("profile update response", response)
+                // console.log("profile update response", response)
                 if (response.ok) {
                     return of(ProfileAction.updateProfileSuccess(response.data.useobject))
                 } else {

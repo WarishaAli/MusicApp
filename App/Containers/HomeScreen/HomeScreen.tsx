@@ -1,6 +1,6 @@
 import { Card, Container, Icon } from "native-base";
 import React from "react";
-import { FlatList, ImageBackground, ScrollView, Text, TouchableOpacity, Alert } from "react-native";
+import { FlatList, ImageBackground, ScrollView, Text, TouchableOpacity, Alert, View } from "react-native";
 import { NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
 import BottomBar from "../../Components/BottomBar";
@@ -24,6 +24,12 @@ export interface State {
 }
 export interface OwnProps {
 
+}
+export enum DataTypes{
+    SONGS = "Top Songs",
+    ALBUMS="Albums",
+    VIDEOS="Videos",
+    PODCASTS="Podcasts",
 }
 export interface DispatchProps {
     setBottomTab: (btnName: BottomBarBtns) => void;
@@ -71,7 +77,8 @@ class HomeScreen extends React.Component<Props, State> {
     );
     public renderGenreList = (data: any, noDataText: string) => {
         return data ? (
-            <FlatList data={data.length > 15 ? data.slice(0, 10) : data} renderItem={noDataText === "categories" ? this.renderGenreView : this.renderFeauteredSongs} style={styles.listStyle} horizontal={true}
+            <FlatList data={data.length > 15 ? data.slice(0, 10) : data}
+            renderItem={(item) => noDataText === DataTypes.ALBUMS ? this.renderGenreView(item) : this.renderFeauteredSongs(item, noDataText)} style={styles.listStyle} horizontal={true}
                 showsHorizontalScrollIndicator={false}
             // keyExtractor={(item) => noDataText === "categories" ? item.cat_id : item.songid}
             />
@@ -80,45 +87,53 @@ class HomeScreen extends React.Component<Props, State> {
         </Text>)
     }
 
-    public getSongInfo = async (item) => {
-        try {
-            const info = await SoundPlayer.getInfo() // Also, you need to await this because it is async
-            console.log('getInfo', info.duration / 60, info.currentTime / 60) // {duration: 12.416, currentTime: 7.691}
-            this.props.navigation.push("MusicPlayScreen", { songData: info })
-        } catch (e) {
-            console.log('There is no song playing', e)
-        }
-    }
+    // public getSongInfo = async (item) => {
+    //     try {
+    //         const info = await SoundPlayer.getInfo() // Also, you need to await this because it is async
+    //         console.log('getInfo', info.duration / 60, info.currentTime / 60) // {duration: 12.416, currentTime: 7.691}
+    //         this.props.navigation.push("MusicPlayScreen", { songData: info })
+    //     } catch (e) {
+    //         console.log('There is no song playing', e)
+    //     }
+    // }
     public playSong = (item) => {
         this.props.playSong(item);
         this.props.shouldPlay(true);
         this.props.setPlaylist(this.props.featuredSongs);
     }
     public openSongScreen = async (item) => {
-       const a = await this.playSong(item);
-        this.getSongInfo(item);
+        this.playSong(item);
+        // this.getSongInfo(item);
+        this.props.navigation.push("MusicPlayScreen", { songData: item })
     }
 
-    public renderFeauteredSongs = ({ item }) => {
+    public openVideoScreen = (videoItem: any) => {
+
+    }
+
+    public renderFeauteredSongs = (item: any, text: string) => {
         return (
-            <TouchableOpacity onPress={() => this.openSongScreen(item)}>
+            <TouchableOpacity onPress={() => text === DataTypes.VIDEOS ? this.openVideoScreen(item.item) : this.openSongScreen(item.item)}>
                 <Card style={styles.songsCard}>
-                    <ImageBackground style={styles.cardImage} source={{ uri: item.songimage }} imageStyle={{ borderRadius: 5 }}></ImageBackground>
+                    <ImageBackground style={styles.cardImage} source={{ uri: item.item.songimage }}
+                    // imageStyle={{ borderRadius: 5 }}
+                    ></ImageBackground>
+                    <View style={styles.cardOverlayView}>
+                    <Text style={styles.songName}>{item.item.song_name}</Text>
+                    <Text style={{ fontSize: 12, color: colors.charcoal, alignSelf: "center" }}>{item.item.song_category}</Text>
+                    </View>
                 </Card>
-                <Text style={styles.songName}>{item.song_name}</Text>
-                <Text style={{ fontSize: 12 }}>{item.song_category}</Text>
             </TouchableOpacity>
         )
     }
-    public renderGenreView = ({ item }) => {
+    public renderGenreView = (item) => {
         return (
             <TouchableOpacity
-                onPress={() => { this.selectSingleCategory(item) }}>
+                onPress={() => { this.selectSingleCategory(item.item) }}>
                 <Card style={styles.songsCard}>
-                    <ImageBackground style={styles.cardImage} source={{ uri: item.thumbnail }} resizeMode={"cover"} imageStyle={{ borderRadius: 10}}>
-                        {/* <TouchableOpacity onPress={() => { this.selectSingleCategory(item) }}> */}
-                        {/* <Text style={[styles.subHeading, { color: colors.snow, alignSelf: "center", fontSize: 16, zIndex: 4, marginTop: 20 }]}>{item.song_category}</Text> */}
-                        {/* </TouchableOpacity> */}
+                    <ImageBackground style={styles.cardImage} source={{ uri: item.item.thumbnail }} resizeMode={"cover"}
+                    // imageStyle={{ borderRadius: 10}}
+                    >
                     </ImageBackground>
                 </Card>
             </TouchableOpacity>
@@ -135,18 +150,20 @@ class HomeScreen extends React.Component<Props, State> {
                     rightItem={<Icon name={"search"} type={"Feather"} style={styles.searchIcon}></Icon>}
                 />
                 <ScrollView style={{ marginLeft: 15, flex: 0.9, marginBottom: 70 }}>
-                    {this.renderTextIcon("Music by genre", this.props.category)}
-                    {this.renderGenreList(this.props.category, "categories")}
-                    {this.renderTextIcon("Featured songs", this.props.featuredSongs)}
-                    {this.renderGenreList(this.props.featuredSongs, "featured songs")}
-                    {this.renderTextIcon("Featured videos", this.props.featuredVideos)}
-                    {this.renderGenreList(this.props.featuredVideos, "featured videos")}
-                    {this.renderTextIcon("Featured podcasts", this.props.featuredPodcasts)}
-                    {this.renderGenreList(this.props.featuredPodcasts, "featured podcasts")}
+                    {this.renderTextIcon(DataTypes.SONGS, this.props.featuredSongs)}
+                    {this.renderGenreList(this.props.featuredSongs, DataTypes.SONGS)}
+                    {this.renderTextIcon(DataTypes.ALBUMS, this.props.category)}
+                    {this.renderGenreList(this.props.category, DataTypes.ALBUMS)}
+                    {this.renderTextIcon(DataTypes.VIDEOS, this.props.featuredVideos)}
+                    {this.renderGenreList(this.props.featuredVideos, DataTypes.VIDEOS)}
+                    {this.renderTextIcon(DataTypes.PODCASTS, this.props.featuredPodcasts)}
+                    {this.renderGenreList(this.props.featuredPodcasts, DataTypes.PODCASTS)}
                 </ScrollView>
 
 
-                {<MusicPlayer style={styles.musicPlayer} hide={!this.props.isSongPlaying} />}
+                {<MusicPlayer style={styles.musicPlayer} hide={!this.props.isSongPlaying}
+                    navigation={this.props.navigation}
+                />}
                 <BottomBar navigation={this.props.navigation} />
             </Container>
         )

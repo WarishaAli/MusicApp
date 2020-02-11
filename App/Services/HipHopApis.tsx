@@ -4,6 +4,7 @@ import { IUserData, IUserRequest, ISongUpload } from "../Lib/Interfaces";
 import { from } from "rxjs";
 import { deviceId } from "../Lib/ApiData";
 import { Platform } from "react-native";
+import { UserRole } from "../Containers/SignupScreen/SignupScreen";
 
 
 export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHopApi => {
@@ -18,11 +19,12 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     //   20 second timeout...
     timeout: 20000,
   });
-  const signup = (username: string, email: string, pwd: string) => {
+  const signup = (username: string, email: string, pwd: string, userRole: UserRole) => {
     let data = new FormData();
     data.append("email_id", email);
     data.append("password", pwd);
     data.append("name", username);
+    data.append("user_cat", userRole)
     return from(api.post(`/signup`, data));
   };
   const login = (email: string, pwd: string, socialType: string, socialId: string) => {

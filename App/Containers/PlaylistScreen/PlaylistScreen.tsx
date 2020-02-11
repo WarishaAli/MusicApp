@@ -1,4 +1,4 @@
-import { Button, Container, Icon, Row } from "native-base";
+import { Button, Container, Icon, Row, Toast } from "native-base";
 import React from "react";
 import { Image, Picker, Text, TouchableOpacity, View } from "react-native";
 import DocumentPicker from 'react-native-document-picker';
@@ -21,6 +21,8 @@ import colors from "../../Themes/Colors";
 import { BottomBarBtns } from "../../Types/BottomBar";
 import styles from "./PlaylistScreenStyles";
 import CommonHeader from "../../Components/CommonHeader/CommonHeader";
+import Share from "react-native-share";
+import { UserRole } from "../SignupScreen/SignupScreen";
 
 export interface OwnProps {
     comingFrom: PlaylistTypes;
@@ -43,6 +45,8 @@ export interface StateProps {
     favorites: undefined | Array<IFavoriteResponse>;
     categorySongs: undefined | Array<any>;
     mySongs: undefined | Array<Songs>;
+    isPlaying: boolean;
+    userRole: UserRole;
 }
 export interface State {
     playlistType: PlaylistTypes;
@@ -100,6 +104,12 @@ class PlaylistScreen extends React.Component<Props, State>{
         this.props.playMusic(true);
         this.props.selectSong(item);
     }
+    public shareSong= (item: any) => {
+        Share.open({url: item.song_file, title: "HiphopStreets",
+        message: "Hey, check out this song on Hiphop Streets!"}).then((res) => {console.log(res);
+        Toast.show({text: "Song shared successfully!"});
+        }).catch((err) => console.log("at error", err))
+    }
     public renderSongs = ({ item }) => (
         // image songName catName likeCount
         <View style={{ flexDirection: "row", marginTop: 25, }}>
@@ -112,11 +122,17 @@ class PlaylistScreen extends React.Component<Props, State>{
             </TouchableOpacity>
             <Row></Row>
             <View style={{flexDirection: "row"}}>
-            <Text style={[styles.subHeading, {marginLeft: 0}]}>{item.likecount}</Text>
-            <TouchableOpacity onPress={() => {this.props.makeFavorite(item.songid)}}>
-            <Icon name={"hearto"} type={"AntDesign"} style={styles.heartIcon}></Icon>
+            <Text style={styles.likeTxt}>{item.likecount}</Text>
+            { this.props.userRole === UserRole.NORMAL &&
+                <TouchableOpacity style={styles.iconView}onPress={() => {this.props.makeFavorite(item.songid)}}>
+                <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, {fontSize: 17}]}></Icon>
+                </TouchableOpacity>
+                // {false && <Icon name={"heart"} type={"AntDesign"} style={styles.heartIcon}></Icon>}
+            }
+            
+            <TouchableOpacity style={styles.shareView} onPress={() => this.shareSong(item)}>
+                <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={styles.heartIcon}></Icon>
             </TouchableOpacity>
-            {false && <Icon name={"heart"} type={"AntDesign"} style={styles.heartIcon}></Icon>}
             </View>
             {/* <View style={styles.caretView} /> */}
         </View>
@@ -234,8 +250,8 @@ class PlaylistScreen extends React.Component<Props, State>{
             <Container>
                 <CommonHeader title={"Stream songs"}
                     leftItem={
-                  this.state.playlistType === PlaylistTypes.EXPLORE &&  <TouchableOpacity onPress={() => this.props.navigation.pop()}>
-                   <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.snow }}></Icon>
+                  this.state.playlistType === PlaylistTypes.EXPLORE &&  <TouchableOpacity  style={{ marginTop: 10, paddingRight: 5 }} onPress={() => this.props.navigation.pop()}>
+                   <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.lightMaroon }}></Icon>
                 </TouchableOpacity>
                     }
                 />
@@ -250,21 +266,22 @@ class PlaylistScreen extends React.Component<Props, State>{
                 </View>
                 {/* </View> */}
                
-                <ScrollView style={{ paddingHorizontal: 10, paddingTop: 10, maxHeight: "65%"}}>
+                <ScrollView style={{ paddingHorizontal: 10, paddingTop: 10}}>
                     {this.props.selectedPlaylist &&
                         <FlatList scrollEnabled={true} style={{ paddingHorizontal: 15, paddingBottom: 40}}
                             data={this.props.selectedPlaylist} renderItem={this.renderSongs}
                             keyExtractor={(item) => item.songid}
                             />}
                 </ScrollView>
-                {this.state.playlistType === PlaylistTypes.MYSONGS && <TouchableOpacity style={styles.addSong}
+                {this.state.playlistType === PlaylistTypes.MYSONGS && <TouchableOpacity style={[styles.addSong, {bottom: this.props.isPlaying ? 140 : 100}]}
                     onPress={() => this.setState({showModal: true})}
                 >
                     <Icon name={"add"}style={styles.addIcon} ></Icon>
                     </TouchableOpacity>}
                 <MusicPlayer
                     style={this.state.playlistType === PlaylistTypes.EXPLORE ? styles.singleCatStyle : styles.playlistStyle}
-                    hide={false}
+                    hide={!this.props.isPlaying}
+                    navigation={this.props.navigation}
                 />
                  <ModalView content={
                     this.modalContent()
@@ -299,6 +316,8 @@ export const mapStateToProps = (state: RootState): StateProps => ({
     favorites: state.favorites.favoritesData,
     categorySongs: state.category.songByCategory,
     mySongs: state.mySongs.mySongs,
+    isPlaying: state.songs.isPlaying,
+    userRole: state.login.userData.user_cat,
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlaylistScreen);

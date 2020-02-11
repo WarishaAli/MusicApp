@@ -12,6 +12,8 @@ export default StyleSheet.create({
         textAlign: "center",
         fontSize: 25,
         marginTop: 20,
+        fontFamily: "serif",
+        color: colors.maroon
       },
       guitarIcon: {
         fontSize: 60,
