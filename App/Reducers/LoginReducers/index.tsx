@@ -6,8 +6,9 @@ import { IUserData, IUserRequest } from "../../Lib/Interfaces";
 import { UserRole } from "../../Containers/SignupScreen/SignupScreen";
 
 const actions = {
-    signup: createAction("SIGNUP_REQUEST", (username: string, email: string, pwd: string, userRole: UserRole) => ({
-        type: "SIGNUP_REQUEST", payload: { username, email, pwd, userRole }
+    signup: createAction("SIGNUP_REQUEST", (username: string, email: string, pwd: string,
+        userRole: UserRole, pob: string, dob: string, country: string, interests: string, topAlbums: string) => ({
+        type: "SIGNUP_REQUEST", payload: { username, email, pwd, userRole, dob, pob, country, interests, topAlbums }
     })),
     loginRequest: createAction("LOGIN_REQUEST", (email: string | undefined, pwd: string | undefined, socialType: string, socialId?: string) => ({
         type: "LOGIN_REQUEST", payload: { email, pwd, socialType, socialId }

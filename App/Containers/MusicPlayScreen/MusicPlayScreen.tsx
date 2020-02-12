@@ -30,6 +30,7 @@ export interface DispatchProps {
     playNext: (isAuto: boolean) => void;
     playPrev: () => void;
     showPlaying: (playing: boolean) => void;
+    isPlaying: (play: boolean) => void;
 }
 
 export interface StateProps {
@@ -88,11 +89,11 @@ class MusicPlayScreen extends React.Component<Props, State>{
     }
     public componentDidUpdate(nextProps: Props) {
         if (this.props.isPlaying !== nextProps.isPlaying || this.props.currentSong !== nextProps.currentSong) {
-            this.props.isPlaying ? this.playSong() : this.pauseSong();
+            // this.props.isPlaying ? this.playSong() : this.pauseSong();
         };
 
     }
-    public playSong = async () => {
+    public playSong = () => {
         if (this.props.currentSong.song_file) {
             try {
                 SoundPlayer.playUrl(this.props.currentSong.song_file);
@@ -131,9 +132,9 @@ class MusicPlayScreen extends React.Component<Props, State>{
             }
         })
     }
-    public songProgress = () => {
-        this.getInfo();
-    }
+    // public songProgress = () => {
+    //     this.getInfo();
+    // }
     public render() {
         return (
             <Container style={styles.container}>
@@ -209,7 +210,8 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     playMusic: (shouldPlay) => dispatch(SongsActions.setIsPlaying(shouldPlay)),
     playNext: (isAuto: boolean) => dispatch(SongsActions.setNextSong(isAuto)),
     playPrev: () => dispatch(SongsActions.setPreviousSong()),
-    showPlaying: (playing) => dispatch(SongsActions.showPlaying(playing))
+    showPlaying: (playing) => dispatch(SongsActions.showPlaying(playing)),
+    isPlaying: (play) => dispatch(SongsActions.setIsPlaying(true)),
 });
 export const mapStateToProps = (state: RootState): StateProps => ({
     isPlaying: state.songs.isPlaying,

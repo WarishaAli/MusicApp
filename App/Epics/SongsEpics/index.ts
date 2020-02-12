@@ -4,6 +4,7 @@ import { SongsActions } from "../../Reducers/SongsReducer";
 import {mergeMap} from "rxjs/operators";
 import {findCurrentSongIndex} from "../../Lib/MusicPlayerHelpers";
 import { of } from "rxjs";
+import SoundPlayer from "react-native-sound-player";
 
 export const setNextSongEpic: Epic = (action$, state$) => action$.pipe(
     ofType(getType(SongsActions.setNextSong)),
@@ -14,7 +15,9 @@ export const setNextSongEpic: Epic = (action$, state$) => action$.pipe(
         const currentIndex = findCurrentSongIndex(currentPlaylist, currentSong);
         // console.log(currentIndex);
         if(currentIndex + 1 <= currentPlaylist.length-1){
-            return of(SongsActions.setSong(currentPlaylist[ currentIndex+1]));
+            SoundPlayer.playUrl(currentPlaylist[ currentIndex+1].song_file);
+            return of(SongsActions.setSong(currentPlaylist[ currentIndex+1]),
+            SongsActions.showPlaying(true), SongsActions.setIsPlaying(true));
         } else{
             return of(SongsActions.void());
         }
@@ -27,7 +30,10 @@ export const setPrevSongEpic: Epic = (action$, state$) => action$.pipe(
         const currentSong = state$.value.songs.song;
         const currentIndex = findCurrentSongIndex(currentPlaylist, currentSong);
         if(currentIndex > 0){
-            return of(SongsActions.setSong(currentPlaylist[currentIndex-1]));
+            SoundPlayer.playUrl(currentPlaylist[currentIndex-1].song_file)
+            return of(SongsActions.setSong(currentPlaylist[currentIndex-1]), 
+            SongsActions.showPlaying(true), SongsActions.setIsPlaying(true)
+            );
         } else{
             return of(SongsActions.void());
         }

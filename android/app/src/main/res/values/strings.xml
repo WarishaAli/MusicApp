@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HipHopStreets</string>
+    <string name="app_name">HipHop Streets</string>
     <string name="facebook_app_id">508981323085160</string>
     <string name="fb_login_protocol_scheme">fb508981323085160</string>
 </resources>

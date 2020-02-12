@@ -26,6 +26,7 @@ export const getSongByCategoryEpic: Epic = (action$, state$, {api}: IDependencie
     mergeMap((action) =>{
         return api.hiphop.getSongByCat(action.payload).pipe(
             mergeMap((response) => {
+                console.log("song by category", response);
                 if(response.ok){
                     return of(CategoryAction.getSongByCatSuccess(response.data.data), SongsActions.setPlaylist(response.data.data))
                 } else{

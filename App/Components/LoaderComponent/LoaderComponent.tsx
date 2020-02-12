@@ -21,6 +21,6 @@ class LoaderComponent extends React.Component<Props>{
     }
 };
 const mapStateToProps = (state: RootState):Props => ({
-    loading: state.category.fetching || state.favorites.fetching || state.login.fetching || state.mySongs.fetching,
+    loading: state.category.fetching || state.favorites.fetching || state.login.fetching || state.mySongs.fetching || state.profile.fetching,
 })
 export default connect(mapStateToProps, null)(LoaderComponent);

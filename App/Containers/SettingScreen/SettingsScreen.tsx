@@ -24,6 +24,7 @@ export interface DispatchProps {
     updateProfile: (params: IUserData) => void;
     logout: () => void;
     selectSong: (song_file: string) => void;
+    playMusic: (shouldPlay: boolean) => void;
 }
 
 export interface State {
@@ -97,6 +98,11 @@ class SettingScreen extends React.Component<Props, State>{
             </View>
         </View>
     );
+
+    public logout = () => {
+        this.props.playMusic(false);
+        this.props.logout();
+    }
 
     public renderListView = () => (
         <View>
@@ -204,6 +210,7 @@ const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     updateProfile: (params: IUserData) => dispatch(ProfileAction.updateProfileRequest(params)),
     logout: () => dispatch(LoginActions.logout()),
     selectSong: (song) => dispatch(SongsActions.setSong(song)),
+    playMusic: () => dispatch(SongsActions.setIsPlaying(false)),
 })
 const mapStateToProps = (state: RootState): StateProps => ({
     profileData: state.profile.profileData,

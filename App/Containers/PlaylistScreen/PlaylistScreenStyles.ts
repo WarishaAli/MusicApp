@@ -116,7 +116,7 @@ export default StyleSheet.create({
     songImg:{
         width: 45,
         height: 45,
-        borderRadius: 10,
+        borderRadius: 50,
     },
     heartIcon:{
         fontSize: 19,

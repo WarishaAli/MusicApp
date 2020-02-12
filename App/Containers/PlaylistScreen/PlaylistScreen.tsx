@@ -23,6 +23,7 @@ import styles from "./PlaylistScreenStyles";
 import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 import Share from "react-native-share";
 import { UserRole } from "../SignupScreen/SignupScreen";
+import SoundPlayer from "react-native-sound-player";
 
 export interface OwnProps {
     comingFrom: PlaylistTypes;
@@ -37,6 +38,7 @@ export interface DispatchProps {
     makeFavorite: (songId: string) => void;
     getMySong: () => void;
     uploadSong: (params: ISongUpload) => void;
+    showPlaying: (showPlayer: boolean) => void;
 }
 export interface StateProps {
     shouldPlay: boolean;
@@ -101,8 +103,11 @@ class PlaylistScreen extends React.Component<Props, State>{
         // this.props.playMusic(false);
     }
     public playSong = (item: any) => {
+        this.props.showPlaying(true);
         this.props.playMusic(true);
         this.props.selectSong(item);
+        // SoundPlayer.loadUrl(item.song_file);
+        SoundPlayer.playUrl(item.song_file);
     }
     public shareSong= (item: any) => {
         Share.open({url: item.song_file, title: "HiphopStreets",
@@ -113,7 +118,7 @@ class PlaylistScreen extends React.Component<Props, State>{
     public renderSongs = ({ item }) => (
         // image songName catName likeCount
         <View style={{ flexDirection: "row", marginTop: 25, }}>
-            <Image source={{ uri: item.songimage }} style={styles.songImg}></Image>
+            <Image source={{ uri: item.songimage, cache: "reload" }} style={styles.songImg}></Image>
             <TouchableOpacity  onPress={() => this.playSong(item)} style={{paddingLeft: 10, width: "50%"}}>
                 <Text numberOfLines={2} lineBreakMode={"middle"}style={[styles.heading, {alignSelf: "flex-start"}
                     // { fontWeight: this.props.selectedSong.name === item.name ? "bold" : "normal", color: this.props.selectedSong.name === item.name ? colors.maroon : colors.black }
@@ -259,7 +264,7 @@ class PlaylistScreen extends React.Component<Props, State>{
                 {/* <Image source={{uri: this.state.categoryData.thumbnail}} style={{width: 100, height: 100}}></Image> */}
                 <View style={styles.headerView}>
                     <Text style={styles.header}>{this.getHeading()}</Text>
-                    <Button style={styles.listenBtn} onPress={() => this.playSong(this.props.selectedPlaylist.songs[0])}>
+                    <Button style={styles.listenBtn} onPress={() => this.playSong(this.props.selectedPlaylist[0])}>
                         <Icon name={"playcircleo"} type={"AntDesign"} style={{ fontSize: 15, padding: 0, margin: 0 }} />
                         <Text style={styles.listenTxt}>Play All</Text>
                     </Button>
@@ -280,7 +285,7 @@ class PlaylistScreen extends React.Component<Props, State>{
                     </TouchableOpacity>}
                 <MusicPlayer
                     style={this.state.playlistType === PlaylistTypes.EXPLORE ? styles.singleCatStyle : styles.playlistStyle}
-                    hide={!this.props.isPlaying}
+                    hide={false}
                     navigation={this.props.navigation}
                 />
                  <ModalView content={
@@ -307,6 +312,7 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     makeFavorite: (songId) => dispatch(FavoriteAction.makeFavoriteRequest(songId)),
     getMySong: () => dispatch(MySongAction.getMySongsRequest()),
     uploadSong: (params: ISongUpload) => dispatch(MySongAction.uploadMySongReq(params)),
+    showPlaying: (playing) => dispatch(SongsActions.showPlaying(playing)),
     // playNext: () => dispatch(SongsActions.setNextSong()),
 });
 export const mapStateToProps = (state: RootState): StateProps => ({

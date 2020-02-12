@@ -125,7 +125,9 @@ export const loginRequestEpic: Epic = (action$, state$, { api }: IDependencies) 
 export const signupRequestEpic: Epic = (action$, state$, { api }: IDependencies) => action$.pipe(
   ofType(getType(LoginActions.signup)),
   mergeMap((action) => {
-    return api.hiphop.signup(action.payload.username, action.payload.email, action.payload.pwd, action.payload.userRole).pipe(
+    return api.hiphop.signup(action.payload.username, action.payload.email, action.payload.pwd, action.payload.userRole,
+      action.payload.pob, action.payload.dob, action.payload.country, action.payload.interests, action.payload.topAlbums
+      ).pipe(
       mergeMap(async (response: ApiResponse<any>) => {
         console.log("signup response", response);
         if (response.ok && response.data.error === false) {
@@ -138,7 +140,9 @@ export const signupRequestEpic: Epic = (action$, state$, { api }: IDependencies)
           }
         }
         else {
-          Alert.alert("Error", "Unfortunatley an error occurred during your signup, please check your internet connection or try again later");
+          response.data.message  ?
+          Alert.alert("Error", response.data.message)
+          : Alert.alert("Error", "Unfortunatley following error occurred during your signup, please check your internet connection or try again later");
         };
         return of(SongsActions.void())
       }),
@@ -155,7 +159,8 @@ export const logoutEpic: Epic = (action$, state$, { api }: IDependencies) => act
   ofType(getType(LoginActions.logout)),
   mergeMap((action: any) => {
     return api.hiphop.logout(state$.value.login.userData.access_token).pipe(
-      mergeMap(async () => {
+      mergeMap(async (response) => {
+        console.log("logout response", response);
         try {
           await AsyncStorage.removeItem(LOGIN_KEY)
         } catch{

@@ -14,20 +14,27 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     headers: {
       // "Cache-Control": "no-cache",
       // "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-      // "Content-Type": "application/json",
+      "Content-Type": "application/json",
     },
     //   20 second timeout...
     timeout: 20000,
   });
-  const signup = (username: string, email: string, pwd: string, userRole: UserRole) => {
+  const signup = (username: string, email: string, pwd: string, userRole: UserRole, pob: string, dob: string, country: string,
+    interests? :string, topAlbums? :string) => {
     let data = new FormData();
     data.append("email_id", email);
     data.append("password", pwd);
     data.append("name", username);
-    data.append("user_cat", userRole)
+    data.append("user_cat", userRole);
+    data.append("pob", pob);
+    data.append("dob", dob);
+    data.append("country", country);
+    interests && data.append("interests", interests);
+    topAlbums && data.append("top_albums", topAlbums)
     return from(api.post(`/signup`, data));
   };
   const login = (email: string, pwd: string, socialType: string, socialId: string) => {
+    api.setHeader("Accept", "application/json");
     let data = new FormData();
     data.append("socialtype", socialType);
     data.append("device_id", deviceId);

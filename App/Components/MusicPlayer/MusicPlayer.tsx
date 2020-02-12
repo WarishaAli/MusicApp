@@ -58,7 +58,7 @@ class MusicPlayer extends React.Component<Props, State> {
     }
     public componentDidUpdate(nextProps: Props) {
         if (this.props.isPlaying !== nextProps.isPlaying || this.props.currentSong !== nextProps.currentSong) {
-            this.props.isPlaying ? this.playSong() : this.pauseSong();
+            // this.props.isPlaying ? this.playSong() : this.pauseSong();
         }
     }
     public loadUrl = () => {
@@ -70,17 +70,18 @@ class MusicPlayer extends React.Component<Props, State> {
             Alert.alert("Unfortunately we could not load your song, please check you internet connection or try again later.")
         }
     }
-    public playSong = async () => {
+    public playSong = () => {
 
         if (this.props.currentSong.song_file) {
 
             try {
-                this.loadUrl();
+                // this.loadUrl();
                 SoundPlayer.playUrl(this.props.currentSong.song_file)
             } catch (e) {
                 console.log(`cannot play the sound file`, e)
             };
-            // this.props.showPlaying(true);
+            this.props.showPlaying(true);
+            this.props.playMusic(true);
         }
     };
     public pauseSong = () => {

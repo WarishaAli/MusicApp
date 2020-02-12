@@ -12,9 +12,10 @@ import { Images } from "../../Themes";
 import { RootState } from "../../Reducers";
 import MusicPlayer from "../../Components/MusicPlayer/MusicPlayer";
 import { ISongData } from "../MusicPlayScreen/MusicPlayScreen";
+import SoundPlayer from "react-native-sound-player";
 
 export enum ScreenTitle {
-    GENRE = "Music by genre",
+    GENRE = "Albums",
     SONGS = "Featured songs",
     VIDEOS = "Featured videos",
     PODCASTS = "Featured podcasts",
@@ -58,6 +59,8 @@ class AllCategoriesScreen extends React.Component<Props>{
         )
     };
     public playSong = (songData: any) => {
+        SoundPlayer.playUrl(songData.song_file);
+        this.props.showPlay(true);
         this.props.playSong(songData);
         this.props.shouldPlay(true);
         this.props.setPlaylist(this.categoryData.data);

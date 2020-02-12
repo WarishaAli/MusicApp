@@ -97,8 +97,10 @@ class HomeScreen extends React.Component<Props, State> {
     //     }
     // }
     public playSong = (item) => {
+        SoundPlayer.playUrl(item.song_file);
         this.props.playSong(item);
         this.props.shouldPlay(true);
+        this.props.showPlay(true);
         this.props.setPlaylist(this.props.featuredSongs);
     }
     public openSongScreen = async (item) => {

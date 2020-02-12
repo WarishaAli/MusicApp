@@ -1,5 +1,5 @@
 // This is for the devscreens
-import {createAPI} from "./GithubApi";
+import { createAPI } from "./GithubApi";
 import { Observable } from "rxjs";
 import { ApiResponse } from "apisauce";
 import createHipHopApi from "./HipHopApis";
@@ -8,16 +8,18 @@ import { UserRole } from "../Containers/SignupScreen/SignupScreen";
 
 export default {
     create: {
-    hiphop: createHipHopApi(),
+        hiphop: createHipHopApi(),
     }
 };
 
-export interface Api{
+export interface Api {
     hiphop: HipHopApi,
 };
 
 export interface HipHopApi {
-    signup: (username: string, email: string, pwd: string, userRole: UserRole) => Observable<ApiResponse<IUserData>>;
+    signup: (username: string, email: string, pwd: string, userRole: UserRole,
+        pob: string, dob: string, country: string, interests?: string, topAlbums?: string
+    ) => Observable<ApiResponse<IUserData>>;
     login: (email: string, pwd: string, socialType: string, socialId: string) => Observable<ApiResponse<IUserData>>;
     getSongByCat: (category: string) => Observable<ApiResponse<any>>;
     getCategories: () => Observable<ApiResponse<any>>;
@@ -25,7 +27,7 @@ export interface HipHopApi {
     getFavoriteSongs: (token: string) => Observable<ApiResponse<any>>;
     getMySongs: (token: string) => Observable<ApiResponse<any>>;
     getProfile: (token: string) => Observable<ApiResponse<any>>;
-    uploadSong: (token: string, params: ISongUpload ) => Observable<ApiResponse<any>>;
+    uploadSong: (token: string, params: ISongUpload) => Observable<ApiResponse<any>>;
     updateProfile: (token: string, params: IUserData) => Observable<ApiResponse<any>>;
     homeData: () => Observable<ApiResponse<any>>;
     logout: (token: string) => Observable<ApiResponse<any>>;

@@ -24,7 +24,7 @@ export default StyleSheet.create({
 
     },
     songsCard:{
-        width: 150,
+        width: 180,
         height: 210,
         // borderRadius: 10,
         marginRight: 10,
