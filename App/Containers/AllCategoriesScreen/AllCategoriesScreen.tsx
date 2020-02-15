@@ -13,6 +13,7 @@ import { RootState } from "../../Reducers";
 import MusicPlayer from "../../Components/MusicPlayer/MusicPlayer";
 import { ISongData } from "../MusicPlayScreen/MusicPlayScreen";
 import SoundPlayer from "react-native-sound-player";
+import { DataTypes } from "../HomeScreen/HomeScreen";
 
 export enum ScreenTitle {
     GENRE = "Albums",
@@ -87,7 +88,7 @@ class AllCategoriesScreen extends React.Component<Props>{
                 />
                 <Content style={{ paddingHorizontal: 20, }}>
                     {/* <Text style={styles.headerTitle}>{this.categoryData.title}</Text> */}
-                    <FlatList renderItem={this.categoryData.title === ScreenTitle.GENRE ? this.renderCatTiles : this.renderSongTiles}
+                    <FlatList renderItem={this.categoryData.title === DataTypes.ALBUMS ? this.renderCatTiles : this.renderSongTiles}
                         data={this.categoryData.data} style={{ marginBottom: 100 }}
                         numColumns={2}
                     />

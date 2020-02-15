@@ -18,8 +18,8 @@ export interface IFavoriteResponse{
     songImage: string;
 }
 const actions= {
-    getFavoriteRequest: createAction("GET_FAVORITE_REQUEST", (() => ({
-        type: "GET_FAVORITE_REQUEST"   }))),
+    getFavoriteRequest: createAction("GET_FAVORITE_REQUEST", ((setPlaylist: boolean) => ({
+        type: "GET_FAVORITE_REQUEST", payload: setPlaylist   }))),
     getFavoriteSuccess: createAction("GET_FAVORITE_SUCCESS", ((params: IFavoriteResponse) => ({
         type: "GET_FAVORITE_SUCCESS", payload: params,
     }))),

@@ -24,6 +24,7 @@ import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 import Share from "react-native-share";
 import { UserRole } from "../SignupScreen/SignupScreen";
 import SoundPlayer from "react-native-sound-player";
+import { isFavorite } from "../../Lib/MusicPlayerHelpers";
 
 export interface OwnProps {
     comingFrom: PlaylistTypes;
@@ -33,12 +34,13 @@ export interface DispatchProps {
     setBottomTab: (btnName: BottomBarBtns) => void;
     playMusic: (shouldPlay: boolean) => void;
     selectSong: (song: Songs) => void;
-    getFavorites: () => void;
+    getFavorites: (setPlaylist: boolean) => void;
     getSongByCat: (catName: string) => void;
     makeFavorite: (songId: string) => void;
     getMySong: () => void;
     uploadSong: (params: ISongUpload) => void;
     showPlaying: (showPlayer: boolean) => void;
+    getHeart: (setPlaylist: boolean) => void;
 }
 export interface StateProps {
     shouldPlay: boolean;
@@ -87,7 +89,7 @@ class PlaylistScreen extends React.Component<Props, State>{
             }
             break;
             case PlaylistTypes.PLAYLIST : {
-                this.props.getFavorites();
+                this.props.getFavorites(true);
                 this.props.setBottomTab(BottomBarBtns.PLAYLIST);
             }
             break;
@@ -96,11 +98,8 @@ class PlaylistScreen extends React.Component<Props, State>{
                 this.props.setBottomTab(BottomBarBtns.BLOGS);
             }
         }
-        // this.state.playlistType === PlaylistTypes.PLAYLIST ? this.props.getFavorites() : this.props.getSongByCat(this.state.categoryName);
-        // this.state.playlistType === PlaylistTypes.PLAYLIST && this.props.setBottomTab(BottomBarBtns.PLAYLIST);
-        // await this.props.selectPlaylist(playlists[0]);
-        // this.props.selectSong(this.props.selectedPlaylist.songs[0]);
-        // this.props.playMusic(false);
+        this.props.getHeart(false);
+        // console.log("favories data", this.props.favorites);
     }
     public playSong = (item: any) => {
         SoundPlayer.playUrl(item.song_file);
@@ -116,9 +115,12 @@ class PlaylistScreen extends React.Component<Props, State>{
         Toast.show({text: "Song shared successfully!"});
         }).catch((err) => console.log("at error", err))
     }
-    public renderSongs = ({ item }) => (
+    public renderSongs = ({ item }) => {
+        // console.log("favorites ", this.props.favorites);
+        let isFav = false;
+        isFav = this.props.favorites ? isFavorite(this.props.favorites, item.songid) : false
         // image songName catName likeCount
-        <View style={{ flexDirection: "row", marginTop: 25, }}>
+        return (<View style={{ flexDirection: "row", marginTop: 25, }}>
             <Image source={{ uri: item.songimage, cache: "reload" }} style={styles.songImg}></Image>
             <TouchableOpacity  onPress={() => this.playSong(item)} style={{paddingLeft: 10, width: "50%"}}>
                 <Text numberOfLines={2} lineBreakMode={"middle"}style={[styles.heading, {alignSelf: "flex-start"}
@@ -129,11 +131,14 @@ class PlaylistScreen extends React.Component<Props, State>{
             <Row></Row>
             <View style={{flexDirection: "row"}}>
             {this.props.userRole === UserRole.NORMAL && <Text style={styles.likeTxt}>{item.likecount}</Text>}
-            { this.props.userRole === UserRole.NORMAL &&
+            { (this.props.userRole === UserRole.NORMAL) &&
                 <TouchableOpacity style={styles.iconView}onPress={() => {this.props.makeFavorite(item.songid)}}>
-                <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, {fontSize: 17}]}></Icon>
+                { !isFav ? 
+                    <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, {fontSize: 17}]}></Icon> : 
+                    <Icon name={"heart"} type={"AntDesign"} style={[styles.heartIcon, {fontSize: 17}]}></Icon>
+                    } 
                 </TouchableOpacity>
-                // {false && <Icon name={"heart"} type={"AntDesign"} style={styles.heartIcon}></Icon>}
+               
             }
             
             <TouchableOpacity style={styles.shareView} onPress={() => this.shareSong(item)}>
@@ -141,8 +146,8 @@ class PlaylistScreen extends React.Component<Props, State>{
             </TouchableOpacity>
             </View>
             {/* <View style={styles.caretView} /> */}
-        </View>
-    )
+        </View>)
+    }
     public getHeading = () => {
         if(this.state.playlistType === PlaylistTypes.EXPLORE){
             return this.state.categoryData.song_category
@@ -308,12 +313,13 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     playMusic: (shouldPlay) => dispatch(SongsActions.setIsPlaying(shouldPlay)),
     // selectPlaylist: (playlist) => dispatch(SongsActions.setPlaylist(playlist)),
     selectSong: (song) => dispatch(SongsActions.setSong(song)),
-    getFavorites: () => dispatch(FavoriteAction.getFavoriteRequest()),
+    getFavorites: () => dispatch(FavoriteAction.getFavoriteRequest(true)),
     getSongByCat: (catName) => dispatch(CategoryAction.getSongByCatRequest(catName)),
     makeFavorite: (songId) => dispatch(FavoriteAction.makeFavoriteRequest(songId)),
     getMySong: () => dispatch(MySongAction.getMySongsRequest()),
     uploadSong: (params: ISongUpload) => dispatch(MySongAction.uploadMySongReq(params)),
     showPlaying: (playing) => dispatch(SongsActions.showPlaying(playing)),
+    getHeart: () => dispatch(FavoriteAction.getFavoriteRequest(false)),
     // playNext: () => dispatch(SongsActions.setNextSong()),
 });
 export const mapStateToProps = (state: RootState): StateProps => ({

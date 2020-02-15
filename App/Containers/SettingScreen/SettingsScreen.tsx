@@ -86,7 +86,7 @@ class SettingScreen extends React.Component<Props, State>{
         <View style={styles.profileView}>
             <Image style={styles.roundView} source={{ uri: this.props.profileData.image }}></Image>
             <View style={styles.profileInfo}>
-                <Text style={styles.userNameHeading}>{this.props.profileData.name || "Your username"}</Text>
+                <Text style={styles.userNameHeading}>{this.props.profileData.name || "-"}</Text>
                 <Text style={styles.bioHeading} numberOfLines={4}>{ this.props.profileData.email_id || "Your email id"}</Text>
                 <Text style={styles.bioHeading} numberOfLines={4}>{this.props.profileData.biography || "Say something about yourself"}</Text>
                 <Text style={styles.bioHeading} numberOfLines={1}>{this.props.profileData.sex || "Specify your gender"}</Text>

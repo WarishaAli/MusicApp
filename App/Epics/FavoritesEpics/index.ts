@@ -11,11 +11,13 @@ import { Toast } from "native-base";
 export const getFavoritesEpic: Epic = (action$, state$, {api}: IDependencies) => action$.pipe(
     ofType(getType(FavoriteAction.getFavoriteRequest)),
     mergeMap((action) =>{
+        console.log("at epics", action.payload);
         return api.hiphop.getFavoriteSongs(state$.value.login.userData.access_token).pipe(
             mergeMap((response: ApiResponse<any>) => {
                 if(response.ok && response.data.status === 200){
-
-                    return of(FavoriteAction.getFavoriteSuccess(response.data.data), SongsActions.setPlaylist(response.data.data))
+                    return action.payload ?
+                    of(FavoriteAction.getFavoriteSuccess(response.data.data), SongsActions.setPlaylist(response.data.data)) : 
+                    of(FavoriteAction.getFavoriteSuccess(response.data.data))
                 } else{
                     return of(FavoriteAction.getFavoriteFailure())
                 }
@@ -29,9 +31,11 @@ export const makeFavoritesEpic: Epic = (action$, state$, {api}: IDependencies) =
     mergeMap((action) =>{
         return api.hiphop.makeFavorite(action.payload, state$.value.login.userData.access_token).pipe(
             mergeMap((response: ApiResponse<any>) => {
+                console.log(response, "make favorite response")
                 if(response.ok && response.status === 200){
-                    Toast.show({text: "Song added to favorites list!"})
-                    return of(FavoriteAction.makeFavoriteSuccess())
+                    Toast.show({text: response.data.message === "Success: Unliked!" ? "Song added to favorites list!" : 
+                    "Song removed from favorites list!"}) 
+                    return of(FavoriteAction.makeFavoriteSuccess(), FavoriteAction.getFavoriteRequest(false))
                 } else{
                     return of(FavoriteAction.makeFavoriteFailure())
                 }

@@ -122,7 +122,7 @@ class HomeScreen extends React.Component<Props, State> {
                     ></ImageBackground>
                     <View style={styles.cardOverlayView}>
                     <Text style={styles.songName}>{item.item.song_name}</Text>
-                    <Text style={{ fontSize: 12, color: colors.charcoal, alignSelf: "center" }}>{item.item.song_category}</Text>
+                    <Text style={{ fontSize: 12, color: colors.charcoal, alignSelf: "center" }}>{item.item.artistName}</Text>
                     </View>
                 </Card>
             </TouchableOpacity>

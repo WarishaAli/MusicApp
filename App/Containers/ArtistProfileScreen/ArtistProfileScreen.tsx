@@ -36,19 +36,14 @@ class ArtistProfileScreen extends React.Component<Props>{
                     <Text style={{ alignSelf: "center", color: colors.lightMaroon, fontFamily: "serif", fontSize: 25, marginTop: 10, fontWeight: "bold" }}>
                         {this.props.artistData.name}</Text>
                     <ScrollView style={{ maxHeight: "50%", }}>
-                        <View style={styles.listView}>
-                            <Text style={styles.headingText}>Top Albums</Text>
-                            <Text style={styles.valueText}>{this.props.artistData.top_albums || "-"}</Text>
-                        </View>
-                        <View style={styles.caret}></View>
-                        <View style={styles.listView}>
+                    <View style={styles.listView}>
                             <Text style={styles.headingText}>About {this.props.artistData.name}</Text>
                             <Text style={styles.valueText}>{this.props.artistData.biography || "-"}</Text>
                         </View>
                         <View style={styles.caret}></View>
                         <View style={styles.listView}>
-                            <Text style={styles.headingText}>Gender</Text>
-                            <Text style={styles.valueText}>{this.props.artistData.sex || "-"}</Text>
+                            <Text style={styles.headingText}>Top Albums</Text>
+                            <Text style={styles.valueText}>{this.props.artistData.top_albums || "-"}</Text>
                         </View>
                         <View style={styles.caret}></View>
                         <View style={styles.listView}>
@@ -56,6 +51,13 @@ class ArtistProfileScreen extends React.Component<Props>{
                             <Text style={styles.valueText}>{this.props.artistData.interests || "-"}</Text>
                         </View>
                         <View style={styles.caret}></View>
+                        
+                        <View style={styles.listView}>
+                            <Text style={styles.headingText}>Gender</Text>
+                            <Text style={styles.valueText}>{this.props.artistData.sex || "-"}</Text>
+                        </View>
+                        <View style={styles.caret}></View>
+                        
                         <View style={styles.listView}>
                             <Text style={styles.headingText}>Birthday</Text>
                             <Text style={styles.valueText}>{this.props.artistData.dob || "-"}</Text>
@@ -64,11 +66,6 @@ class ArtistProfileScreen extends React.Component<Props>{
                         <View style={styles.listView}>
                             <Text style={styles.headingText}>Country</Text>
                             <Text style={styles.valueText}>{this.props.artistData.country || "-"}</Text>
-                        </View>
-                        <View style={styles.caret}></View>
-                        <View style={styles.listView}>
-                            <Text style={styles.headingText}>Interests</Text>
-                            <Text numberOfLines={2} style={styles.valueText}>{this.props.artistData.interests || "-"}</Text>
                         </View>
                         <View style={styles.caret}></View>
                         <View style={styles.listView}>

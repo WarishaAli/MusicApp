@@ -15,6 +15,7 @@ import { ArtistProfileAction } from "../../Reducers/ArtistProfileReducer";
 import { UserRole } from "../SignupScreen/SignupScreen";
 import Share from "react-native-share";
 import { FavoriteAction } from "../../Reducers/FavoritesReducer";
+import { isFavorite } from "../../Lib/MusicPlayerHelpers";
 
 export interface ISongData {
     song_name: string;
@@ -26,7 +27,7 @@ export interface ISongData {
 }
 export interface State {
     songData: ISongData | any;
-    duration: {min: number, sec: number, total: number}; 
+    duration: { min: number, sec: number, total: number };
     currentTime: { min: number, sec: number, total: number };
     layout: { width: number, height: number, x: number, y: number, }
 }
@@ -38,6 +39,7 @@ export interface DispatchProps {
     isPlaying: (play: boolean) => void;
     getArtist: (userId: string) => void;
     makeFavorite: (songId: string) => void;
+    getFavorites: () => void;
 }
 
 export interface StateProps {
@@ -46,6 +48,7 @@ export interface StateProps {
     currentPlaylist: Songs;
     showPlay: boolean;
     userRole: UserRole;
+    favorites: any;
 }
 export type Props = NavigationScreenProps & DispatchProps & StateProps;
 class MusicPlayScreen extends React.Component<Props, State>{
@@ -53,8 +56,8 @@ class MusicPlayScreen extends React.Component<Props, State>{
         super(props);
         this.state = {
             songData: this.props.currentSong,
-            duration: {min: 0, sec: 0, total: 0},
-            currentTime: {min: 0, sec: 0, total: 0},
+            duration: { min: 0, sec: 0, total: 0 },
+            currentTime: { min: 0, sec: 0, total: 0 },
             layout: { width: 0, height: 0, x: 0, y: 0 }
         }
     }
@@ -63,6 +66,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
     public timer: any = null;
 
     public componentDidMount() {
+        this.props.getFavorites();
         this._onFinishedPlaying = SoundPlayer.addEventListener("FinishedPlaying", (result: any) => {
             console.log("at song finished playing", result);
             this.playNextSong(true);
@@ -85,7 +89,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
     // public getDuration = async () => {
     //     const songInfo = await SoundPlayer.getInfo();
     //     const totalTime =  this.getMinsSec(songInfo.duration);
-       
+
     //     console.log("at total song time", totalTime);
     //     this.setState({ duration: {min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration},
     //             // currentTime: {
@@ -103,17 +107,17 @@ class MusicPlayScreen extends React.Component<Props, State>{
         // this.setState({ duration: {min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration}});
         this.timer = setInterval(async () => {
             const songInfo = await SoundPlayer.getInfo();
-            const totalTime =  this.getMinsSec(songInfo.duration);
-            const current =  this.getMinsSec(songInfo.currentTime);
-          this.props.isPlaying && this.setState({
-            duration: {min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration},
-        });
-        this.props.showPlaying && current.seconds == "59" ? this.setState({currentTime: {min: this.state.currentTime.min + 1, total: songInfo.currentTime, sec: 0}})
-        : this.setState({currentTime: {sec: this.state.currentTime.sec + 1, total: songInfo.currentTime, min: this.state.currentTime.min}})
+            const totalTime = this.getMinsSec(songInfo.duration);
+            const current = this.getMinsSec(songInfo.currentTime);
+            this.props.isPlaying && this.setState({
+                duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration },
+            });
+            this.props.showPlaying && current.seconds == "59" ? this.setState({ currentTime: { min: this.state.currentTime.min + 1, total: songInfo.currentTime, sec: 0 } })
+                : this.setState({ currentTime: { sec: this.state.currentTime.sec + 1, total: songInfo.currentTime, min: this.state.currentTime.min } })
             // console.log("making seconds mins", minutes, seconds);
             //   this.setState({songDuration: { duration: this.gettimeInMins(info.duration), currentTime: this.gettimeInMins(info.currentTime)}})
         }, 1000);
-        
+
     };
     // public gettimeInMins = (time: number) => {
     //     let num = time / 60;
@@ -148,7 +152,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
     public pauseSong = () => {
         SoundPlayer.pause();
         this.props.showPlaying(false);
-        
+
     }
     public playNextSong = (isAuto: boolean) => {
         this.props.playNext(isAuto);
@@ -261,14 +265,31 @@ class MusicPlayScreen extends React.Component<Props, State>{
                         {!this.props.showPlay && <Icon onPress={this.playSong} style={[styles.icon, { fontSize: 40, paddingHorizontal: 30, marginTop: 0 }]} name={"play"} type={"AntDesign"} />}
                         <Icon onPress={() => this.playNextSong(false)} style={styles.icon} name={"stepforward"} type={"AntDesign"} />
                     </View>
-                    <View style={{ flexDirection: "row", alignSelf: "center", marginTop: 20 }}>
-                        <TouchableOpacity style={{ padding: 10 }} onPress={() => this.props.makeFavorite(this.props.currentSong.songid)}>
-                            <Icon name={"hearto"} type={"AntDesign"} style={{ fontSize: 18, color: colors.charcoal, marginTop: 2 }}></Icon>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{ padding: 10, marginLeft: 5 }} onPress={this.shareSong}>
-                            <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={{ fontSize: 20, color: colors.charcoal, }}></Icon>
-                        </TouchableOpacity>
-                    </View>
+
+                </View>
+                <View style={{ flexDirection: "row", alignSelf: "center", position: "absolute", bottom: 10 }}>
+                    {
+                        this.props.userRole === UserRole.NORMAL &&
+                        <TouchableOpacity style={{
+                            padding: 5, width: 180, height: 30, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
+                            justifyContent: "center", borderColor: colors.lightMaroon
+                        }} onPress={() => this.props.makeFavorite(this.props.currentSong.songid)}>
+                            <Text>{isFavorite(this.props.favorites, this.props.currentSong.songid) ? 
+                            "Remove from favorites" : "Add to favorites"}</Text>
+                            <Icon name={"hearto"}
+                            type={"AntDesign"} style={{
+                                fontSize: 12, color: colors.charcoal, marginTop: 2, marginLeft: 2, padding: 0
+                            }}></Icon>
+                        </TouchableOpacity>}
+                    <TouchableOpacity
+                        style={{
+                            padding: 5, width: 150, height: 30, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
+                            justifyContent: "center", marginLeft: 5, borderColor: colors.lightMaroon
+                        }}
+                        onPress={this.shareSong}>
+                        <Text>Share song</Text>
+                        <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={{ fontSize: 20, color: colors.charcoal, }}></Icon>
+                    </TouchableOpacity>
                 </View>
             </Container>
         )
@@ -281,14 +302,16 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     showPlaying: (playing) => dispatch(SongsActions.showPlaying(playing)),
     isPlaying: (play) => dispatch(SongsActions.setIsPlaying(true)),
     getArtist: (userId) => dispatch(ArtistProfileAction.getArtistProfileRequest(userId)),
-    makeFavorite: (songId) => dispatch(FavoriteAction.makeFavoriteRequest(songId))
+    makeFavorite: (songId) => dispatch(FavoriteAction.makeFavoriteRequest(songId)),
+    getFavorites: () => dispatch(FavoriteAction.getFavoriteRequest(false)),
 });
 export const mapStateToProps = (state: RootState): StateProps => ({
     isPlaying: state.songs.isPlaying,
     currentSong: state.songs.song,
     currentPlaylist: state.songs.playlist,
     showPlay: state.songs.showPlay,
-    userRole: state.login.userData.user_cat
+    userRole: state.login.userData.user_cat,
+    favorites: state.favorites.favoritesData,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MusicPlayScreen);

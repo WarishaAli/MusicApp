@@ -25,7 +25,7 @@ export default StyleSheet.create({
         fontSize: 16,
         fontFamily: "serif",
         alignSelf: "flex-start",
-        marginLeft: 10,
+        // marginLeft: 10,
         textAlign: "center"
     }
 })
