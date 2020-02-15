@@ -30,7 +30,7 @@ export const makeFavoritesEpic: Epic = (action$, state$, {api}: IDependencies) =
         return api.hiphop.makeFavorite(action.payload, state$.value.login.userData.access_token).pipe(
             mergeMap((response: ApiResponse<any>) => {
                 if(response.ok && response.status === 200){
-                    Toast.show({text: "Song Liked!"})
+                    Toast.show({text: "Song added to favorites list!"})
                     return of(FavoriteAction.makeFavoriteSuccess())
                 } else{
                     return of(FavoriteAction.makeFavoriteFailure())

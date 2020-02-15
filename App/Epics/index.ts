@@ -4,7 +4,7 @@ import { checkIfLoginEpic, loginRequestEpic, signupRequestEpic, logoutEpic, chec
 import { getCategoriesEpic, getSongByCategoryEpic, getHomeDataEpic } from "./CategoryEpics";
 import { getFavoritesEpic, makeFavoritesEpic } from "./FavoritesEpics";
 import { getMySongsEpic, uploadMySongEpic } from "./MySongsEpics";
-import { getProfileEpic, updateProfileEpic } from "./ProfileEpics";
+import { getProfileEpic, updateProfileEpic, getArtistProfile } from "./ProfileEpics";
 
 export default combineEpics(
     setNextSongEpic,
@@ -23,5 +23,6 @@ export default combineEpics(
     updateProfileEpic,
     logoutEpic,
     getHomeDataEpic,
+    getArtistProfile,
     // checkUserRoleEpic,
 );

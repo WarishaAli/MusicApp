@@ -10,6 +10,7 @@ import LoginReducer, { LoginState } from "./LoginReducers";
 import MySongReducers, { MySongState } from "./MySongsReducer";
 import ProfileReducers, { ProfileState } from "./ProfileReducers";
 import SongsReducer, { SongsState } from "./SongsReducer";
+import ArtistProfileReducers, { ArtistProfileState } from "./ArtistProfileReducer";
 
 /* ------------- Assemble The Reducers ------------- */
 export const reducers = combineReducers({
@@ -20,6 +21,7 @@ export const reducers = combineReducers({
   favorites: FavoriteReducers,
   mySongs: MySongReducers,
   profile: ProfileReducers,
+  artist: ArtistProfileReducers,
 });
 
 export interface RootState {
@@ -30,6 +32,7 @@ export interface RootState {
   favorites: FavoriteState,
   mySongs: MySongState,
   profile: ProfileState,
+  artist: ArtistProfileState, 
 }
 const api: any = Api.create;
 const db: any = "";

@@ -94,6 +94,10 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     return from(api.delete(`/logout`));
   }
 
+  const getArtistProfile = (userId: string) => {
+    return from(api.get(`/getArtistProfile?userid=${userId}`))
+  }
+
 
 
 
@@ -110,5 +114,6 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     updateProfile,
     homeData,
     logout,
+    getArtistProfile,
   }
 };

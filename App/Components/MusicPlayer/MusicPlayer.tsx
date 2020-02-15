@@ -12,6 +12,7 @@ import { NavigationScreenProps } from "react-navigation";
 import { async } from "rxjs/internal/scheduler/async";
 
 
+
 export interface OwnProps {
     style?: ViewStyle;
     hide: boolean;
@@ -117,7 +118,7 @@ class MusicPlayer extends React.Component<Props, State> {
                 {/* </View> */}
                 {this.props.currentSong && <View style={styles.textView}>
                     <Text style={styles.heading}>{this.props.currentSong.song_name || " "}</Text>
-                    <Text style={styles.subHeading}>{this.props.currentSong.song_category || ""}</Text>
+                    <Text style={styles.subHeading}>{this.props.currentSong.artistName || ""}</Text>
                 </View>}
                 { <View style={{ flexDirection: "row", alignSelf: "center", flex: 0.5, marginLeft: 20 }}>
                     <Icon onPress={this.playPreviousSong} style={styles.icon} name={"stepbackward"} type={"AntDesign"} />

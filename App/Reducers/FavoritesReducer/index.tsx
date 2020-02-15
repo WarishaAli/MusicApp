@@ -57,7 +57,7 @@ export const getFavoriteRequest: Reducer<ImmutableFavoriteState> = (state, actio
 })
 
 export const makeFavoriteRequest: Reducer<ImmutableFavoriteState> = (state, action) => state.merge({
-    fetching: true,
+    fetching: false,
 })
 
 export const makeFavoriteSuccess: Reducer<ImmutableFavoriteState> = (state, action) => state.merge({

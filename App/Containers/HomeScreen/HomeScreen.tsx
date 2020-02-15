@@ -27,7 +27,7 @@ export interface OwnProps {
 }
 export enum DataTypes{
     SONGS = "Top Songs",
-    ALBUMS="Albums",
+    ALBUMS="Categories",
     VIDEOS="Videos",
     PODCASTS="Podcasts",
 }
@@ -187,7 +187,7 @@ export const mapStateToProps = (state: RootState): StateProps => ({
     loginToken: state.login.userData,
     featuredSongs: state.category.homeData ? state.category.homeData.featuredSongs : undefined,
     featuredVideos: state.category.homeData ? state.category.homeData.featuredVideos : undefined,
-    featuredPodcasts: state.category.homeData ? state.category.homeData.podcastShows : undefined,
+    featuredPodcasts: state.category.homeData ? state.category.homeData.featuredPodcasts : undefined,
     isSongPlaying: state.songs.isPlaying
 })
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

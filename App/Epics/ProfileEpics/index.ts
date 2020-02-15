@@ -5,6 +5,8 @@ import { getType } from "typesafe-actions"
 import { IDependencies } from "../../Reducers/CreateStore"
 import { ProfileAction } from "../../Reducers/ProfileReducers"
 import { Alert } from "react-native"
+import { ArtistProfileAction } from "../../Reducers/ArtistProfileReducer"
+import Api from "../../Services/Api"
 
 
 export const getProfileEpic: Epic = (action$, state$, { api }: IDependencies) => action$.pipe(
@@ -39,3 +41,20 @@ export const updateProfileEpic: Epic = (action$, state$, { api }: IDependencies)
         )
     })
 )
+
+export const getArtistProfile: Epic = (action$, state$, {api}: IDependencies) => action$.pipe(
+    ofType(getType(ArtistProfileAction.getArtistProfileRequest)),
+    mergeMap((action) => {
+        console.log("artist", action.payload.userId);
+        return api.hiphop.getArtistProfile(action.payload.userId).pipe(
+            mergeMap((response) => {
+                console.log("artist response", response);
+                if(response.ok && response.data.error !== true){
+                    return of (ArtistProfileAction.getArtistProfileSuccess(response.data.userobject))
+                } else {
+                    return of (ArtistProfileAction.getArtistProfileFailure())
+                }
+            })
+        )
+    })
+) 

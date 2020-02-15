@@ -103,11 +103,12 @@ class PlaylistScreen extends React.Component<Props, State>{
         // this.props.playMusic(false);
     }
     public playSong = (item: any) => {
+        SoundPlayer.playUrl(item.song_file);
         this.props.showPlaying(true);
         this.props.playMusic(true);
         this.props.selectSong(item);
         // SoundPlayer.loadUrl(item.song_file);
-        SoundPlayer.playUrl(item.song_file);
+        
     }
     public shareSong= (item: any) => {
         Share.open({url: item.song_file, title: "HiphopStreets",
@@ -123,11 +124,11 @@ class PlaylistScreen extends React.Component<Props, State>{
                 <Text numberOfLines={2} lineBreakMode={"middle"}style={[styles.heading, {alignSelf: "flex-start"}
                     // { fontWeight: this.props.selectedSong.name === item.name ? "bold" : "normal", color: this.props.selectedSong.name === item.name ? colors.maroon : colors.black }
                 ]}>{item.song_name}</Text>
-                {this.state.playlistType === PlaylistTypes.PLAYLIST && <Text style={[styles.subHeading, {marginTop: 1}]}>{item.song_category}</Text>}
+                <Text style={[styles.subHeading, {marginTop: 1, color: colors.maroon, fontSize: 12}]}>{item.artistName}</Text>
             </TouchableOpacity>
             <Row></Row>
             <View style={{flexDirection: "row"}}>
-            <Text style={styles.likeTxt}>{item.likecount}</Text>
+            {this.props.userRole === UserRole.NORMAL && <Text style={styles.likeTxt}>{item.likecount}</Text>}
             { this.props.userRole === UserRole.NORMAL &&
                 <TouchableOpacity style={styles.iconView}onPress={() => {this.props.makeFavorite(item.songid)}}>
                 <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, {fontSize: 17}]}></Icon>
