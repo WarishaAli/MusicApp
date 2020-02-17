@@ -73,6 +73,7 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     data.append("song_image", params.songImage);
     data.append("userfile", params.songFile);
     data.append("status", params.status);
+    data.append("song_type", "mp3");
     api.setHeader("accesstoken", token);
     return from(api.post(`/uploadSong`, data))
   };

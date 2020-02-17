@@ -33,8 +33,9 @@ export const makeFavoritesEpic: Epic = (action$, state$, {api}: IDependencies) =
             mergeMap((response: ApiResponse<any>) => {
                 console.log(response, "make favorite response")
                 if(response.ok && response.status === 200){
-                    Toast.show({text: response.data.message === "Success: Unliked!" ? "Song added to favorites list!" : 
-                    "Song removed from favorites list!"}) 
+                    // console.log("add to fav msg", response.data.message);
+                    Toast.show({text: response.data.message.message === "Success: Unliked!" ? "Song removed from favorites list!"
+                    : "Song added to favorites list!"}) 
                     return of(FavoriteAction.makeFavoriteSuccess(), FavoriteAction.getFavoriteRequest(false))
                 } else{
                     return of(FavoriteAction.makeFavoriteFailure())

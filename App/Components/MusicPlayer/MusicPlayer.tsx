@@ -95,20 +95,21 @@ class MusicPlayer extends React.Component<Props, State> {
     public playPreviousSong = () => {
         this.props.playPrev();
     }
-    public openSongScrenn = async () => {
-        try {
-            const info = await SoundPlayer.getInfo() // Also, you need to await this because it is async
-            console.log('getInfo', info.duration / 60, info.currentTime / 60) // {duration: 12.416, currentTime: 7.691}
-            this.props.navigation.push("MusicPlayScreen", { songData: info })
-        } catch (e) {
-            console.log('There is no song playing', e)
-        }
+    public openSongScrenn = () => {
+        // try {
+        //     // const info = await SoundPlayer.getInfo() // Also, you need to await this because it is async
+        //     // console.log('getInfo', info.duration / 60, info.currentTime / 60) // {duration: 12.416, currentTime: 7.691}
+        //     this.props.navigation.push("MusicPlayScreen", { songData: info })
+        // } catch (e) {
+        //     console.log('There is no song playing', e)
+        // }
+        this.props.navigation.push("MusicPlayScreen", {songData: ""});
     }
     public render() {
         return (
             <TouchableOpacity
-            activeOpacity={0}
-            onPress={this.props.hide ? () => null : this.openSongScrenn}
+            // activeOpacity={0}
+            onPress={this.openSongScrenn}
             style={[styles.mainView, this.props.style, { opacity: this.props.hide ? 0 : 1 }]}>
                 {/* <View style={styles.imageView}> */}
                 <Image
@@ -117,14 +118,15 @@ class MusicPlayer extends React.Component<Props, State> {
                     source={{ uri: this.props.currentSong.songimage }}></Image>
                 {/* </View> */}
                 {this.props.currentSong && <View style={styles.textView}>
-                    <Text style={styles.heading}>{this.props.currentSong.song_name || " "}</Text>
-                    <Text style={styles.subHeading}>{this.props.currentSong.artistName || ""}</Text>
+                    <Text style={styles.heading}  numberOfLines={1}>{this.props.currentSong.song_name || " "}</Text>
+                    <Text style={styles.subHeading}>
+                        {this.props.currentSong.artistName || ""}</Text>
                 </View>}
                 { <View style={{ flexDirection: "row", alignSelf: "center", flex: 0.5, marginLeft: 20 }}>
                     <Icon onPress={this.playPreviousSong} style={styles.icon} name={"stepbackward"} type={"AntDesign"} />
                     {this.props.showPlay && <Icon onPress={this.pauseSong} style={[styles.icon]} name={"pause"} type={"AntDesign"} />}
                     {!this.props.showPlay && <Icon onPress={this.playSong} style={[styles.icon]} name={"caretright"} type={"AntDesign"} />}
-                    <Icon onPress={() => this.playNextSong(false)} style={styles.icon} name={"stepforward"} type={"AntDesign"} />
+                    <Icon onPress={() => this.playNextSong(true)} style={styles.icon} name={"stepforward"} type={"AntDesign"} />
                 </View>}
 
             </TouchableOpacity>
@@ -134,7 +136,7 @@ class MusicPlayer extends React.Component<Props, State> {
 export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     playMusic: (shouldPlay) => dispatch(SongsActions.setIsPlaying(shouldPlay)),
     playNext: (isAuto: boolean) => dispatch(SongsActions.setNextSong(isAuto)),
-    playPrev: () => dispatch(SongsActions.setPreviousSong()),
+    playPrev: () => dispatch(SongsActions.setPreviousSong(true)),
     showPlaying: (playing) => dispatch(SongsActions.showPlaying(playing))
 });
 export const mapStateToProps = (state: RootState): StateProps => ({

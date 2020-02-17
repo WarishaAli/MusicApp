@@ -104,6 +104,7 @@ export default StyleSheet.create({
     modalContent: {
         paddingHorizontal: 20,
         alignSelf: "center",
+        maxHeight: "70%"
     },
     camIcon: {
         color: colors.snow,

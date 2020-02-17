@@ -67,6 +67,7 @@
 		0B8773CA852346C58B7B5EFF /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BCE133A72DE84C4D9121D6E9 /* libRNGoogleSignin.a */; };
 		B4046068288648DB92800BDC /* libRNCSlider.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 32DF130441984EE3A6EB80B3 /* libRNCSlider.a */; };
 		18EBE839DFB846CFAFB37576 /* libRNShare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D6A38B2A19B411898E41F3D /* libRNShare.a */; };
+		422FB6F0EB8243BF84972E7B /* libRCTVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ACEA7110CA94F6B8EAE8369 /* libRCTVideo.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -335,6 +336,8 @@
 		32DF130441984EE3A6EB80B3 /* libRNCSlider.a */ = {isa = PBXFileReference; name = "libRNCSlider.a"; path = "libRNCSlider.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		2B80E80EFC2146018AC0FAB7 /* RNShare.xcodeproj */ = {isa = PBXFileReference; name = "RNShare.xcodeproj"; path = "../node_modules/react-native-share/ios/RNShare.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		3D6A38B2A19B411898E41F3D /* libRNShare.a */ = {isa = PBXFileReference; name = "libRNShare.a"; path = "libRNShare.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		A91FF8886A0D4343822601EF /* RCTVideo.xcodeproj */ = {isa = PBXFileReference; name = "RCTVideo.xcodeproj"; path = "../node_modules/react-native-video/ios/RCTVideo.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		7ACEA7110CA94F6B8EAE8369 /* libRCTVideo.a */ = {isa = PBXFileReference; name = "libRCTVideo.a"; path = "libRCTVideo.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -373,6 +376,7 @@
 				0B8773CA852346C58B7B5EFF /* libRNGoogleSignin.a in Frameworks */,
 				B4046068288648DB92800BDC /* libRNCSlider.a in Frameworks */,
 				18EBE839DFB846CFAFB37576 /* libRNShare.a in Frameworks */,
+				422FB6F0EB8243BF84972E7B /* libRCTVideo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -553,6 +557,7 @@
 				44146E32D3D742B5B0FFEB2E /* RNGoogleSignin.xcodeproj */,
 				898A6DA0A9C54D869A6F64B8 /* RNCSlider.xcodeproj */,
 				2B80E80EFC2146018AC0FAB7 /* RNShare.xcodeproj */,
+				A91FF8886A0D4343822601EF /* RCTVideo.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1159,9 +1164,11 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
@@ -1204,9 +1211,11 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
@@ -1248,6 +1257,7 @@
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
+					"$(SRCROOT)/..",
 				);
 			};
 			name = Debug;
@@ -1268,6 +1278,7 @@
 				VERSIONING_SYSTEM = "apple-generic";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
@@ -1319,9 +1330,11 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
@@ -1373,9 +1386,11 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
@@ -1422,6 +1437,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 			};
 			name = Debug;
@@ -1446,6 +1462,7 @@
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",

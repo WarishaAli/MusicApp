@@ -60,11 +60,18 @@ class AllCategoriesScreen extends React.Component<Props>{
         )
     };
     public playSong = (songData: any) => {
-        SoundPlayer.playUrl(songData.song_file);
-        this.props.showPlay(true);
-        this.props.playSong(songData);
-        this.props.shouldPlay(true);
-        this.props.setPlaylist(this.categoryData.data);
+        if (this.categoryData.title === DataTypes.VIDEOS) {
+            SoundPlayer.pause();
+            this.playSong(songData)
+            this.props.setPlaylist(this.categoryData.data);
+            this.props.navigation.push("MusicPlayScreen", { songData: songData, isSong: false, videoUrl: songData })
+        } else {
+            SoundPlayer.playUrl(songData.song_file);
+            this.props.showPlay(true);
+            this.props.playSong(songData);
+            this.props.shouldPlay(true);
+            this.props.setPlaylist(this.categoryData.data);
+        }
     }
     public renderSongTiles = ({ item }) => (
         <TouchableOpacity style={styles.cardItemStyle} onPress={() => this.playSong(item)}>
@@ -93,7 +100,7 @@ class AllCategoriesScreen extends React.Component<Props>{
                         numColumns={2}
                     />
                 </Content>
-                <MusicPlayer style={styles.musicPlayer} hide={!this.props.isPlaying} />
+                <MusicPlayer style={styles.musicPlayer} hide={!this.props.isPlaying} navigation={this.props.navigation} />
             </Container>
         );
     }

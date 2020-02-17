@@ -2,6 +2,15 @@ import {StyleSheet} from "react-native";
 import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
+    video:{
+        width: 300,
+        height: 300,
+        alignSelf: "center",
+        // backgroundColor: colors.black,
+        paddingHorizontal: 50,
+        borderRadius: 10,
+        zIndex: -1
+    },
     timeText:{
         fontSize: 12,
         color: colors.steel

@@ -22,10 +22,11 @@ export default StyleSheet.create({
     },
     valueText:{
         color: colors.charcoal,
-        fontSize: 16,
+        fontSize: 14,
         fontFamily: "serif",
-        alignSelf: "flex-start",
+        marginTop: 2,
+        // alignSelf: "flex-start",
         // marginLeft: 10,
-        textAlign: "center"
+        // textAlign: "center"
     }
 })

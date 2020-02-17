@@ -15,7 +15,7 @@ export const setNextSongEpic: Epic = (action$, state$) => action$.pipe(
         const currentIndex = findCurrentSongIndex(currentPlaylist, currentSong);
         // console.log(currentIndex);
         if(currentIndex + 1 <= currentPlaylist.length-1){
-            SoundPlayer.playUrl(currentPlaylist[ currentIndex+1].song_file);
+            action.payload && SoundPlayer.playUrl(currentPlaylist[ currentIndex+1].song_file);
             return of(SongsActions.setSong(currentPlaylist[ currentIndex+1]),
             SongsActions.showPlaying(true), SongsActions.setIsPlaying(true));
         } else{
@@ -25,12 +25,12 @@ export const setNextSongEpic: Epic = (action$, state$) => action$.pipe(
     ); 
 export const setPrevSongEpic: Epic = (action$, state$) => action$.pipe(
     ofType(getType(SongsActions.setPreviousSong)),
-    mergeMap(() => {
+    mergeMap((action) => {
         const currentPlaylist = state$.value.songs.playlist;
         const currentSong = state$.value.songs.song;
         const currentIndex = findCurrentSongIndex(currentPlaylist, currentSong);
         if(currentIndex > 0){
-            SoundPlayer.playUrl(currentPlaylist[currentIndex-1].song_file)
+            action.payload && SoundPlayer.playUrl(currentPlaylist[currentIndex-1].song_file)
             return of(SongsActions.setSong(currentPlaylist[currentIndex-1]), 
             SongsActions.showPlaying(true), SongsActions.setIsPlaying(true)
             );

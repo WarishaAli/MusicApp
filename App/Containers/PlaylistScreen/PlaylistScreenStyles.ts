@@ -132,7 +132,7 @@ export default StyleSheet.create({
         justifyContent: "center",
         // marginBottom: 10,
         position: "absolute",
-        bottom: 150,
+        bottom: 170,
         right: 20,
         zIndex: 4
     },
@@ -152,6 +152,7 @@ export default StyleSheet.create({
     modalContent: {
         paddingHorizontal: 20,
         alignSelf: "center",
+        maxHeight: "70%"
     },
     songImageView:{
         width: 80,

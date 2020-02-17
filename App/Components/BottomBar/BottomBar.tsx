@@ -77,9 +77,17 @@ class BottomBar extends React.Component<Props, State>{
             {/* Explore */}
             <Button onPress={() => this.selectBottomTab(BottomBarBtns.EXPLORE)} transparent={true}
             style={[styles.iconHolder, {backgroundColor: this.props.selectedTab === BottomBarBtns.EXPLORE ? colors.lightMaroon : colors.maroon}]}>
-             <Icon style={[styles.iconStyle, {fontSize: 24}]} name={"home"} type={"AntDesign"}/>
-            <Text style={styles.textStyle}>home</Text>
+             <Icon style={[styles.iconStyle, {fontSize: 24}]} name={"compass"} type={"Feather"}/>
+            <Text style={styles.textStyle}>explore</Text>
             </Button>
+
+            <Button 
+            // onPress={() => this.selectBottomTab(BottomBarBtns.SETTINGS)}
+            transparent={true}
+            style={[styles.iconHolder, {backgroundColor: this.props.selectedTab === BottomBarBtns.SETTINGS ? colors.lightMaroon : colors.maroon}]}>
+            <Icon style={styles.iconStyle} name={"readme"} type={"FontAwesome5"}/>
+             <Text style={styles.textStyle}>blogs</Text>
+        </Button>
             
             <Button onPress={() => this.selectBottomTab(BottomBarBtns.SETTINGS)} transparent={true}
             style={[styles.iconHolder, {backgroundColor: this.props.selectedTab === BottomBarBtns.SETTINGS ? colors.lightMaroon : colors.maroon}]}>

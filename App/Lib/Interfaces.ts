@@ -24,4 +24,5 @@ export interface ISongUpload {
     songImage: string;
     songFile: string;
     status: string;
+    songType: string;
 }

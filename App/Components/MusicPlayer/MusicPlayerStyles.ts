@@ -32,7 +32,8 @@ export default StyleSheet.create({
         color: colors.charcoal,
         fontSize: 18,
         textAlign: "left",
-        fontFamily: "serif"
+        fontFamily: "serif",
+       
     },
     subHeading: {
         color: colors.charcoal,

@@ -1,6 +1,6 @@
 import { Card, Col, Container, Content, Icon } from "native-base";
 import React from "react";
-import { Image, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
+import { Image, Text, TextInput, TouchableOpacity, View, Alert, ScrollView } from "react-native";
 import ImagePicker from 'react-native-image-picker';
 import { FlatList, NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
@@ -82,22 +82,23 @@ class SettingScreen extends React.Component<Props, State>{
         )
     }
     public showModal = () => this.setState({ visible: true });
-    public renderTopProfileView = () => (
-        <View style={styles.profileView}>
-            <Image style={styles.roundView} source={{ uri: this.props.profileData.image }}></Image>
+    public renderTopProfileView = () => {
+        let data = this.props.profileData;
+        return(<View style={styles.profileView}>
+            <Image style={styles.roundView} source={{ uri: data ? data.image : "" }}></Image>
             <View style={styles.profileInfo}>
-                <Text style={styles.userNameHeading}>{this.props.profileData.name || "-"}</Text>
-                <Text style={styles.bioHeading} numberOfLines={4}>{ this.props.profileData.email_id || "Your email id"}</Text>
-                <Text style={styles.bioHeading} numberOfLines={4}>{this.props.profileData.biography || "Say something about yourself"}</Text>
-                <Text style={styles.bioHeading} numberOfLines={1}>{this.props.profileData.sex || "Specify your gender"}</Text>
+                <Text style={styles.userNameHeading}>{data ? data.name : "Username"}</Text>
+                <Text style={styles.bioHeading} numberOfLines={4}>{ data ? data.email_id : "Email id"}</Text>
+                <Text style={styles.bioHeading} numberOfLines={4}>{data ? data.biography : "Biography"}</Text>
+                <Text style={styles.bioHeading} numberOfLines={1}>{data ? data.sex : "Gender" }</Text>
                 <TouchableOpacity style={{ flexDirection: "row" }} onPress={this.showModal}>
                     <Text style={[styles.userNameHeading, { fontWeight: "normal", fontSize: 15, color: colors.lightMaroon }]}>Edit Profile</Text>
                     <Icon name={"edit-3"} type={"Feather"} style={styles.editIcon}></Icon>
                 </TouchableOpacity>
                 {/* <LargeTransparentButton text={"Edit Profile"} textStyle= {styles.editBtnText} style={styles.editBtn}/> */}
             </View>
-        </View>
-    );
+        </View>)
+    };
 
     public logout = () => {
         this.props.playMusic(false);
@@ -165,24 +166,29 @@ class SettingScreen extends React.Component<Props, State>{
           });
     }
     updateProfile = () => {
+        if(this.state.userName.length > 0 && this.state.emailId.length > 0 && this.state.gender.length > 0 && this.state.profileImage !==undefined
+            && this.state.bio.length > 0){
         this.setState({visible: false});
         this.props.updateProfile({userName: this.state.userName, emailId: this.state.emailId, gender: this.state.gender,
         image: this.state.profileImage, biography: this.state.bio})
+    } else{
+        Alert.alert("Error", "Please enter all fields to update your profile!")
     }
+}
     public render() {
         return (
             <Container>
                 <CommonHeader title={"Profile & Settings"} />
                 {/* {this.props.profileData ?  */}
                 <Content style={{ maxHeight: "80%" }}>
-                    {this.props.profileData && this.renderTopProfileView()}
+                    {this.renderTopProfileView()}
                     {this.renderListView()}
                 </Content> 
                 {/* : */}
                  {/* <Text style={{padding: 30, alignSelf: "center", marginTop: 50}}>Unfortunately, your profile data is not available at the moment! Please try again later</Text> */}
                  {/* } */}
                 <ModalView content={
-                    <View style={styles.modalContent}>
+                    <ScrollView style={styles.modalContent}>
                         <Image source={{ uri: this.state.profileImage.uri}} style={styles.roundView} onLayout={this.onLayoutImg} />
                         <TouchableOpacity style={[styles.cameraView, { top: this.state.imgPosition.y - 140, left: this.state.imgPosition.x - 30, }]}
                         onPress={this.selectImage}
@@ -193,7 +199,7 @@ class SettingScreen extends React.Component<Props, State>{
                         <TextInput value={this.state.emailId} onChangeText={(text) => this.setState({ emailId: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your email id"}/>
                         <TextInput value={this.state.bio} onChangeText={(text) => this.setState({ bio: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your biography"} />
                         <TextInput value={this.state.gender} onChangeText={(text) => this.setState({ gender: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your gender"}/>
-                    </View>
+                    </ScrollView>
                 }
                     visible={this.state.visible}
                     title={"Edit your profile"}

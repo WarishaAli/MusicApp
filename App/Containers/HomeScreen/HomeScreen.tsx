@@ -105,12 +105,14 @@ class HomeScreen extends React.Component<Props, State> {
     }
     public openSongScreen = async (item) => {
         this.playSong(item);
-        // this.getSongInfo(item);
-        this.props.navigation.push("MusicPlayScreen", { songData: item })
+        this.props.navigation.push("MusicPlayScreen", { songData: item, isSong: true })
     }
 
     public openVideoScreen = (videoItem: any) => {
-
+        SoundPlayer.pause();
+        this.props.playSong(videoItem)
+        this.props.setPlaylist(this.props.featuredVideos);
+        this.props.navigation.push("MusicPlayScreen", { songData: videoItem, isSong: false, videoUrl: videoItem })
     }
 
     public renderFeauteredSongs = (item: any, text: string) => {
@@ -121,7 +123,7 @@ class HomeScreen extends React.Component<Props, State> {
                     // imageStyle={{ borderRadius: 5 }}
                     ></ImageBackground>
                     <View style={styles.cardOverlayView}>
-                    <Text style={styles.songName}>{item.item.song_name}</Text>
+                    <Text numberOfLines={1} style={styles.songName}>{item.item.song_name}</Text>
                     <Text style={{ fontSize: 12, color: colors.charcoal, alignSelf: "center" }}>{item.item.artistName}</Text>
                     </View>
                 </Card>
@@ -146,6 +148,7 @@ class HomeScreen extends React.Component<Props, State> {
     //     this.setState({ data: dataSet });
     // }
     public render() {
+        console.log(!this.props.isSongPlaying, "at home")
         return (
             <Container style={{ backgroundColor: colors.snow }} >
                 <CommonHeader title={"Search"}
@@ -188,6 +191,6 @@ export const mapStateToProps = (state: RootState): StateProps => ({
     featuredSongs: state.category.homeData ? state.category.homeData.featuredSongs : undefined,
     featuredVideos: state.category.homeData ? state.category.homeData.featuredVideos : undefined,
     featuredPodcasts: state.category.homeData ? state.category.homeData.featuredPodcasts : undefined,
-    isSongPlaying: state.songs.isPlaying
+    isSongPlaying: state.songs.isPlaying || state.songs.showPlay
 })
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

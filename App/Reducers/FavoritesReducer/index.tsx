@@ -53,7 +53,7 @@ export const INITIAL_STATE: ImmutableFavoriteState = SI.from({
 });
 
 export const getFavoriteRequest: Reducer<ImmutableFavoriteState> = (state, action) => state.merge({
-    fetching: true,
+    fetching: action.payload,
 })
 
 export const makeFavoriteRequest: Reducer<ImmutableFavoriteState> = (state, action) => state.merge({
