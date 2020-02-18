@@ -1,6 +1,6 @@
-import { Card, Container, Icon } from "native-base";
+import { Card, Container, Icon, ListItem, Item } from "native-base";
 import React from "react";
-import { FlatList, ImageBackground, ScrollView, Text, TouchableOpacity, Alert, View } from "react-native";
+import { FlatList, ImageBackground, ScrollView, Text, TouchableOpacity, Alert, View, TextInput } from "react-native";
 import { NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
 import BottomBar from "../../Components/BottomBar";
@@ -17,19 +17,22 @@ import colors from "../../Themes/Colors";
 import { BottomBarBtns } from "../../Types/BottomBar";
 import styles from "./HomeScreenStyles";
 import SoundPlayer from "react-native-sound-player";
-import { ISongData } from "../MusicPlayScreen/MusicPlayScreen";
+import { ISongData, OpenSong } from "../MusicPlayScreen/MusicPlayScreen";
+import { SearchAction } from "../../Reducers/SearchReducer";
 
 export interface State {
     croppedFeaturedSongs: any;
+    showSearchBar: boolean;
+    searchText: string;
 }
 export interface OwnProps {
 
 }
-export enum DataTypes{
+export enum DataTypes {
     SONGS = "Top Songs",
-    ALBUMS="Categories",
-    VIDEOS="Videos",
-    PODCASTS="Podcasts",
+    ALBUMS = "Categories",
+    VIDEOS = "Videos",
+    PODCASTS = "Podcasts",
 }
 export interface DispatchProps {
     setBottomTab: (btnName: BottomBarBtns) => void;
@@ -39,7 +42,7 @@ export interface DispatchProps {
     playSong: (song: ISongData) => void;
     shouldPlay: (play: boolean) => void;
     showPlay: (play: boolean) => void;
-
+    searchSong: (keyword: string) => void;
 }
 
 export interface StateProps {
@@ -49,6 +52,7 @@ export interface StateProps {
     featuredVideos: any;
     featuredPodcasts: any;
     isSongPlaying: boolean;
+    searchData: any;
 }
 export type Props = OwnProps & NavigationScreenProps & DispatchProps & StateProps;
 class HomeScreen extends React.Component<Props, State> {
@@ -56,6 +60,8 @@ class HomeScreen extends React.Component<Props, State> {
         super(props);
         this.state = {
             croppedFeaturedSongs: [],
+            showSearchBar: false,
+            searchText: "",
         }
     }
     public componentDidMount() {
@@ -78,7 +84,7 @@ class HomeScreen extends React.Component<Props, State> {
     public renderGenreList = (data: any, noDataText: string) => {
         return data ? (
             <FlatList data={data.length > 15 ? data.slice(0, 10) : data}
-            renderItem={(item) => noDataText === DataTypes.ALBUMS ? this.renderGenreView(item) : this.renderFeauteredSongs(item, noDataText)} style={styles.listStyle} horizontal={true}
+                renderItem={(item) => noDataText === DataTypes.ALBUMS ? this.renderGenreView(item) : this.renderFeauteredSongs(item, noDataText)} style={styles.listStyle} horizontal={true}
                 showsHorizontalScrollIndicator={false}
             // keyExtractor={(item) => noDataText === "categories" ? item.cat_id : item.songid}
             />
@@ -105,7 +111,7 @@ class HomeScreen extends React.Component<Props, State> {
     }
     public openSongScreen = async (item) => {
         this.playSong(item);
-        this.props.navigation.push("MusicPlayScreen", { songData: item, isSong: true })
+        this.props.navigation.push("MusicPlayScreen", { songData: item, isSong: true, comingFrom: OpenSong.SCREEN })
     }
 
     public openVideoScreen = (videoItem: any) => {
@@ -123,8 +129,8 @@ class HomeScreen extends React.Component<Props, State> {
                     // imageStyle={{ borderRadius: 5 }}
                     ></ImageBackground>
                     <View style={styles.cardOverlayView}>
-                    <Text numberOfLines={1} style={styles.songName}>{item.item.song_name}</Text>
-                    <Text style={{ fontSize: 12, color: colors.charcoal, alignSelf: "center" }}>{item.item.artistName}</Text>
+                        <Text numberOfLines={1} style={styles.songName}>{item.item.song_name}</Text>
+                        <Text style={{ fontSize: 12, color: colors.charcoal, alignSelf: "center" }}>{item.item.artistName}</Text>
                     </View>
                 </Card>
             </TouchableOpacity>
@@ -147,13 +153,62 @@ class HomeScreen extends React.Component<Props, State> {
     // public setData = (dataSet: any) => {
     //     this.setState({ data: dataSet });
     // }
+    public showSearchBar = () => {
+        this.setState({ showSearchBar: true })
+    }
+    public onClickSearchItem = (item: any) => {
+        this.setState({ showSearchBar: false });
+        item.song_category === "Podcast videos" ? this.openVideoScreen(item) : this.openSongScreen(item);
+    }
+    public renderSearchItem = ({ item }) => {
+        return (
+            <TouchableOpacity style={{ marginTop: 5, marginLeft: 5 }} onPress={() => this.onClickSearchItem(item)}>
+                <Text style={{ fontSize: 18, fontFamily: "serif", paddingLeft: 10 }}>{item.song_name}</Text>
+                <Text style={{ paddingLeft: 10, marginTop: 2, fontSize: 12 }}>{item.song_category}</Text>
+                <View style={{ backgroundColor: colors.maroon, height: 0.5, width: "80%", margin: 15 }}></View>
+            </TouchableOpacity>
+        )
+    }
     public render() {
         console.log(!this.props.isSongPlaying, "at home")
         return (
             <Container style={{ backgroundColor: colors.snow }} >
                 <CommonHeader title={"Search"}
-                    rightItem={<Icon name={"search"} type={"Feather"} style={styles.searchIcon}></Icon>}
+                    rightItem={
+                        <TouchableOpacity>
+                            <Icon name={"search"} type={"Feather"} style={styles.searchIcon} onPress={this.showSearchBar}></Icon>
+                        </TouchableOpacity>
+                    }
                 />
+                {this.state.showSearchBar &&
+                    <TouchableOpacity onPress={() => this.setState({ showSearchBar: false })} style={{ position: "absolute", top: 15, right: 60, zIndex: 10 }}>
+                        <Icon name={"closecircleo"} type={"AntDesign"}
+                            style={{
+                                fontSize: 12, color: colors.lightMaroon
+                                ,
+                            }}></Icon>
+                    </TouchableOpacity>
+                }
+                {this.state.showSearchBar && <TextInput
+                    style={{
+                        position: "absolute", top: 0, backgroundColor: colors.snow, flex: 1, width: "80%", right: 50, padding: 5,
+                        borderWidth: 0.5, borderColor: colors.silver, borderRadius: 5, borderBottomColor: colors.steel
+                    }} placeholder={"Search a song"} placeholderTextColor={colors.lightMaroon}
+                    onChangeText={(text) => this.props.searchSong(text)}></TextInput>}
+                {this.state.showSearchBar && <View style={{
+                    width: "90%", height: 300, position: "absolute", top: 45,
+                    backgroundColor: colors.snow, zIndex: 10, alignSelf: "center", borderWidth: 0.5, borderColor: colors.silver, borderBottomColor: colors.silver
+                }}>
+
+                    {this.props.searchData && this.props.searchData.length === 0 ? 
+                    <Text style={{ alignSelf: "flex-start", padding: 30, color: colors.maroon }}>
+                        We could not find any song for your query</Text> : 
+                        <FlatList data={this.props.searchData} renderItem={this.renderSearchItem}
+                    />}
+                </View>}
+
+
+
                 <ScrollView style={{ marginLeft: 15, flex: 0.9, marginBottom: 70 }}>
                     {this.renderTextIcon(DataTypes.SONGS, this.props.featuredSongs)}
                     {this.renderGenreList(this.props.featuredSongs, DataTypes.SONGS)}
@@ -166,7 +221,7 @@ class HomeScreen extends React.Component<Props, State> {
                 </ScrollView>
 
 
-                {<MusicPlayer style={styles.musicPlayer} hide={!this.props.isSongPlaying}
+                {this.props.isSongPlaying && <MusicPlayer style={styles.musicPlayer} hide={false}
                     navigation={this.props.navigation}
                 />}
                 <BottomBar navigation={this.props.navigation} />
@@ -182,6 +237,7 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     playSong: (song) => dispatch(SongsActions.setSong(song)),
     shouldPlay: (play) => dispatch(SongsActions.setIsPlaying(play)),
     showPlay: (showPlay) => dispatch(SongsActions.showPlaying(showPlay)),
+    searchSong: (keyword) => dispatch(SearchAction.searchRequest(keyword))
 
 })
 
@@ -191,6 +247,7 @@ export const mapStateToProps = (state: RootState): StateProps => ({
     featuredSongs: state.category.homeData ? state.category.homeData.featuredSongs : undefined,
     featuredVideos: state.category.homeData ? state.category.homeData.featuredVideos : undefined,
     featuredPodcasts: state.category.homeData ? state.category.homeData.featuredPodcasts : undefined,
-    isSongPlaying: state.songs.isPlaying || state.songs.showPlay
+    isSongPlaying: state.songs.isPlaying || state.songs.showPlay,
+    searchData: state.search.searchData,
 })
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

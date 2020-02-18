@@ -99,6 +99,10 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     return from(api.get(`/getArtistProfile?userid=${userId}`))
   }
 
+  const search =  (keyword: string) => {
+    return from(api.get(`/search?keyword=${keyword}`))
+  }
+
 
 
 
@@ -116,5 +120,6 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     homeData,
     logout,
     getArtistProfile,
+    search
   }
 };

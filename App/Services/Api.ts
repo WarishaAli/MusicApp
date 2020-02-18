@@ -32,4 +32,5 @@ export interface HipHopApi {
     homeData: () => Observable<ApiResponse<any>>;
     logout: (token: string) => Observable<ApiResponse<any>>;
     getArtistProfile: (userId: string) => Observable<ApiResponse<any>>;
+    search: (keyword: string) => Observable<ApiResponse<any>>;
 }

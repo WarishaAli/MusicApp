@@ -18,6 +18,11 @@ import { FavoriteAction } from "../../Reducers/FavoritesReducer";
 import { isFavorite } from "../../Lib/MusicPlayerHelpers";
 import Video from 'react-native-video';
 
+export enum OpenSong {
+    SCREEN = "From Screen",
+    COMPONENT = "From Component",
+}
+
 export interface ISongData {
     song_name: string;
     song_category: string;
@@ -34,16 +39,19 @@ export interface State {
     isSong: boolean;
     // videoUrl: Songs;
     pauseVideo: boolean;
+    songPausedAt: number;
+    comingFrom: OpenSong;
 }
 export interface DispatchProps {
     playMusic: (shouldPlay: boolean) => void;
     playNext: (isSong: boolean) => void;
     playPrev: (isSong: boolean) => void;
     showPlaying: (playing: boolean) => void;
-    isPlaying: (play: boolean) => void;
+    isSongPlaying: (play: boolean) => void;
     getArtist: (userId: string) => void;
     makeFavorite: (songId: string) => void;
     getFavorites: () => void;
+    setSong: () => void;
 }
 
 export interface StateProps {
@@ -67,6 +75,8 @@ class MusicPlayScreen extends React.Component<Props, State>{
             isSong: this.props.navigation.getParam("isSong"),
             // videoUrl:  this.props.navigation.getParam("videoUrl"),
             pauseVideo: false,
+            songPausedAt: 0,
+            comingFrom: this.props.navigation.getParam("comingFrom"),
         }
     }
     public _onFinishedPlaying: any = null;
@@ -80,18 +90,18 @@ class MusicPlayScreen extends React.Component<Props, State>{
         this._onFinishedPlaying = this.state.isSong ? SoundPlayer.addEventListener("FinishedPlaying", (result: any) => {
             console.log("at song finished playing", result);
             this.playNextSong(true);
-            // this.setState({ duration: {min: 0, sec: 0, total: 0}, currentTime: { min: 0, sec: 0, total: 0}})
-            // this.timer && clearInterval(this.timer);
+            this.setState({ duration: { min: 0, sec: 0, total: 0 }, currentTime: { min: 0, sec: 0, total: 0 } })
+            this.timer && clearInterval(this.timer);
         }) : null;
-        this._onFinishedloading = this.state.isSong ? SoundPlayer.addEventListener("FinishedLoading", (result: any) => {
+        this._onFinishedloading = this.state.comingFrom === OpenSong.SCREEN && this.state.isSong ? SoundPlayer.addEventListener("FinishedLoading", (result: any) => {
             console.log("at finish loading");
-            // if (result) {
-            //     this.durationCounter();
-            // }
+            if (result) {
+                this.durationCounter();
+            }
         }) : null;
-        // if (this.props.isPlaying) {
-        //     this.getInfo();
-        // }
+        if (this.props.showPlay && this.state.comingFrom === OpenSong.COMPONENT) {
+            this.durationCounter();
+        }
     }
     public getMinsSec = (time: number) => {
         return { minutes: (time / 60).toFixed(0), seconds: (time % 60).toFixed(0) }
@@ -122,8 +132,10 @@ class MusicPlayScreen extends React.Component<Props, State>{
             this.props.isPlaying && this.setState({
                 duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration },
             });
-            this.props.showPlaying && current.seconds == "59" ? this.setState({ currentTime: { min: this.state.currentTime.min + 1, total: songInfo.currentTime, sec: 0 } })
-                : this.setState({ currentTime: { sec: this.state.currentTime.sec + 1, total: songInfo.currentTime, min: this.state.currentTime.min } })
+            console.log("at parse int", parseInt(current.seconds));
+            this.setState({currentTime: {min: current.minutes, sec: current.seconds, total: songInfo.currentTime}})
+            // this.props.showPlaying && parseInt(current.seconds) === 59 ? this.setState({ currentTime: { min: this.state.currentTime.min + 1, total: songInfo.currentTime, sec: 0 } })
+            //     : this.setState({ currentTime: { sec: this.state.currentTime.sec + 1, total: songInfo.currentTime, min: this.state.currentTime.min } })
             // console.log("making seconds mins", minutes, seconds);
             //   this.setState({songDuration: { duration: this.gettimeInMins(info.duration), currentTime: this.gettimeInMins(info.currentTime)}})
         }, 1000);
@@ -145,8 +157,9 @@ class MusicPlayScreen extends React.Component<Props, State>{
         this._onFinishedloading && this._onFinishedloading.remove();
     }
     public componentDidUpdate(nextProps: Props) {
-        if (this.props.isPlaying !== nextProps.isPlaying || this.props.currentSong !== nextProps.currentSong) {
+        if (this.props.isPlaying !== nextProps.isPlaying) {
             // this.props.isPlaying ? this.playSong() : this.pauseSong();
+            this.durationCounter()
         };
 
     }
@@ -154,6 +167,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
         if (this.props.currentSong.song_file && this.state.isSong) {
             try {
                 SoundPlayer.playUrl(this.props.currentSong.song_file);
+                SoundPlayer.seek(this.state.songPausedAt);
             } catch (e) {
                 console.log(`cannot play the sound file`, e)
             };
@@ -164,9 +178,13 @@ class MusicPlayScreen extends React.Component<Props, State>{
         }
     };
     public pauseSong = () => {
-        if (this.state.isSong) { SoundPlayer.pause() 
-        } else { 
-            this.setState({ pauseVideo: true }); SoundPlayer.pause() }
+        if (this.state.isSong) {
+            SoundPlayer.pause();
+            this.setState({songPausedAt: this.state.currentTime.total})
+            this.timer && clearInterval(this.timer);
+        } else {
+            this.setState({ pauseVideo: true }); SoundPlayer.pause()
+        }
         this.props.showPlaying(false);
 
     }
@@ -213,7 +231,8 @@ class MusicPlayScreen extends React.Component<Props, State>{
                         if (!this.state.isSong) {
                             this.props.showPlaying(false);
                             this.setState({ pauseVideo: true });
-                            this.props.isPlaying(false);
+                            this.props.isSongPlaying(false);
+                            this.props.setSong();
                             SoundPlayer.pause();
                         }
                     }}>
@@ -233,18 +252,22 @@ class MusicPlayScreen extends React.Component<Props, State>{
                             onBuffer={this.onBuffer}                // Callback when remote video is buffering
                             // onError={this.videoError}               // Callback when video cannot be loaded
                             resizeMode={"cover"}
-                            style={{ width: 300, height: 300 }}
+                            style={{ width: 300, height: 300, marginTop: 0 }}
                             paused={this.state.pauseVideo}
                             onReadyForDisplay={() => this.props.showPlaying(true)}
                             onEnd={() => this.props.showPlaying(false)}
                             poster={this.props.currentSong.songimage}
+                            onProgress={({currentTime, playableDuration, seekableDuration}) => {this.setState({
+                                currentTime: {min: this.getMinsSec(currentTime).minutes, sec: this.getMinsSec(currentTime).seconds,
+                                total: currentTime}, duration: {min: this.getMinsSec(seekableDuration).minutes, sec: this.getMinsSec(seekableDuration).seconds,
+                                total: seekableDuration}})}}
                         // selectedAudioTrack={{type: this.state.pauseVideo ? "disabled" : "system"}}
                         />
 
                         //  </View>
                     }
                     <Text style={{ marginTop: 20, fontSize: 15, fontFamily: "serif", color: colors.black, alignSelf: "center" }}>Now Playing</Text>
-                    <Text numberOfLines={2} style={styles.songNameText}>{this.props.currentSong.song_name}</Text>
+                    <Text numberOfLines={1} style={styles.songNameText}>{this.props.currentSong.song_name}</Text>
                     {/* <TouchableOpacity><Icon name={"hearto"} type={"AntDesign"} style={styles.heartIcon}></Icon></TouchableOpacity> */}
                     <Text
                         onPress={() => this.openArtistProfile(this.props.currentSong.userid)}
@@ -259,7 +282,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
 
                     <View style={{ justifyContent: "space-between" }}>
                         {/* <View style={{height: 3, width: "100%", backgroundColor: colors.black }}></View> */}
-                        {/* <Slider
+                        <Slider
                             //  onLayout={this.onLayoutSlider} 
                             style={{ marginTop: 20, height: 20, width: "100%" }}
                             // minimumValue={this.state.currentTime.total}
@@ -268,29 +291,43 @@ class MusicPlayScreen extends React.Component<Props, State>{
                             maximumTrackTintColor={colors.black}
                             thumbTintColor={colors.black}
                             onValueChange={(n) => {
-                                console.log("value change",n, typeof(n),this.getMinsSec(n));
-                                this.setState({currentTime: {min: parseInt( this.getMinsSec(n).minutes),
-                                sec: parseInt(this.getMinsSec(n).seconds), total: n
-                                }})
+                                if(this.state.isSong){
+                                    this.setState({
+                                        currentTime: {
+                                            min: parseInt(this.getMinsSec(n).minutes),
+                                            sec: parseInt(this.getMinsSec(n).seconds), total: n
+                                        }
+                                    })
+                                    SoundPlayer.seek(this.state.currentTime.total)
+                                } else {
+                                    this.videoPlayer.seek(n);
+                                }
                             }}
                             onSlidingComplete={(n: number) => {
-                                this.setState({currentTime: {min: this.getMinsSec(n).minutes,
-                                    sec: this.getMinsSec(n).seconds, total: n
-                                    }})
-                                SoundPlayer.seek(this.state.currentTime.total)
+                                if(this.state.isSong){
+                                    this.setState({
+                                        currentTime: {
+                                            min: parseInt(this.getMinsSec(n).minutes),
+                                            sec: parseInt(this.getMinsSec(n).seconds), total: n
+                                        }
+                                    })
+                                    SoundPlayer.seek(this.state.currentTime.total)
+                                } else {
+                                    this.videoPlayer.seek(n);
+                                }
                             }}
                             value={this.state.currentTime.total}
                         // onProgress={this.songProgress}
-                        /> */}
-                        {/* <View style={{ flexDirection: "row", marginTop: 0, justifyContent: "space-between", width: "100%" }}>
-                            <Text style={styles.timeText}>{this.state.currentTime.min.toString() + 
-                            ":" + this.state.currentTime.sec.toString()}</Text>
+                        />
+                        <View style={{ flexDirection: "row", marginTop: 0, justifyContent: "space-between", width: "100%" }}>
+                            <Text style={styles.timeText}>{this.state.currentTime.min.toString() +
+                                ":" + this.state.currentTime.sec.toString()}</Text>
                             <Text style={styles.timeText}>
                                 {this.state.duration.min.toString() + ":" + this.state.duration.sec.toString()}</Text>
-                        </View> */}
+                        </View>
                     </View>
                     <View style={{
-                        flexDirection: "row", alignSelf: "center", marginTop: 30,
+                        flexDirection: "row", alignSelf: "center", marginTop: 25,
                         // position: "absolute", width: "40%",
                         // bottom: this.state.layout.height, right: this.state.layout.width - 30
                     }}>
@@ -320,7 +357,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
                             padding: 5, width: 150, height: 30, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
                             justifyContent: "center", marginLeft: 5, borderColor: colors.lightMaroon
                         }}
-                        onPress={this.shareSong}>
+                        onPress={() => this.shareSong(this.props.currentSong)}>
                         <Text>{this.state.isSong ? "Share song" : "Share video"}</Text>
                         <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={{ fontSize: 20, color: colors.charcoal, }}></Icon>
                     </TouchableOpacity>
@@ -334,10 +371,11 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     playNext: (isSong: boolean) => dispatch(SongsActions.setNextSong(isSong)),
     playPrev: (isSong) => dispatch(SongsActions.setPreviousSong(isSong)),
     showPlaying: (playing) => dispatch(SongsActions.showPlaying(playing)),
-    isPlaying: (play) => dispatch(SongsActions.setIsPlaying(true)),
+    isSongPlaying: (play) => dispatch(SongsActions.setIsPlaying(true)),
     getArtist: (userId) => dispatch(ArtistProfileAction.getArtistProfileRequest(userId)),
     makeFavorite: (songId) => dispatch(FavoriteAction.makeFavoriteRequest(songId)),
     getFavorites: () => dispatch(FavoriteAction.getFavoriteRequest(false)),
+    setSong: () => dispatch(SongsActions.setSong({song_name: "Select a song", songimage: "", song_file: ""})),
 });
 export const mapStateToProps = (state: RootState): StateProps => ({
     isPlaying: state.songs.isPlaying,

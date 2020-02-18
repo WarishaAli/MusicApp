@@ -10,6 +10,7 @@ import { SongsActions } from "../../Reducers/SongsReducer";
 import { Songs } from "../../Lib/PlaylistTypes";
 import { NavigationScreenProps } from "react-navigation";
 import { async } from "rxjs/internal/scheduler/async";
+import { OpenSong } from "../../Containers/MusicPlayScreen/MusicPlayScreen";
 
 
 
@@ -103,7 +104,7 @@ class MusicPlayer extends React.Component<Props, State> {
         // } catch (e) {
         //     console.log('There is no song playing', e)
         // }
-        this.props.navigation.push("MusicPlayScreen", {songData: ""});
+        this.props.navigation.push("MusicPlayScreen", {songData: "", isSong: true, comingFrom: OpenSong.COMPONENT});
     }
     public render() {
         return (
