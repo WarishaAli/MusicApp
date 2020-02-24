@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StatusBar, View } from "react-native";
+import { StatusBar, View, Linking, Platform } from "react-native";
 import { connect } from "react-redux";
 import ReduxPersist from "../../Config/ReduxPersist";
 import ReduxNavigation from "../../Navigation/ReduxNavigation";
@@ -25,14 +25,36 @@ export class RootContainer extends React.Component<Props, State> {
     if (!ReduxPersist.active) {
       this.props.startup();
     }
+    // Linking.addEventListener('url', this.handleOpenURL);
+    // if (Platform.OS === 'android') {
+    //   Linking.getInitialURL().then(url => {
+    //     this.navigate(url);
+    //   });
+    // }
   }
+  // componentWillUnmount() { // C
+  //   Linking.removeEventListener('url', this.handleOpenURL);
+  // }
+  // public handleOpenURL = (event) => { // D
+  //   this.navigate(event.url);
+  // }
+  // navigate = (url) => { // E
+  //   const { navigate } = this.props.navigation;
+  //   const route = url.replace(/.*?:\/\//g, '');
+  //   const id = route.match(/\/([^\/]+)\/?$/)[1];
+  //   const routeName = route.split('/')[0];
+  
+  //   // if (routeName === 'song') {
+  //   //   navigate('MusicPlayScreen', { id, name: 'chris' })
+  //   // };
+  // }
 
   public render() {
     console.log("root", this.props.navigation);
     return (
       <View style={styles.applicationView}>
         <StatusBar barStyle="light-content" />
-        <ReduxNavigation />
+        <ReduxNavigation  navigation={this.props.navigation}/>
         <LoaderComponent />
       </View>
     );

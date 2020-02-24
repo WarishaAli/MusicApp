@@ -113,8 +113,15 @@ class PlaylistScreen extends React.Component<Props, State>{
 
     }
     public shareSong = (item: any) => {
+        let urlParam=[];
+        let shareUrl="";
+        for(let i in item){
+            urlParam.push(encodeURI(i) + "=" + encodeURI(item[i]))
+        }
+        shareUrl = `http://app.hiphopstreets.com/song?${urlParam.join("&")}`;
+       
         Share.open({
-            url: item.song_file, title: "HiphopStreets",
+            url: shareUrl, title: "HiphopStreets",
             message: "Hey, check out this song on Hiphop Streets!"
         }).then((res) => {
             console.log(res);
