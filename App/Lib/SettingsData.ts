@@ -3,7 +3,7 @@ export const SettingsData = [
         title: "About Us",
         iconName: "info-outline",
         iconType: "MaterialIcons",
-        description: "Our aim is to gather all music enthusiasts, either you like making it, listening to it or both!",
+        description: "We have one mission at HipHop Streets...Inspire aspiring artists to go for their dreams. We use our custom music app, our relationships  and our various platforms to give deserving artists the exposure and opportunities they need. Learn more about us at https://www.hiphopstreets.com",
     },
     // {
     //     title: "Privacy Policy",
@@ -16,7 +16,7 @@ export const SettingsData = [
         title: "Contact Us",
         iconName: "ios-call",
         iconType: "Ionicons",
-        description: "You can reach out to us via email: abc@hiphopstreets.com or call us at +020983830",
+        description: "Reach out to us via email at hiphopstreets2016@gmail.com",
     },
     {
         title: "Logout",

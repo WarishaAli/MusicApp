@@ -50,9 +50,9 @@ class SettingScreen extends React.Component<Props, State>{
             visible: false,
             profileImage: {uri: "", type: "image/jpeg", name: ""},
             bio: this.props.profileData ? this.props.profileData.biography : "Say something about yourself",
-            gender: this.props.profileData ? this.props.profileData.sex : "Specify your gender",
+            // gender: this.props.profileData ? this.props.profileData.sex : "Specify your gender",
             userName: this.props.profileData ? this.props.profileData.name : "your username",
-            emailId: this.props.profileData ? this.props.profileData.email_id : "your email id",
+            emailId: this.props.profileData ? this.props.profileData.email_id : "your email address",
             imgPosition: { x: 0, y: 0 }
         }
     }
@@ -90,7 +90,7 @@ class SettingScreen extends React.Component<Props, State>{
                 <Text style={styles.userNameHeading}>{data ? data.name : "Username"}</Text>
                 <Text style={styles.bioHeading} numberOfLines={4}>{ data ? data.email_id : "Email id"}</Text>
                 <Text style={styles.bioHeading} numberOfLines={4}>{data ? data.biography : "Biography"}</Text>
-                <Text style={styles.bioHeading} numberOfLines={1}>{data ? data.sex : "Gender" }</Text>
+                {/* <Text style={styles.bioHeading} numberOfLines={1}>{data ? data.sex : "Gender" }</Text> */}
                 <TouchableOpacity style={{ flexDirection: "row" }} onPress={this.showModal}>
                     <Text style={[styles.userNameHeading, { fontWeight: "normal", fontSize: 15, color: colors.lightMaroon }]}>Edit Profile</Text>
                     <Icon name={"edit-3"} type={"Feather"} style={styles.editIcon}></Icon>
@@ -106,9 +106,9 @@ class SettingScreen extends React.Component<Props, State>{
     }
 
     public renderListView = () => (
-        <View>
-            <FlatList data={SettingsData} renderItem={this.renderSettingsItems} />
-        </View>
+        <ScrollView style={{maxHeight: "65%"}}>
+            <FlatList data={SettingsData} renderItem={this.renderSettingsItems} style={{marginBottom: 90}} />
+        </ScrollView>
     )
     public logout = (title: string) => {
        if( title==="Logout"){
@@ -166,10 +166,10 @@ class SettingScreen extends React.Component<Props, State>{
           });
     }
     updateProfile = () => {
-        if(this.state.userName.length > 0 && this.state.emailId.length > 0 && this.state.gender.length > 0 && this.state.profileImage !==undefined
+        if(this.state.userName.length > 0 && this.state.emailId.length > 0  && this.state.profileImage !==undefined
             && this.state.bio.length > 0){
         this.setState({visible: false});
-        this.props.updateProfile({userName: this.state.userName, emailId: this.state.emailId, gender: this.state.gender,
+        this.props.updateProfile({userName: this.state.userName, emailId: this.state.emailId, gender: "undefined",
         image: this.state.profileImage, biography: this.state.bio})
     } else{
         Alert.alert("Error", "Please enter all fields to update your profile!")
@@ -180,10 +180,10 @@ class SettingScreen extends React.Component<Props, State>{
             <Container>
                 <CommonHeader title={"Profile & Settings"} />
                 {/* {this.props.profileData ?  */}
-                <Content style={{ maxHeight: "80%" }}>
+                <View style={{}}>
                     {this.renderTopProfileView()}
                     {this.renderListView()}
-                </Content> 
+                </View> 
                 {/* : */}
                  {/* <Text style={{padding: 30, alignSelf: "center", marginTop: 50}}>Unfortunately, your profile data is not available at the moment! Please try again later</Text> */}
                  {/* } */}
@@ -198,7 +198,7 @@ class SettingScreen extends React.Component<Props, State>{
                         <TextInput value={this.state.userName} onChangeText={(text) => this.setState({ userName: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your username"} />
                         <TextInput value={this.state.emailId} onChangeText={(text) => this.setState({ emailId: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your email id"}/>
                         <TextInput value={this.state.bio} onChangeText={(text) => this.setState({ bio: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your biography"} />
-                        <TextInput value={this.state.gender} onChangeText={(text) => this.setState({ gender: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your gender"}/>
+                        {/* <TextInput value={this.state.gender} onChangeText={(text) => this.setState({ gender: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your gender"}/> */}
                     </ScrollView>
                 }
                     visible={this.state.visible}

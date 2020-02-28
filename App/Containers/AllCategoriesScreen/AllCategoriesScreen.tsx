@@ -89,7 +89,7 @@ class AllCategoriesScreen extends React.Component<Props>{
                 <CommonHeader title={"Explore " + this.categoryData.title}
                     leftItem={
                         <TouchableOpacity onPress={() => this.props.navigation.pop()} style={{ marginTop: 10, paddingRight: 5 }}>
-                            <Icon name={"ios-arrow-back"} style={{ color: colors.lightMaroon, fontSize: 15, }} />
+                            <Icon name={"ios-arrow-back"} style={{ color: colors.lightMaroon, fontSize: 15, padding: 5 }} />
                         </TouchableOpacity>
                     }
                 />

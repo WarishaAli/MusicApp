@@ -27,11 +27,12 @@ export interface State {
     topAlbums: string;
     interests: string;
     firstPage: boolean;
+    termsChecked: boolean;
 }
 
 export interface DispatchProps {
     signup: (username: string, email: string, pwd: string, userRole: UserRole, pob: string, dob: string, country: string,
-        interests? :string, topAlbums? :string) => void;
+        interests?: string, topAlbums?: string) => void;
 }
 export type Props = DispatchProps & NavigationScreenProps;
 
@@ -49,7 +50,8 @@ class SignupScreen extends React.Component<Props, State> {
             interests: "",
             topAlbums: "",
             country: "",
-            firstPage: true
+            firstPage: true,
+            termsChecked: false,
         }
     }
     public openLogin = () => {
@@ -99,7 +101,7 @@ class SignupScreen extends React.Component<Props, State> {
         } else {
             return this.state.userRole === UserRole.ARTIST ? (this.state.interests.length === 0 ||
                 this.state.topAlbums.length === 0 || this.state.password.length === 0 ||
-                this.state.password !== this.state.confirmPwd
+                this.state.password !== this.state.confirmPwd || this.state.termsChecked === false
             ) : (this.state.password.length === 0 ||
                 this.state.password !== this.state.confirmPwd)
         }
@@ -108,10 +110,10 @@ class SignupScreen extends React.Component<Props, State> {
         return this.state.firstPage ? (
             <View>
                 <InputText placeHolder={"Full Name"} onChangeText={this.setUsername} value={this.state.username} />
-                <InputText style={{ marginTop: 20 }} placeHolder={"Email"} onChangeText={this.setEmail} value={this.state.email}/>
-                <InputText style={{ marginTop: 20 }} placeHolder={"Birthday"} onChangeText={this.setDob} value={this.state.dob}/>
-                <InputText style={{ marginTop: 20 }} placeHolder={"Place of birth"} onChangeText={this.setPob} value={this.state.pob}/>
-                <InputText style={{ marginTop: 20 }} placeHolder={"Country"} onChangeText={this.setCountry} value={this.state.country}/>
+                <InputText style={{ marginTop: 20 }} placeHolder={"Email"} onChangeText={this.setEmail} value={this.state.email} />
+                <InputText style={{ marginTop: 20 }} placeHolder={"Birthday"} onChangeText={this.setDob} value={this.state.dob} />
+                <InputText style={{ marginTop: 20 }} placeHolder={"Place of birth"} onChangeText={this.setPob} value={this.state.pob} />
+                <InputText style={{ marginTop: 20 }} placeHolder={"Country"} onChangeText={this.setCountry} value={this.state.country} />
             </View>
         ) : (
                 <View>
@@ -134,8 +136,16 @@ class SignupScreen extends React.Component<Props, State> {
                         <InputText style={{ marginTop: 20 }} placeHolder={"Interests"} onChangeText={this.setInterests} value={this.state.interests} />
                         <InputText style={{ marginTop: 20 }} placeHolder={"Top Albums"} onChangeText={this.setTopAlbums} value={this.state.topAlbums} />
                     </View>}
-                    <InputText style={{ marginTop: 20 }} placeHolder={"Password"} onChangeText={this.setPwd} secureTextEntry={true} value={this.state.password}/>
-                    <InputText style={{ marginTop: 20 }} placeHolder={"Confirm Password"} onChangeText={this.confirmPwd} secureTextEntry={true} value={this.state.confirmPwd}/>
+                    <InputText style={{ marginTop: 20 }} placeHolder={"Password"} onChangeText={this.setPwd} secureTextEntry={true} value={this.state.password} />
+                    <InputText style={{ marginTop: 20 }} placeHolder={"Confirm Password"} onChangeText={this.confirmPwd} secureTextEntry={true} value={this.state.confirmPwd} />
+                    {this.state.userRole === UserRole.ARTIST &&
+                        <View style={{backgroundColor: colors.silver, marginTop: 20, padding: 10, flexDirection: "row" }}>
+                            <CheckBox checked={this.state.termsChecked} color={colors.steel}
+                            onPress={() => this.setState({termsChecked: !this.state.termsChecked})}
+                            />
+                            <Text style={{marginLeft: 20}}>
+                                I agree to the <Text style={{color: colors.maroon}}>Terms and Conditions</Text></Text>
+                        </View>}
                 </View>
             )
     }
@@ -147,11 +157,11 @@ class SignupScreen extends React.Component<Props, State> {
                     {this.renderTextFields()}
                     <LargeButton style={{ marginTop: 20 }} text={this.state.firstPage ? "NEXT" : "SIGNUP"} onPress={this.signup}
                         disabled={this.disableBtn()} />
-                        {!this.state.firstPage && 
-                        <Text style={[styles.accountText, {color: colors.maroon}]}
-                        onPress={() => this.setState({firstPage: true})}
+                    {!this.state.firstPage &&
+                        <Text style={[styles.accountText, { color: colors.maroon }]}
+                            onPress={() => this.setState({ firstPage: true })}
                         >Edit previously entered fields?</Text>
-                        }
+                    }
                     <Text style={styles.accountText}>Already have an account? <Text onPress={this.openLogin} style={{ color: colors.maroon }}>Login</Text></Text>
                 </Content>
             </Container>
@@ -160,7 +170,7 @@ class SignupScreen extends React.Component<Props, State> {
 }
 
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-    signup: (username, email, pwd, userRole, pob, dob, country, interests, 
+    signup: (username, email, pwd, userRole, pob, dob, country, interests,
         topAlbums) => dispatch(LoginActions.signup(username, email, pwd, userRole, pob, dob, country, interests, topAlbums))
 })
 

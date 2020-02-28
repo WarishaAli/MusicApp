@@ -88,7 +88,7 @@ class PlaylistScreen extends React.Component<Props, State>{
     public async componentDidMount() {
         switch (this.state.playlistType) {
             case PlaylistTypes.EXPLORE: {
-                this.props.getSongByCat(this.state.categoryData.song_category)
+                this.props.getSongByCat(this.state.categoryData.song_category);
             }
                 break;
             case PlaylistTypes.PLAYLIST: {
@@ -98,7 +98,7 @@ class PlaylistScreen extends React.Component<Props, State>{
                 break;
             case PlaylistTypes.MYSONGS: {
                 this.props.getMySong();
-                this.props.setBottomTab(BottomBarBtns.BLOGS);
+                this.props.setBottomTab(BottomBarBtns.MYSONGS);
             }
         }
         this.props.getHeart(false);
@@ -220,7 +220,7 @@ class PlaylistScreen extends React.Component<Props, State>{
     }
     public uploadSong = () => {
         if(this.state.songName.length > 0 && this.state.songCat.length > 0 && this.state.songFile !== undefined &&
-            this.state.songImage !== undefined && this.state.songStatus !== undefined){
+            this.state.songImage.uri.length > 0 && this.state.songStatus !== undefined){
         this.setState({ showModal: false });
         this.props.uploadSong({
             songName: this.state.songName, songFile: this.state.songFile, songCategory: this.state.songCat,

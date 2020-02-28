@@ -45,18 +45,21 @@ class ReduxNavigation extends React.Component<Props> {
     this.navigate(event.url);
   }
   public navigate =  (url) => { // E
-    console.log(url, "at linking listener");
-    let croppedShareUrl = "";
-    let n = url.search("song");
-    croppedShareUrl = url.substring(n + 5, url.length)
-    let parsedUrl = JSON.parse('{"' + decodeURI(`${croppedShareUrl}`.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + '"}');
-    console.log(parsedUrl, "at redux nav");
-    SoundPlayer.playUrl(parsedUrl.song_file);
-    this.props.playSong(parsedUrl);
-    this.props.shouldPlay(true);
-    this.props.showPlay(true);
-    this.props.navigation.push("MusicPlayScreen", { songData: parsedUrl, isSong: parsedUrl.song_type === "mp3", comingFrom: OpenSong.SCREEN })
-  }
+    if(url){
+      console.log(url, "at linking listener");
+      let croppedShareUrl = "";
+      let n = url.search("song");
+      croppedShareUrl = url.substring(n + 5, url.length)
+      let parsedUrl = JSON.parse('{"' + decodeURI(`${croppedShareUrl}`.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + '"}');
+      console.log(parsedUrl, "at redux nav");
+      SoundPlayer.playUrl(parsedUrl.song_file);
+      this.props.playSong(parsedUrl);
+      this.props.shouldPlay(true);
+      this.props.showPlay(true);
+      this.props.navigation.push("MusicPlayScreen", { songData: parsedUrl, isSong: parsedUrl.song_type === "mp3", comingFrom: OpenSong.SCREEN })
+   
+    }
+    }
   public render() {
     // console.log("at redux comp", this.props.isLogin);
     const AppContainer = createAppContainer(AppNavigation);

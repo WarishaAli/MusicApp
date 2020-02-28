@@ -1,3 +1,5 @@
+import { Dimensions } from "react-native";
+
 export const findCurrentSongIndex = (songsArray: any[], currentSong: any) => {
     const currentIndx = songsArray.findIndex((val) => {
         let firstCondition: boolean = true;
@@ -41,3 +43,8 @@ export const isFavorite = (favList: Array<any>, songId: string) => {
         return isFav;
     }
 }
+
+export const isPortrait = () => {
+    const dim = Dimensions.get('screen');
+    return dim.height >= dim.width;
+};

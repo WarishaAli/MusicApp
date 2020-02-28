@@ -13,7 +13,7 @@ export default StyleSheet.create({
     },
     searchIcon:{
         fontSize: 18,
-        color: colors.lightMaroon
+        color: colors.lightMaroon,
     },
     songName:{
         color: colors.charcoal,

@@ -82,7 +82,7 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     const data = new FormData();
     data.append("name", params.userName);
     data.append("email_id", params.emailId);
-    data.append("sex", params.gender);
+    data.append("sex", "undefined");
     data.append("biography", params.biography);
     data.append("image", params.image);
     return from(api.post(`/updateProfile`, data));
@@ -92,6 +92,7 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
 
   const logout = (token: string) => {
     api.setHeader("accesstoken", token);
+    api.deleteHeader("accesstoken");
     return from(api.delete(`/logout`));
   }
 

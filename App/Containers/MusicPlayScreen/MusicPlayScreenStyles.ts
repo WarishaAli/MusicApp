@@ -32,7 +32,7 @@ export default StyleSheet.create({
         alignSelf: "center",
     },
     holderView:{
-        marginTop: 18,
+        // marginTop: 18,
         paddingHorizontal: 30,
     },
     heartIcon:{

@@ -114,7 +114,7 @@ export const loginRequestEpic: Epic = (action$, state$, { api }: IDependencies) 
       }),
       mergeMap(() => {
         if(loginResponse !== undefined){
-          return action.payload.socialType === "facebook" ? of(LoginActions.loginSuccess(loginResponse)) :  of(LoginActions.loginSuccess(loginResponse), ProfileAction.getProfileRequest())
+          return action.payload.socialType === "facebook" ? of(LoginActions.loginSuccess(loginResponse), ProfileAction.getProfileRequest()) :  of(LoginActions.loginSuccess(loginResponse), ProfileAction.getProfileRequest())
         }else{
           return of(LoginActions.loginFailure())
         }
@@ -147,7 +147,7 @@ export const signupRequestEpic: Epic = (action$, state$, { api }: IDependencies)
         return of(SongsActions.void())
       }),
       mergeMap(() => {
-        return loginResponse ? of(LoginActions.loginSuccess(loginResponse)) : of(LoginActions.loginFailure());
+        return loginResponse ? of(LoginActions.loginSuccess(loginResponse), ProfileAction.getProfileRequest()) : of(LoginActions.loginFailure());
 
 
       })

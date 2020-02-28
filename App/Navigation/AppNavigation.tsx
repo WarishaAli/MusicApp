@@ -14,6 +14,7 @@ const home = createStackNavigator({
   Playlist: {screen: PlaylistScreen},
   SelectAllCategory: {screen: SelectAllCategory},
   MusicPlayScreen: {screen: MusicPlayScreen}
+ 
 },{
   headerMode: "none",
   initialRouteName: "Home",
@@ -21,16 +22,27 @@ const home = createStackNavigator({
     headerStyle: styles.header,
   },
 });
+const playlist = createStackNavigator({
+  PlaylistScreen: {screen: PlaylistScreen},
+  MusicPlayScreen: {screen: MusicPlayScreen}
+}, {
+  headerMode: "none",
+  initialRouteName: "PlaylistScreen",
+  navigationOptions: {
+    headerStyle: styles.header,
+  },
+})
 
 
 // Manifest of possible screens
 const PrimaryNav = createStackNavigator({
   HomeScreen: {screen: home},
-  PlaylistScreen: {screen: PlaylistScreen},
+  PlaylistScreen: {screen: playlist},
   AddSongScreen:{screen: AddSongScreen},
-  // BlogsScreen: {screen: BlogScreen},
+  BlogsScreen: {screen: BlogScreen},
   SettingScreen: {screen: SettingsScreen},
   ArtistProfileScreen: {screen: ArtistProfileScreen},
+  MusicPlayScreen: {screen: MusicPlayScreen}
   // SelectAllCategory: {screen: SelectAllCategory},
 }, {
   initialRouteName: "HomeScreen",

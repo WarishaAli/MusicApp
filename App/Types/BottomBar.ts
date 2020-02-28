@@ -3,4 +3,5 @@ export enum BottomBarBtns {
     PLAYLIST= "Playlist",
     BLOGS = "Blogs",
     SETTINGS= "Settings",
+    MYSONGS = "My Songs",
 }

@@ -33,6 +33,10 @@ export const INITIAL_STATE: ImmutableSearchState = SI.from({
     fetching: false,
 });
 
+export const searchRequest: Reducer<ImmutableSearchState> = (state, action) => state.merge({
+     fetching: true
+})
+
 export const searchSuccess: Reducer<ImmutableSearchState> = (state, action) => state.merge({
     searchData: action.payload, fetching: false
 })
@@ -43,6 +47,7 @@ export const searchFailure: Reducer<ImmutableSearchState> = (state, action) => s
 const reducerMap: ReducerMap<typeof actions, ImmutableSearchState> = {
     searchFailure,
     searchSuccess,
+    searchRequest,
 };
 
 export const SearchReducers = mapReducers(INITIAL_STATE, reducerMap, actions);

@@ -1,6 +1,6 @@
-import { Card, Container, Icon, ListItem, Item } from "native-base";
+import { Card, Container, Icon, ListItem, Item, Button } from "native-base";
 import React from "react";
-import { FlatList, ImageBackground, ScrollView, Text, TouchableOpacity, Alert, View, TextInput } from "react-native";
+import { FlatList, ImageBackground, ScrollView, Text, TouchableOpacity, Alert, View, TextInput, ActivityIndicator } from "react-native";
 import { NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
 import BottomBar from "../../Components/BottomBar";
@@ -53,6 +53,7 @@ export interface StateProps {
     featuredPodcasts: any;
     isSongPlaying: boolean;
     searchData: any;
+    isSongSearching: boolean;
 }
 export type Props = OwnProps & NavigationScreenProps & DispatchProps & StateProps;
 class HomeScreen extends React.Component<Props, State> {
@@ -180,7 +181,19 @@ class HomeScreen extends React.Component<Props, State> {
                         </TouchableOpacity>
                     }
                 />
-                {this.state.showSearchBar &&
+                {!this.state.showSearchBar &&
+                    <Button
+                    transparent={true}
+                    onPress={this.showSearchBar}
+                    style={{width: 100, position: "absolute", top: 10, left: 20, height: 20}}/>}
+                {
+                    (this.state.showSearchBar && this.props.isSongSearching) &&
+                    <ActivityIndicator
+                        style={{ position: "absolute", top: 15, right: 60, zIndex: 10 }}
+                        color={colors.lightMaroon}
+                    />
+                }
+                {(this.state.showSearchBar && !this.props.isSongSearching) &&
                     <TouchableOpacity onPress={() => this.setState({ showSearchBar: false })} style={{ position: "absolute", top: 15, right: 60, zIndex: 10 }}>
                         <Icon name={"closecircleo"} type={"AntDesign"}
                             style={{
@@ -200,16 +213,16 @@ class HomeScreen extends React.Component<Props, State> {
                     backgroundColor: colors.snow, zIndex: 10, alignSelf: "center", borderWidth: 0.5, borderColor: colors.silver, borderBottomColor: colors.silver
                 }}>
 
-                    {this.props.searchData && this.props.searchData.length === 0 ? 
-                    <Text style={{ alignSelf: "flex-start", padding: 30, color: colors.maroon }}>
-                        We could not find any song for your query</Text> : 
+                    {this.props.searchData && this.props.searchData.length === 0 ?
+                        <Text style={{ alignSelf: "flex-start", padding: 30, color: colors.maroon }}>
+                            We could not find any song for your query</Text> :
                         <FlatList data={this.props.searchData} renderItem={this.renderSearchItem}
-                    />}
+                        />}
                 </View>}
 
 
 
-                <ScrollView style={{ marginLeft: 15, flex: 0.9, marginBottom: 70 }}>
+                <ScrollView style={{ marginLeft: 15, flex: 0.9, marginBottom: 100 }}>
                     {this.renderTextIcon(DataTypes.SONGS, this.props.featuredSongs)}
                     {this.renderGenreList(this.props.featuredSongs, DataTypes.SONGS)}
                     {this.renderTextIcon(DataTypes.ALBUMS, this.props.category)}
@@ -249,5 +262,6 @@ export const mapStateToProps = (state: RootState): StateProps => ({
     featuredPodcasts: state.category.homeData ? state.category.homeData.featuredPodcasts : undefined,
     isSongPlaying: state.songs.isPlaying || state.songs.showPlay,
     searchData: state.search.searchData,
+    isSongSearching: state.search.fetching,
 })
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

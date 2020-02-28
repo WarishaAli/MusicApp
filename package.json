@@ -49,6 +49,7 @@
     "react-native-share": "^3.0.0",
     "react-native-sound-player": "^0.10.3",
     "react-native-video": "^5.0.2",
+    "react-native-webview": "^8.1.2",
     "react-navigation": "3.12.0",
     "react-redux": "^5.0.2",
     "react-redux-typescript": "^2.3.0",

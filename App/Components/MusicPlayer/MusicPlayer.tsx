@@ -104,35 +104,38 @@ class MusicPlayer extends React.Component<Props, State> {
         // } catch (e) {
         //     console.log('There is no song playing', e)
         // }
-        this.props.navigation.push("MusicPlayScreen", {songData: "", isSong: true, comingFrom: OpenSong.COMPONENT});
+        if (this.props.currentSong.song_file) { 
+
+        this.props.navigation.push("MusicPlayScreen", { songData: "", isSong: true, comingFrom: OpenSong.COMPONENT });
     }
+}
     public render() {
-        return (
-            <TouchableOpacity
+    return (
+        <TouchableOpacity
             // activeOpacity={0}
             onPress={this.openSongScrenn}
             style={[styles.mainView, this.props.style, { opacity: this.props.hide ? 0 : 1 }]}>
-                {/* <View style={styles.imageView}> */}
-                <Image
-                    style={styles.imageView}
-                    resizeMode={"cover"}
-                    source={{ uri: this.props.currentSong.songimage }}></Image>
-                {/* </View> */}
-                {this.props.currentSong && <View style={styles.textView}>
-                    <Text style={styles.heading}  numberOfLines={1}>{this.props.currentSong.song_name || " "}</Text>
-                    <Text style={styles.subHeading}>
-                        {this.props.currentSong.artistName || ""}</Text>
-                </View>}
-                { <View style={{ flexDirection: "row", alignSelf: "center", flex: 0.5, marginLeft: 20 }}>
-                    <Icon onPress={this.playPreviousSong} style={styles.icon} name={"stepbackward"} type={"AntDesign"} />
-                    {this.props.showPlay && <Icon onPress={this.pauseSong} style={[styles.icon]} name={"pause"} type={"AntDesign"} />}
-                    {!this.props.showPlay && <Icon onPress={this.playSong} style={[styles.icon]} name={"caretright"} type={"AntDesign"} />}
-                    <Icon onPress={() => this.playNextSong(true)} style={styles.icon} name={"stepforward"} type={"AntDesign"} />
-                </View>}
+            {/* <View style={styles.imageView}> */}
+            <Image
+                style={styles.imageView}
+                resizeMode={"cover"}
+                source={{ uri: this.props.currentSong.songimage }}></Image>
+            {/* </View> */}
+            {this.props.currentSong && <View style={styles.textView}>
+                <Text style={styles.heading} numberOfLines={1}>{this.props.currentSong.song_name || " "}</Text>
+                <Text style={styles.subHeading}>
+                    {this.props.currentSong.artistName || ""}</Text>
+            </View>}
+            {<View style={{ flexDirection: "row", alignSelf: "center", flex: 0.5, marginLeft: 20 }}>
+                <Icon onPress={this.playPreviousSong} style={styles.icon} name={"stepbackward"} type={"AntDesign"} />
+                {this.props.showPlay && <Icon onPress={this.pauseSong} style={[styles.icon]} name={"pause"} type={"AntDesign"} />}
+                {!this.props.showPlay && <Icon onPress={this.playSong} style={[styles.icon]} name={"caretright"} type={"AntDesign"} />}
+                <Icon onPress={() => this.playNextSong(true)} style={styles.icon} name={"stepforward"} type={"AntDesign"} />
+            </View>}
 
-            </TouchableOpacity>
-        )
-    }
+        </TouchableOpacity>
+    )
+}
 };
 export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     playMusic: (shouldPlay) => dispatch(SongsActions.setIsPlaying(shouldPlay)),

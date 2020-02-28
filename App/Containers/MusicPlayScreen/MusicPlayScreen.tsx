@@ -3,7 +3,7 @@ import { Container, Icon, Col, Toast } from "native-base";
 import { NavigationScreenProps } from "react-navigation";
 import styles from "./MusicPlayScreenStyles";
 import CommonHeader from "../../Components/CommonHeader/CommonHeader";
-import { TouchableOpacity, Image, Text, View, Alert } from "react-native";
+import { TouchableOpacity, Image, Text, View, ScrollView, Dimensions } from "react-native";
 import colors from "../../Themes/Colors";
 import Slider from '@react-native-community/slider';
 import SoundPlayer from "react-native-sound-player";
@@ -15,7 +15,7 @@ import { ArtistProfileAction } from "../../Reducers/ArtistProfileReducer";
 import { UserRole } from "../SignupScreen/SignupScreen";
 import Share from "react-native-share";
 import { FavoriteAction } from "../../Reducers/FavoritesReducer";
-import { isFavorite } from "../../Lib/MusicPlayerHelpers";
+import { isFavorite, isPortrait } from "../../Lib/MusicPlayerHelpers";
 import Video from 'react-native-video';
 
 export enum OpenSong {
@@ -125,20 +125,23 @@ class MusicPlayScreen extends React.Component<Props, State>{
         // const totalTime =  this.getMinsSec(songInfo.duration);
         // console.log("at total song time", totalTime);
         // this.setState({ duration: {min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration}});
-        this.timer = setInterval(async () => {
-            const songInfo = await SoundPlayer.getInfo();
-            const totalTime = this.getMinsSec(songInfo.duration);
-            const current = this.getMinsSec(songInfo.currentTime);
-            this.props.isPlaying && this.setState({
-                duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration },
-            });
-            console.log("at parse int", parseInt(current.seconds));
-            this.setState({currentTime: {min: current.minutes, sec: current.seconds, total: songInfo.currentTime}})
-            // this.props.showPlaying && parseInt(current.seconds) === 59 ? this.setState({ currentTime: { min: this.state.currentTime.min + 1, total: songInfo.currentTime, sec: 0 } })
-            //     : this.setState({ currentTime: { sec: this.state.currentTime.sec + 1, total: songInfo.currentTime, min: this.state.currentTime.min } })
-            // console.log("making seconds mins", minutes, seconds);
-            //   this.setState({songDuration: { duration: this.gettimeInMins(info.duration), currentTime: this.gettimeInMins(info.currentTime)}})
-        }, 1000);
+        if (this.props.currentSong.song_file) {
+            this.timer = setInterval(async () => {
+                const songInfo = await SoundPlayer.getInfo();
+                const totalTime = this.getMinsSec(songInfo.duration);
+                const current = this.getMinsSec(songInfo.currentTime);
+                this.props.isPlaying && this.setState({
+                    duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration },
+                });
+                console.log("at parse int", parseInt(current.seconds));
+                this.setState({ currentTime: { min: current.minutes, sec: current.seconds, total: songInfo.currentTime } })
+                // this.props.showPlaying && parseInt(current.seconds) === 59 ? this.setState({ currentTime: { min: this.state.currentTime.min + 1, total: songInfo.currentTime, sec: 0 } })
+                //     : this.setState({ currentTime: { sec: this.state.currentTime.sec + 1, total: songInfo.currentTime, min: this.state.currentTime.min } })
+                // console.log("making seconds mins", minutes, seconds);
+                //   this.setState({songDuration: { duration: this.gettimeInMins(info.duration), currentTime: this.gettimeInMins(info.currentTime)}})
+            }, 1000);
+        }
+
 
     };
     // public gettimeInMins = (time: number) => {
@@ -157,7 +160,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
         this._onFinishedloading && this._onFinishedloading.remove();
     }
     public componentDidUpdate(nextProps: Props) {
-        if (this.props.isPlaying !== nextProps.isPlaying) {
+        if (this.props.isPlaying !== nextProps.isPlaying && this.state.isSong) {
             // this.props.isPlaying ? this.playSong() : this.pauseSong();
             this.durationCounter()
         };
@@ -180,7 +183,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
     public pauseSong = () => {
         if (this.state.isSong) {
             SoundPlayer.pause();
-            this.setState({songPausedAt: this.state.currentTime.total})
+            this.setState({ songPausedAt: this.state.currentTime.total })
             this.timer && clearInterval(this.timer);
         } else {
             this.setState({ pauseVideo: true }); SoundPlayer.pause()
@@ -208,9 +211,25 @@ class MusicPlayScreen extends React.Component<Props, State>{
         this.props.navigation.push("ArtistProfileScreen")
     }
 
+    // public shareSong = (item: any) => {
+    //     Share.open({
+    //         url: item.song_file, title: "HiphopStreets",
+    //         message: "Hey, check out this song on Hiphop Streets!"
+    //     }).then((res) => {
+    //         console.log(res);
+    //         Toast.show({ text: "Song shared successfully!" });
+    //     }).catch((err) => console.log("at error", err))
+    // }
     public shareSong = (item: any) => {
+        let urlParam = [];
+        let shareUrl = "";
+        for (let i in item) {
+            urlParam.push(encodeURI(i) + "=" + encodeURI(item[i]))
+        }
+        shareUrl = `http://app.hiphopstreets.com/song?${urlParam.join("&")}`;
+
         Share.open({
-            url: item.song_file, title: "HiphopStreets",
+            url: shareUrl, title: "HiphopStreets",
             message: "Hey, check out this song on Hiphop Streets!"
         }).then((res) => {
             console.log(res);
@@ -240,7 +259,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
                     </TouchableOpacity>
                 } />
 
-                <View style={styles.holderView}>
+                <ScrollView style={styles.holderView}>
 
                     {this.state.isSong && <Image style={styles.image} source={{ uri: this.props.currentSong.songimage }}></Image>}
                     {!this.state.isSong &&
@@ -252,15 +271,23 @@ class MusicPlayScreen extends React.Component<Props, State>{
                             onBuffer={this.onBuffer}                // Callback when remote video is buffering
                             // onError={this.videoError}               // Callback when video cannot be loaded
                             resizeMode={"cover"}
-                            style={{ width: 300, height: 300, marginTop: 0 }}
+                            style={{ marginTop: 0, width: Dimensions.get("screen").width,
+                            height: isPortrait() ? 300 : Dimensions.get("window").height / 1.2 }}
                             paused={this.state.pauseVideo}
                             onReadyForDisplay={() => this.props.showPlaying(true)}
                             onEnd={() => this.props.showPlaying(false)}
                             poster={this.props.currentSong.songimage}
-                            onProgress={({currentTime, playableDuration, seekableDuration}) => {this.setState({
-                                currentTime: {min: this.getMinsSec(currentTime).minutes, sec: this.getMinsSec(currentTime).seconds,
-                                total: currentTime}, duration: {min: this.getMinsSec(seekableDuration).minutes, sec: this.getMinsSec(seekableDuration).seconds,
-                                total: seekableDuration}})}}
+                            onProgress={({ currentTime, playableDuration, seekableDuration }) => {
+                                this.setState({
+                                    currentTime: {
+                                        min: this.getMinsSec(currentTime).minutes, sec: this.getMinsSec(currentTime).seconds,
+                                        total: currentTime
+                                    }, duration: {
+                                        min: this.getMinsSec(seekableDuration).minutes, sec: this.getMinsSec(seekableDuration).seconds,
+                                        total: seekableDuration
+                                    }
+                                })
+                            }}
                         // selectedAudioTrack={{type: this.state.pauseVideo ? "disabled" : "system"}}
                         />
 
@@ -291,7 +318,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
                             maximumTrackTintColor={colors.black}
                             thumbTintColor={colors.black}
                             onValueChange={(n) => {
-                                if(this.state.isSong){
+                                if (this.state.isSong) {
                                     this.setState({
                                         currentTime: {
                                             min: parseInt(this.getMinsSec(n).minutes),
@@ -304,7 +331,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
                                 }
                             }}
                             onSlidingComplete={(n: number) => {
-                                if(this.state.isSong){
+                                if (this.state.isSong) {
                                     this.setState({
                                         currentTime: {
                                             min: parseInt(this.getMinsSec(n).minutes),
@@ -336,32 +363,33 @@ class MusicPlayScreen extends React.Component<Props, State>{
                         {!this.props.showPlay && <Icon onPress={this.playSong} style={[styles.icon, { fontSize: 40, paddingHorizontal: 30, marginTop: 0 }]} name={"play"} type={"AntDesign"} />}
                         <Icon onPress={() => this.playNextSong(false)} style={styles.icon} name={"stepforward"} type={"AntDesign"} />
                     </View>
+                    <View style={{ flexDirection: "row", alignSelf: "center", marginTop: 25 }}>
+                        {
+                            this.props.userRole === UserRole.NORMAL &&
+                            <TouchableOpacity style={{
+                                padding: 5, width: 180, height: 30, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
+                                justifyContent: "center", borderColor: colors.lightMaroon
+                            }} onPress={() => this.props.makeFavorite(this.props.currentSong.songid)}>
+                                <Text>{isFavorite(this.props.favorites, this.props.currentSong.songid) ?
+                                    "Remove from favorites" : "Add to favorites"}</Text>
+                                <Icon name={"hearto"}
+                                    type={"AntDesign"} style={{
+                                        fontSize: 12, color: colors.charcoal, marginTop: 2, marginLeft: 2, padding: 0
+                                    }}></Icon>
+                            </TouchableOpacity>}
+                        <TouchableOpacity
+                            style={{
+                                padding: 5, width: 150, height: 30, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
+                                justifyContent: "center", marginLeft: 5, borderColor: colors.lightMaroon,
+                            }}
+                            onPress={() => this.shareSong(this.props.currentSong)}>
+                            <Text>{this.state.isSong ? "Share song" : "Share video"}</Text>
+                            <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={{ fontSize: 20, color: colors.charcoal, }}></Icon>
+                        </TouchableOpacity>
+                    </View>
 
-                </View>
-                <View style={{ flexDirection: "row", alignSelf: "center", position: "absolute", bottom: 10 }}>
-                    {
-                        this.props.userRole === UserRole.NORMAL &&
-                        <TouchableOpacity style={{
-                            padding: 5, width: 180, height: 30, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
-                            justifyContent: "center", borderColor: colors.lightMaroon
-                        }} onPress={() => this.props.makeFavorite(this.props.currentSong.songid)}>
-                            <Text>{isFavorite(this.props.favorites, this.props.currentSong.songid) ?
-                                "Remove from favorites" : "Add to favorites"}</Text>
-                            <Icon name={"hearto"}
-                                type={"AntDesign"} style={{
-                                    fontSize: 12, color: colors.charcoal, marginTop: 2, marginLeft: 2, padding: 0
-                                }}></Icon>
-                        </TouchableOpacity>}
-                    <TouchableOpacity
-                        style={{
-                            padding: 5, width: 150, height: 30, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
-                            justifyContent: "center", marginLeft: 5, borderColor: colors.lightMaroon
-                        }}
-                        onPress={() => this.shareSong(this.props.currentSong)}>
-                        <Text>{this.state.isSong ? "Share song" : "Share video"}</Text>
-                        <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={{ fontSize: 20, color: colors.charcoal, }}></Icon>
-                    </TouchableOpacity>
-                </View>
+                </ScrollView>
+
             </Container>
         )
     }
@@ -375,7 +403,7 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     getArtist: (userId) => dispatch(ArtistProfileAction.getArtistProfileRequest(userId)),
     makeFavorite: (songId) => dispatch(FavoriteAction.makeFavoriteRequest(songId)),
     getFavorites: () => dispatch(FavoriteAction.getFavoriteRequest(false)),
-    setSong: () => dispatch(SongsActions.setSong({song_name: "Select a song", songimage: "", song_file: ""})),
+    setSong: () => dispatch(SongsActions.setSong({ song_name: "Select a song", songimage: "", song_file: "" })),
 });
 export const mapStateToProps = (state: RootState): StateProps => ({
     isPlaying: state.songs.isPlaying,
