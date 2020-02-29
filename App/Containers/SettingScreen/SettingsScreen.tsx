@@ -1,6 +1,6 @@
 import { Card, Col, Container, Content, Icon } from "native-base";
 import React from "react";
-import { Image, Text, TextInput, TouchableOpacity, View, Alert, ScrollView } from "react-native";
+import { Image, Text, TextInput, TouchableOpacity, View, Alert, ScrollView, Linking } from "react-native";
 import ImagePicker from 'react-native-image-picker';
 import { FlatList, NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
@@ -29,14 +29,14 @@ export interface DispatchProps {
 
 export interface State {
     visible: boolean;
-    profileImage: {uri: string, type: string, name: string};
+    profileImage: { uri: string, type: string, name: string };
     userName: string;
     bio: string;
     gender: string;
     emailId: string;
     imgPosition: { x: number, y: number };
 }
-export interface StateProps{
+export interface StateProps {
     profileData: IUserData;
 }
 
@@ -48,7 +48,7 @@ class SettingScreen extends React.Component<Props, State>{
         super(props);
         this.state = {
             visible: false,
-            profileImage: {uri: "", type: "image/jpeg", name: ""},
+            profileImage: { uri: "", type: "image/jpeg", name: "" },
             bio: this.props.profileData ? this.props.profileData.biography : "Say something about yourself",
             // gender: this.props.profileData ? this.props.profileData.sex : "Specify your gender",
             userName: this.props.profileData ? this.props.profileData.name : "your username",
@@ -84,11 +84,11 @@ class SettingScreen extends React.Component<Props, State>{
     public showModal = () => this.setState({ visible: true });
     public renderTopProfileView = () => {
         let data = this.props.profileData;
-        return(<View style={styles.profileView}>
+        return (<View style={styles.profileView}>
             <Image style={styles.roundView} source={{ uri: data ? data.image : "" }}></Image>
             <View style={styles.profileInfo}>
                 <Text style={styles.userNameHeading}>{data ? data.name : "Username"}</Text>
-                <Text style={styles.bioHeading} numberOfLines={4}>{ data ? data.email_id : "Email id"}</Text>
+                <Text style={styles.bioHeading} numberOfLines={4}>{data ? data.email_id : "Email id"}</Text>
                 <Text style={styles.bioHeading} numberOfLines={4}>{data ? data.biography : "Biography"}</Text>
                 {/* <Text style={styles.bioHeading} numberOfLines={1}>{data ? data.sex : "Gender" }</Text> */}
                 <TouchableOpacity style={{ flexDirection: "row" }} onPress={this.showModal}>
@@ -106,31 +106,56 @@ class SettingScreen extends React.Component<Props, State>{
     }
 
     public renderListView = () => (
-        <ScrollView style={{maxHeight: "65%"}}>
-            <FlatList data={SettingsData} renderItem={this.renderSettingsItems} style={{marginBottom: 90}} />
+        <ScrollView style={{ maxHeight: "65%" }}>
+            {/* <FlatList data={SettingsData} renderItem={this.renderSettingsItems} style={{ marginBottom: 90 }} /> */}
+            <View style={styles.itemRow}>
+                <Icon name={"info-outline"} type={"MaterialIcons"}
+                    style={[styles.editIcon, { padding: 0, alignSelf: "flex-start", fontSize: 20 }]} />
+                <View style={styles.settingsItemView}>
+                    <Text style={styles.text}>About Us</Text>
+                    <Text style={styles.descriptionText}>We have one mission at HipHop Streets...Inspire aspiring artists to go for their dreams. We use our custom music app, our relationships  and our various platforms to give deserving artists the exposure and opportunities they need. Learn more about us at <Text
+                    style={{color:colors.maroon}} onPress={() => Linking.openURL("https://www.hiphopstreets.com")}>https://www.hiphopstreets.com</Text></Text>
+                    <View style={styles.caretLine}></View>
+                </View>
+            </View>
+            <View style={styles.itemRow}>
+                <Icon name={"ios-call"} type={"Ionicons"}
+                    style={[styles.editIcon, { padding: 0, alignSelf: "flex-start", fontSize: 20 }]} />
+                <View style={styles.settingsItemView}>
+                    <Text style={styles.text}>Contact Us</Text>
+                    <Text style={styles.descriptionText}>Reach out to us via email at
+                <Text style={{ color: colors.maroon }}
+                            onPress={() => Linking.openURL("mailto:hiphopstreets2016@gmail.com")}> hiphopstreets2016@gmail.com</Text></Text>
+                    <View style={styles.caretLine}></View>
+                </View>
+            </View>
+            <View style={styles.itemRow}>
+                <Icon name={"logout"} type={"MaterialCommunityIcons"}
+                    style={[styles.editIcon, { padding: 0, alignSelf: "flex-start", fontSize: 20 }]} />
+                <View style={styles.settingsItemView}>
+                    <Text style={styles.text} onPress={this.askLogout}>Logout</Text>
+                    <View style={styles.caretLine}></View>
+                </View>
+            </View>
         </ScrollView>
     )
-    public logout = (title: string) => {
-       if( title==="Logout"){
-            Alert.alert("Confirmation", "Are you sure you want to log out?", [
-                {
-                    text: "Yes",
-                    onPress: this.props.logout,
-                },
-                {
-                    text: "Cancel",
-                }
-            ])
-       }else{
-        return null;
-       }
+    public askLogout = () => {
+        Alert.alert("Confirmation", "Are you sure you want to log out?", [
+            {
+                text: "Yes",
+                onPress: this.logout,
+            },
+            {
+                text: "Cancel",
+            }
+        ])
     }
 
     public renderSettingsItems = ({ item }) => (
 
         <View style={styles.itemRow}>
             <Icon name={item.iconName} type={item.iconType} style={[styles.editIcon, { padding: 0, alignSelf: "flex-start", fontSize: 20 }]} />
-            <TouchableOpacity style={styles.settingsItemView} onPress={() => this.logout(item.title)}>
+            <TouchableOpacity style={styles.settingsItemView} onPress={() => this.askLogout(item.title)}>
                 <Text style={styles.text}>{item.title}</Text>
                 <Text style={styles.descriptionText}>{item.description}</Text>
                 <View style={styles.caretLine}></View>
@@ -143,38 +168,40 @@ class SettingScreen extends React.Component<Props, State>{
         })
     }
     public selectImage = () => {
-        const options={
+        const options = {
             title: "Pick your profile picture"
         }
         ImagePicker.showImagePicker(options, (response) => {
             console.log('Response = ', response);
-          
+
             if (response.didCancel) {
-              console.log('User cancelled image picker');
+                console.log('User cancelled image picker');
             } else if (response.error) {
-              console.log('ImagePicker Error: ', response.error);
+                console.log('ImagePicker Error: ', response.error);
             } else if (response.customButton) {
-              console.log('User tapped custom button: ', response.customButton);
+                console.log('User tapped custom button: ', response.customButton);
             } else {
-              const source = { uri: response.uri };
-          
-              // You can also display the image using data:
-              // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-          
-              this.setState({profileImage: {uri: response.uri, type: response.type, name: response.fileName }});
+                const source = { uri: response.uri };
+
+                // You can also display the image using data:
+                // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+                this.setState({ profileImage: { uri: response.uri, type: response.type, name: response.fileName } });
             }
-          });
+        });
     }
     updateProfile = () => {
-        if(this.state.userName.length > 0 && this.state.emailId.length > 0  && this.state.profileImage !==undefined
-            && this.state.bio.length > 0){
-        this.setState({visible: false});
-        this.props.updateProfile({userName: this.state.userName, emailId: this.state.emailId, gender: "undefined",
-        image: this.state.profileImage, biography: this.state.bio})
-    } else{
-        Alert.alert("Error", "Please enter all fields to update your profile!")
+        if (this.state.userName.length > 0 && this.state.emailId.length > 0 && this.state.profileImage !== undefined
+            && this.state.bio.length > 0) {
+            this.setState({ visible: false });
+            this.props.updateProfile({
+                userName: this.state.userName, emailId: this.state.emailId, gender: "undefined",
+                image: this.state.profileImage, biography: this.state.bio
+            })
+        } else {
+            Alert.alert("Error", "Please enter all fields to update your profile!")
+        }
     }
-}
     public render() {
         return (
             <Container>
@@ -183,20 +210,20 @@ class SettingScreen extends React.Component<Props, State>{
                 <View style={{}}>
                     {this.renderTopProfileView()}
                     {this.renderListView()}
-                </View> 
+                </View>
                 {/* : */}
-                 {/* <Text style={{padding: 30, alignSelf: "center", marginTop: 50}}>Unfortunately, your profile data is not available at the moment! Please try again later</Text> */}
-                 {/* } */}
+                {/* <Text style={{padding: 30, alignSelf: "center", marginTop: 50}}>Unfortunately, your profile data is not available at the moment! Please try again later</Text> */}
+                {/* } */}
                 <ModalView content={
                     <ScrollView style={styles.modalContent}>
-                        <Image source={{ uri: this.state.profileImage.uri}} style={styles.roundView} onLayout={this.onLayoutImg} />
+                        <Image source={{ uri: this.state.profileImage.uri }} style={styles.roundView} onLayout={this.onLayoutImg} />
                         <TouchableOpacity style={[styles.cameraView, { top: this.state.imgPosition.y - 140, left: this.state.imgPosition.x - 30, }]}
-                        onPress={this.selectImage}
+                            onPress={this.selectImage}
                         >
                             <Icon name={"camera"} type={"FontAwesome"} style={styles.camIcon}></Icon>
                         </TouchableOpacity>
                         <TextInput value={this.state.userName} onChangeText={(text) => this.setState({ userName: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your username"} />
-                        <TextInput value={this.state.emailId} onChangeText={(text) => this.setState({ emailId: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your email id"}/>
+                        <TextInput value={this.state.emailId} onChangeText={(text) => this.setState({ emailId: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your email id"} />
                         <TextInput value={this.state.bio} onChangeText={(text) => this.setState({ bio: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your biography"} />
                         {/* <TextInput value={this.state.gender} onChangeText={(text) => this.setState({ gender: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your gender"}/> */}
                     </ScrollView>
