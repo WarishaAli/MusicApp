@@ -9,6 +9,7 @@ import { StartupActions } from "../../Reducers/StartupReducers";
 import styles from "./RootContainerStyles";
 import { NavigationScreenProps } from "react-navigation";
 import LoaderComponent from "../../Components/LoaderComponent/LoaderComponent";
+import PushNotifContainer from "../PushNotifContainer/PushNotifContainer";
 
 interface OwnProps {
   startup: () => void;
@@ -56,6 +57,7 @@ export class RootContainer extends React.Component<Props, State> {
         <StatusBar barStyle="light-content" />
         <ReduxNavigation  navigation={this.props.navigation}/>
         <LoaderComponent />
+        <PushNotifContainer/>
       </View>
     );
   }

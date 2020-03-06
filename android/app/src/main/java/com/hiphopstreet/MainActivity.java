@@ -1,4 +1,4 @@
-package com.musicapp;
+package com.hiphopstreet;
 
 import com.facebook.react.ReactActivity;
 
