@@ -104,6 +104,12 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     return from(api.get(`/search?keyword=${keyword}`))
   }
 
+  const forgotPassword = (email: string) => {
+    const data = new FormData();
+    data.append("email", email);
+    return from (api.post(`/forgotPassword`, data));
+  }
+
 
 
 
@@ -121,6 +127,7 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
     homeData,
     logout,
     getArtistProfile,
-    search
+    search,
+    forgotPassword,
   }
 };

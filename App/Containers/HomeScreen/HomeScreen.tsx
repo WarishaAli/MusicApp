@@ -121,10 +121,28 @@ class HomeScreen extends React.Component<Props, State> {
         this.props.setPlaylist(this.props.featuredVideos);
         this.props.navigation.push("MusicPlayScreen", { songData: videoItem, isSong: false, videoUrl: videoItem })
     }
+    public openPodcastScreen = (item) => {
+        SoundPlayer.playUrl(item.song_file);
+        this.props.playSong(item);
+        this.props.shouldPlay(true);
+        this.props.showPlay(true);
+        this.props.setPlaylist(this.props.featuredPodcasts);
+        this.props.navigation.push("MusicPlayScreen", { songData: item, isSong: true, comingFrom: OpenSong.SCREEN })
+    }
 
     public renderFeauteredSongs = (item: any, text: string) => {
         return (
-            <TouchableOpacity onPress={() => text === DataTypes.VIDEOS ? this.openVideoScreen(item.item) : this.openSongScreen(item.item)}>
+            <TouchableOpacity
+                onPress={() =>
+                    {
+            if (text === DataTypes.VIDEOS) {
+                    this.openVideoScreen(item.item)
+                } else if (text === DataTypes.PODCASTS) {
+                    this.openPodcastScreen(item.item)
+                } else if (text === DataTypes.SONGS) {
+                    this.openSongScreen(item.item)
+                }
+                }}>
                 <Card style={styles.songsCard}>
                     <ImageBackground style={styles.cardImage} source={{ uri: item.item.songimage }}
                     // imageStyle={{ borderRadius: 5 }}
@@ -183,9 +201,9 @@ class HomeScreen extends React.Component<Props, State> {
                 />
                 {!this.state.showSearchBar &&
                     <Button
-                    transparent={true}
-                    onPress={this.showSearchBar}
-                    style={{width: 100, position: "absolute", top: 10, left: 20, height: 20}}/>}
+                        transparent={true}
+                        onPress={this.showSearchBar}
+                        style={{ width: 100, position: "absolute", top: 10, left: 20, height: 20 }} />}
                 {
                     (this.state.showSearchBar && this.props.isSongSearching) &&
                     <ActivityIndicator

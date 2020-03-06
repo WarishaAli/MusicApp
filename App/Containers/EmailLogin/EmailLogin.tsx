@@ -77,6 +77,9 @@ class EmailLogin extends React.Component<Props, State> {
     //         </View>
     //     </View>
     // );
+    public forgotPwd = () => {
+        this.props.navigation.push("ForgotPasswordScreen");
+    }
     public render() {
         return (
             <Container style={styles.mainContainer}>
@@ -87,7 +90,7 @@ class EmailLogin extends React.Component<Props, State> {
                     <LargeButton onPress={this.login} style={{ marginTop: 20 }} text={"LOGIN"}
                         disabled={this.state.email.length === 0 || this.state.password.length === 0}
                     />
-                    {/* <Text style={styles.forgotPwdText}>Forgot Password?</Text> */}
+                    <Text style={styles.forgotPwdText} onPress={this.forgotPwd}>Forgot Password?</Text>
                     <Text style={styles.forgotPwdText}>OR</Text>
                     {/* <LargeButton style={{ marginTop: 10 }} text={"LOGIN WITH FACEBOOK"} iconName={"sc-facebook"} iconType={"EvilIcons"}
                     ></LargeButton> */}

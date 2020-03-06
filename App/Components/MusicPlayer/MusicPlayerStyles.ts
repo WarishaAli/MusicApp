@@ -41,7 +41,7 @@ export default StyleSheet.create({
     },
     icon:{
         color: colors.charcoal,
-        flex: 0.2,
+        flex: 0.3,
         fontSize: 20
         // marginLeft: 5,
     }

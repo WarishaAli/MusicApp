@@ -33,4 +33,5 @@ export interface HipHopApi {
     logout: (token: string) => Observable<ApiResponse<any>>;
     getArtistProfile: (userId: string) => Observable<ApiResponse<any>>;
     search: (keyword: string) => Observable<ApiResponse<any>>;
+    forgotPassword: (email: string) => Observable<ApiResponse<any>>;
 }

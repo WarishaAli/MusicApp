@@ -11,7 +11,7 @@ import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 import { Images } from "../../Themes";
 import { RootState } from "../../Reducers";
 import MusicPlayer from "../../Components/MusicPlayer/MusicPlayer";
-import { ISongData } from "../MusicPlayScreen/MusicPlayScreen";
+import { ISongData, OpenSong } from "../MusicPlayScreen/MusicPlayScreen";
 import SoundPlayer from "react-native-sound-player";
 import { DataTypes } from "../HomeScreen/HomeScreen";
 
@@ -62,7 +62,7 @@ class AllCategoriesScreen extends React.Component<Props>{
     public playSong = (songData: any) => {
         if (this.categoryData.title === DataTypes.VIDEOS) {
             SoundPlayer.pause();
-            this.playSong(songData)
+            this.props.playSong(songData)
             this.props.setPlaylist(this.categoryData.data);
             this.props.navigation.push("MusicPlayScreen", { songData: songData, isSong: false, videoUrl: songData })
         } else {
@@ -71,6 +71,7 @@ class AllCategoriesScreen extends React.Component<Props>{
             this.props.playSong(songData);
             this.props.shouldPlay(true);
             this.props.setPlaylist(this.categoryData.data);
+            this.props.navigation.push("MusicPlayScreen", { songData: songData, isSong: true, comingFrom: OpenSong.SCREEN })
         }
     }
     public renderSongTiles = ({ item }) => (

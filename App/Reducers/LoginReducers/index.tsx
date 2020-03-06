@@ -10,8 +10,8 @@ const actions = {
         userRole: UserRole, pob: string, dob: string, country: string, interests: string, topAlbums: string) => ({
         type: "SIGNUP_REQUEST", payload: { username, email, pwd, userRole, dob, pob, country, interests, topAlbums }
     })),
-    loginRequest: createAction("LOGIN_REQUEST", (email: string | undefined, pwd: string | undefined, socialType: string, socialId?: string) => ({
-        type: "LOGIN_REQUEST", payload: { email, pwd, socialType, socialId }
+    loginRequest: createAction("LOGIN_REQUEST", (email: string | undefined, pwd: string | undefined, socialType: string, socialId?: string, userData? : IUserData) => ({
+        type: "LOGIN_REQUEST", payload: { email, pwd, socialType, socialId, userData }
     })),
     loginSuccess: createAction("LOGIN_SUCCESS", (params: IUserData) => ({
         type: "LOGIN_SUCCESS", payload: params
@@ -35,6 +35,10 @@ const actions = {
     setUserRole: createAction("SET_USER_ROLE", (userRole: UserRole,) => ({
         type: "SET_USER_ROLE", payload: userRole,
     })),
+
+    forgotPassword: createAction("FORGOT_PASSWORD", (email: string) => ({
+        type:"FORGOT_PASSWORD", payload: email,
+    }))
 }
 
 export const LoginActions = actions;

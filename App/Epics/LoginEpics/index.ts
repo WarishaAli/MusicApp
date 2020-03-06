@@ -114,7 +114,8 @@ export const loginRequestEpic: Epic = (action$, state$, { api }: IDependencies) 
       }),
       mergeMap(() => {
         if(loginResponse !== undefined){
-          return action.payload.socialType === "facebook" ? of(LoginActions.loginSuccess(loginResponse), ProfileAction.getProfileRequest()) :  of(LoginActions.loginSuccess(loginResponse), ProfileAction.getProfileRequest())
+          return action.payload.socialType === "facebook" ? 
+          of(LoginActions.loginSuccess(loginResponse), ProfileAction.updateProfileRequest(action.payload.userData)) :  of(LoginActions.loginSuccess(loginResponse), ProfileAction.getProfileRequest())
         }else{
           return of(LoginActions.loginFailure())
         }
@@ -140,9 +141,9 @@ export const signupRequestEpic: Epic = (action$, state$, { api }: IDependencies)
           }
         }
         else {
-          response.data.message  ?
+          response.data  ?
           Alert.alert("Error", response.data.message)
-          : Alert.alert("Error", "Unfortunatley following error occurred during your signup, please check your internet connection or try again later");
+          : Alert.alert("Error", "Unfortunatley an error occurred during your signup, please check your internet connection or try again later");
         };
         return of(SongsActions.void())
       }),
@@ -194,6 +195,23 @@ export const socialLogout: Epic = (action$, state$, { api }: IDependencies) => a
     }
   })
 );
+
+export const forgotPasswordEpic: Epic = (action$, state$, {api}: IDependencies) => action$.pipe(
+  ofType(getType(LoginActions.forgotPassword)),
+  mergeMap((action: any) => {
+    return api.hiphop.forgotPassword(action.payload).pipe(
+      mergeMap((response) => {
+        if(response.ok){
+          Alert.alert("Info", "An email with a new password is sent to your email address")
+        }
+        else{
+          Alert.alert("Error", "Unfortunately an error occurred while resetting your password, please try again later")
+        }
+          return of(SongsActions.void())
+      })
+    )
+  })
+) 
 
 // export const checkUserRoleEpic: Epic = (action$, state$) => action$.pipe(
 //   ofType(getType(LoginActions.checkUserRole)),
