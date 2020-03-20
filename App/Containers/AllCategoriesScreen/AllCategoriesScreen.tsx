@@ -18,7 +18,7 @@ import { DataTypes } from "../HomeScreen/HomeScreen";
 export enum ScreenTitle {
     GENRE = "Albums",
     SONGS = "Featured songs",
-    VIDEOS = "Featured videos",
+    VIDEOS = "Videos",
     PODCASTS = "Featured podcasts",
 }
 export interface OwnProps {
@@ -96,7 +96,7 @@ class AllCategoriesScreen extends React.Component<Props>{
                 />
                 <Content style={{ paddingHorizontal: 20, }}>
                     {/* <Text style={styles.headerTitle}>{this.categoryData.title}</Text> */}
-                    <FlatList renderItem={this.categoryData.title === DataTypes.ALBUMS ? this.renderCatTiles : this.renderSongTiles}
+                    <FlatList renderItem={(this.categoryData.title === DataTypes.ALBUMS || this.categoryData.title === DataTypes.VIDEOS ) ? this.renderCatTiles : this.renderSongTiles}
                         data={this.categoryData.data} style={{ marginBottom: 100 }}
                         numColumns={2}
                     />

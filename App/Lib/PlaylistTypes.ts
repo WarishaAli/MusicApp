@@ -16,4 +16,5 @@ export interface Songs{
     songimage: string;
     song_file: string;
     song_type?: string;
+    artistName?:string;
 }

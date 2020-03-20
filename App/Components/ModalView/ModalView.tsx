@@ -16,7 +16,7 @@ export interface OwnProps {
 export default class ModalView extends React.Component<OwnProps, State>{
     public render() {
         return (
-            <View style={{ flex: 0.3 }}>
+            <View style={{ flex: 0.3 , width: "80%"}}>
                 <Modal visible={this.props.visible} transparent={true} animationType={"fade"} >
                     <View style={styles.modalView}>
                         <Text style={styles.modalTitle}>{this.props.title}</Text>

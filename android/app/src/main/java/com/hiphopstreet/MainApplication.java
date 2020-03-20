@@ -3,6 +3,8 @@ package com.hiphopstreet;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.guichaguri.trackplayer.TrackPlayer;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.brentvatne.react.ReactVideoPackage;
@@ -36,6 +38,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new TrackPlayer(),
+            new SplashScreenReactPackage(),
             new ReactNativePushNotificationPackage(),
             new RNCWebViewPackage(),
             new ReactVideoPackage(),

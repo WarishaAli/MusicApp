@@ -6,6 +6,8 @@ import { IDependencies } from "../../Reducers/CreateStore";
 import { of } from "rxjs";
 import { SongsActions } from "../../Reducers/SongsReducer";
 import SoundPlayer from "react-native-sound-player";
+import RNTrackPlayer from "react-native-track-player";
+import { transformSongArray } from "../../Lib/SongQueueHelper";
 
 export const getCategoriesEpic: Epic = (action$, state$, { api }: IDependencies) => action$.pipe(
     ofType(getType(CategoryAction.getCategoryRequest)),
@@ -29,13 +31,22 @@ export const getSongByCategoryEpic: Epic = (action$, state$, { api }: IDependenc
             mergeMap((response) => {
                 console.log("song by category", response);
                 if (response.ok) {
-                    response.data.data.length > 0 &&
-                    SoundPlayer.playUrl(response.data.data[0].song_file);
-                    return response.data.data.length > 0 ? 
-                    of(CategoryAction.getSongByCatSuccess(response.data.data),
-                    SongsActions.setPlaylist(response.data.data), SongsActions.setSong(response.data.data[0]),
-                    SongsActions.setIsPlaying(true), SongsActions.showPlaying(true)
-                    ) : of(CategoryAction.getSongByCatSuccess(response.data.data))
+                    // SoundPlayer.playUrl(response.data.data[0].song_file);
+                    let songsList = transformSongArray(response.data.data);
+                    if (songsList.length > 0) {
+
+                        songsList.length > 0 && RNTrackPlayer.reset();
+                        songsList.length > 0 && RNTrackPlayer.add(songsList);
+                        RNTrackPlayer.play();
+
+                    }
+                    return response.data.data.length > 0 ?
+                        of(CategoryAction.getSongByCatSuccess(response.data.data),
+                            SongsActions.setPlaylist(response.data.data), SongsActions.setSong(response.data.data[0]),
+                            SongsActions.setIsPlaying(true), SongsActions.showPlaying(true)
+                        ) : of(CategoryAction.getSongByCatSuccess(response.data.data),
+                            SongsActions.setPlaylist(response.data.data),
+                        )
 
 
                 } else {
@@ -52,9 +63,11 @@ export const getHomeDataEpic: Epic = (action$, state$, { api }: IDependencies) =
         return api.hiphop.homeData().pipe(
             mergeMap((response) => {
                 if (response.ok) {
+                    console.log("home data", response)
                     return of(CategoryAction.getHomeDataSuccess({
                         featuredSongs: response.data.featuredSongs, featuredVideos: response.data.featuredVideos,
                         featuredPodcasts: response.data.podcastShows,
+                        videoCategories: response.data.videoCat,
                     }))
                 } else {
                     return of(CategoryAction.getHomeDataFailure())

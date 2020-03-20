@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Image, ViewStyle, Alert, TouchableOpacity } from "react-native";
 import styles from "./MusicPlayerStyles";
 import { Icon } from "native-base";
-import SoundPlayer from "react-native-sound-player";
+// import SoundPlayer from "react-native-sound-player";
 import { RootState } from "../../Reducers";
 import { connect } from "react-redux";
 import { Dispatch } from "react-redux";
@@ -11,6 +11,7 @@ import { Songs } from "../../Lib/PlaylistTypes";
 import { NavigationScreenProps } from "react-navigation";
 import { async } from "rxjs/internal/scheduler/async";
 import { OpenSong } from "../../Containers/MusicPlayScreen/MusicPlayScreen";
+import RNTrackPlayer from "react-native-track-player";
 
 
 
@@ -50,51 +51,55 @@ class MusicPlayer extends React.Component<Props, State> {
     public _onFinishedPlaying: any = null;
 
     public componentDidMount() {
-        this._onFinishedPlaying = SoundPlayer.addEventListener("FinishedPlaying", (result: any) => {
-            console.log("at song finished playing", result)
-            this.playNextSong(true);
-        })
+        // this._onFinishedPlaying = SoundPlayer.addEventListener("FinishedPlaying", (result: any) => {
+        //     console.log("at song finished playing", result)
+        //     this.playNextSong(true);
+        // })
     }
     public componentWillUnmount() {
-        this._onFinishedPlaying.remove();
+        // this._onFinishedPlaying.remove();
     }
-    public componentDidUpdate(nextProps: Props) {
-        if (this.props.isPlaying !== nextProps.isPlaying || this.props.currentSong !== nextProps.currentSong) {
-            // this.props.isPlaying ? this.playSong() : this.pauseSong();
-        }
-    }
-    public loadUrl = () => {
-        try {
-            SoundPlayer.loadUrl(this.props.currentSong.song_file);
-        }
-        catch (e) {
-            console.log("error loading song url", e);
-            Alert.alert("Unfortunately we could not load your song, please check you internet connection or try again later.")
-        }
-    }
+    // public componentDidUpdate(nextProps: Props) {
+    //     if (this.props.isPlaying !== nextProps.isPlaying || this.props.currentSong !== nextProps.currentSong) {
+    //         // this.props.isPlaying ? this.playSong() : this.pauseSong();
+    //     }
+    // }
+    // public loadUrl = () => {
+    //     try {
+    //         SoundPlayer.loadUrl(this.props.currentSong.song_file);
+    //     }
+    //     catch (e) {
+    //         console.log("error loading song url", e);
+    //         Alert.alert("Unfortunately we could not load your song, please check you internet connection or try again later.")
+    //     }
+    // }
     public playSong = () => {
 
-        if (this.props.currentSong.song_file) {
+        // if (this.props.currentSong.song_file) {
 
-            try {
-                // this.loadUrl();
-                SoundPlayer.playUrl(this.props.currentSong.song_file)
-            } catch (e) {
-                console.log(`cannot play the sound file`, e)
-            };
+            // try {
+            //     // this.loadUrl();
+            //     SoundPlayer.playUrl(this.props.currentSong.song_file)
+            // } catch (e) {
+            //     console.log(`cannot play the sound file`, e)
+            // };
+            RNTrackPlayer.play();
             this.props.showPlaying(true);
             this.props.playMusic(true);
-        }
+        // }
     };
     public pauseSong = () => {
-        SoundPlayer.pause();
+        // SoundPlayer.pause();
+        RNTrackPlayer.pause();
         this.props.showPlaying(false);
     }
-    public playNextSong = (isAuto: boolean) => {
-        this.props.playNext(isAuto);
+    public playNextSong = async (isAuto: boolean) => {
+        // this.props.playNext(isAuto);
+        const skip = await RNTrackPlayer.skipToNext();
     }
-    public playPreviousSong = () => {
-        this.props.playPrev();
+    public playPreviousSong = async () => {
+        // this.props.playPrev();
+        const skip = await RNTrackPlayer.skipToPrevious()
     }
     public openSongScrenn = () => {
         // try {

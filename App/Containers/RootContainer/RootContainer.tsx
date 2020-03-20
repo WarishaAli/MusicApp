@@ -10,6 +10,8 @@ import styles from "./RootContainerStyles";
 import { NavigationScreenProps } from "react-navigation";
 import LoaderComponent from "../../Components/LoaderComponent/LoaderComponent";
 import PushNotifContainer from "../PushNotifContainer/PushNotifContainer";
+import SplashScreen from "react-native-splash-screen";
+import TrackPlayer from "../../Components/TrackPlayer/TrackPlayer";
 
 interface OwnProps {
   startup: () => void;
@@ -22,6 +24,7 @@ export type Props = OwnProps & NavigationScreenProps;
 
 export class RootContainer extends React.Component<Props, State> {
   public componentDidMount() {
+    SplashScreen.hide();
     // if redux persist is not active fire startup action
     if (!ReduxPersist.active) {
       this.props.startup();
@@ -58,6 +61,7 @@ export class RootContainer extends React.Component<Props, State> {
         <ReduxNavigation  navigation={this.props.navigation}/>
         <LoaderComponent />
         <PushNotifContainer/>
+        <TrackPlayer/>
       </View>
     );
   }

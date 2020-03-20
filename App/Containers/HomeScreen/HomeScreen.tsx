@@ -19,7 +19,7 @@ import styles from "./HomeScreenStyles";
 import SoundPlayer from "react-native-sound-player";
 import { ISongData, OpenSong } from "../MusicPlayScreen/MusicPlayScreen";
 import { SearchAction } from "../../Reducers/SearchReducer";
-
+import TrackPlayer from "react-native-track-player";
 export interface State {
     croppedFeaturedSongs: any;
     showSearchBar: boolean;
@@ -43,6 +43,7 @@ export interface DispatchProps {
     shouldPlay: (play: boolean) => void;
     showPlay: (play: boolean) => void;
     searchSong: (keyword: string) => void;
+    // songCat: () => void;
 }
 
 export interface StateProps {
@@ -54,6 +55,7 @@ export interface StateProps {
     isSongPlaying: boolean;
     searchData: any;
     isSongSearching: boolean;
+    videoCategories: any;
 }
 export type Props = OwnProps & NavigationScreenProps & DispatchProps & StateProps;
 class HomeScreen extends React.Component<Props, State> {
@@ -69,10 +71,11 @@ class HomeScreen extends React.Component<Props, State> {
         this.props.setBottomTab(BottomBarBtns.EXPLORE);
         this.props.getCategories();
         this.props.getHomeData();
+        // this.props.songCat();
     }
     public selectSingleCategory = (data: any) => {
         // this.props.setPlaylist(data);
-        this.props.navigation.navigate("Playlist", { comingFrom: PlaylistTypes.EXPLORE, category: data })
+        this.props.navigation.navigate("Playlist", { comingFrom: PlaylistTypes.EXPLORE, category: data, isVideo: data.song_category.includes("videos") })
     };
     public renderTextIcon = (title: string, data: any) => (
         <TouchableOpacity
@@ -85,7 +88,10 @@ class HomeScreen extends React.Component<Props, State> {
     public renderGenreList = (data: any, noDataText: string) => {
         return data ? (
             <FlatList data={data.length > 15 ? data.slice(0, 10) : data}
-                renderItem={(item) => noDataText === DataTypes.ALBUMS ? this.renderGenreView(item) : this.renderFeauteredSongs(item, noDataText)} style={styles.listStyle} horizontal={true}
+                renderItem={(item) =>
+                    (noDataText === DataTypes.VIDEOS || noDataText === DataTypes.ALBUMS) ? this.renderGenreView(item) : this.renderFeauteredSongs(item, noDataText)}
+                style={styles.listStyle}
+                horizontal={true}
                 showsHorizontalScrollIndicator={false}
             // keyExtractor={(item) => noDataText === "categories" ? item.cat_id : item.songid}
             />
@@ -133,15 +139,14 @@ class HomeScreen extends React.Component<Props, State> {
     public renderFeauteredSongs = (item: any, text: string) => {
         return (
             <TouchableOpacity
-                onPress={() =>
-                    {
-            if (text === DataTypes.VIDEOS) {
-                    this.openVideoScreen(item.item)
-                } else if (text === DataTypes.PODCASTS) {
-                    this.openPodcastScreen(item.item)
-                } else if (text === DataTypes.SONGS) {
-                    this.openSongScreen(item.item)
-                }
+                onPress={() => {
+                    if (text === DataTypes.VIDEOS) {
+                        this.openVideoScreen(item.item)
+                    } else if (text === DataTypes.PODCASTS) {
+                        this.openPodcastScreen(item.item)
+                    } else if (text === DataTypes.SONGS) {
+                        this.openSongScreen(item.item)
+                    }
                 }}>
                 <Card style={styles.songsCard}>
                     <ImageBackground style={styles.cardImage} source={{ uri: item.item.songimage }}
@@ -241,22 +246,48 @@ class HomeScreen extends React.Component<Props, State> {
 
 
                 <ScrollView style={{ marginLeft: 15, flex: 0.9, marginBottom: 100 }}>
-                    {this.renderTextIcon(DataTypes.SONGS, this.props.featuredSongs)}
-                    {this.renderGenreList(this.props.featuredSongs, DataTypes.SONGS)}
-                    {this.renderTextIcon(DataTypes.ALBUMS, this.props.category)}
-                    {this.renderGenreList(this.props.category, DataTypes.ALBUMS)}
-                    {this.renderTextIcon(DataTypes.VIDEOS, this.props.featuredVideos)}
-                    {this.renderGenreList(this.props.featuredVideos, DataTypes.VIDEOS)}
-                    {this.renderTextIcon(DataTypes.PODCASTS, this.props.featuredPodcasts)}
-                    {this.renderGenreList(this.props.featuredPodcasts, DataTypes.PODCASTS)}
+                    {/* <Button onPress={() => {
+                            TrackPlayer.add([{
+                                id: 'trackId',
+                                url: "http://app.hiphopstreets.com/songfile/439008f6956afd56b0a0b770769a63e7.mp3",
+                                title: 'Dope',
+                                artist: 'Warisha',
+                                artwork: Images.appLogo,
+                            },{
+                                id: 'track2',
+                                url: "http://app.hiphopstreets.com/songfile/439008f6956afd56b0a0b770769a63e7.mp3",
+                                title: 'Hello',
+                                artist: 'Ali',
+                                artwork: Images.croppedBackgroundImage,  
+                            }
+                        ]);
+                           
+                        
+                            // Starts playing it
+                            TrackPlayer.play();
+                        
+                        }
+                    }></Button> */}
+                {this.renderTextIcon(DataTypes.SONGS, this.props.featuredSongs)}
+                {this.renderGenreList(this.props.featuredSongs, DataTypes.SONGS)}
+                {this.renderTextIcon(DataTypes.ALBUMS, this.props.category)}
+                {this.renderGenreList(this.props.category, DataTypes.ALBUMS)}
+                {/* {this.renderTextIcon(DataTypes.VIDEOS, this.props.featuredVideos)} */}
+                {/* {this.renderGenreList(this.props.featuredVideos, DataTypes.VIDEOS)} */}
+                {this.renderTextIcon(DataTypes.VIDEOS, this.props.videoCategories)}
+                {this.renderGenreList(this.props.videoCategories, DataTypes.VIDEOS)}
+                {this.renderTextIcon(DataTypes.PODCASTS, this.props.featuredPodcasts)}
+                {this.renderGenreList(this.props.featuredPodcasts, DataTypes.PODCASTS)}
                 </ScrollView>
 
 
-                {this.props.isSongPlaying && <MusicPlayer style={styles.musicPlayer} hide={false}
-                    navigation={this.props.navigation}
-                />}
-                <BottomBar navigation={this.props.navigation} />
-            </Container>
+                {
+            this.props.isSongPlaying && <MusicPlayer style={styles.musicPlayer} hide={false}
+                navigation={this.props.navigation}
+            />
+        }
+        <BottomBar navigation={this.props.navigation} />
+            </Container >
         )
     }
 }
@@ -268,7 +299,8 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     playSong: (song) => dispatch(SongsActions.setSong(song)),
     shouldPlay: (play) => dispatch(SongsActions.setIsPlaying(play)),
     showPlay: (showPlay) => dispatch(SongsActions.showPlaying(showPlay)),
-    searchSong: (keyword) => dispatch(SearchAction.searchRequest(keyword))
+    searchSong: (keyword) => dispatch(SearchAction.searchRequest(keyword)),
+    // songCat: () => dispatch(CategoryAction.getSongByCatRequest("Hiphop videos"))
 
 })
 
@@ -281,5 +313,6 @@ export const mapStateToProps = (state: RootState): StateProps => ({
     isSongPlaying: state.songs.isPlaying || state.songs.showPlay,
     searchData: state.search.searchData,
     isSongSearching: state.search.fetching,
+    videoCategories: state.category.homeData ? state.category.homeData.videoCategories : undefined,
 })
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

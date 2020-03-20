@@ -23,8 +23,10 @@ import styles from "./PlaylistScreenStyles";
 import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 import Share from "react-native-share";
 import { UserRole } from "../SignupScreen/SignupScreen";
-import SoundPlayer from "react-native-sound-player";
+// import SoundPlayer from "react-native-sound-player";
 import { isFavorite } from "../../Lib/MusicPlayerHelpers";
+import RNTrackPlayer from "react-native-track-player";
+import { transformSongArray } from "../../Lib/SongQueueHelper";
 
 export interface OwnProps {
     comingFrom: PlaylistTypes;
@@ -64,7 +66,8 @@ export interface State {
     imgPosition: { x: number, y: number };
     songStatus: 0 | 1;
     showPicker: boolean;
-    songType: "mp3" | "mp4"
+    songType: "mp3" | "mp4";
+    categories: any;
 }
 export type Props = OwnProps & NavigationScreenProps & DispatchProps & StateProps;
 
@@ -83,9 +86,11 @@ class PlaylistScreen extends React.Component<Props, State>{
             songStatus: 1,
             showPicker: false,
             songType: "mp3",
+            categories: [],
         }
     }
     public async componentDidMount() {
+        console.log("checkingggggggggg", this.props.navigation.getParam("isVideo"));
         switch (this.state.playlistType) {
             case PlaylistTypes.EXPLORE: {
                 this.props.getSongByCat(this.state.categoryData.song_category);
@@ -103,23 +108,46 @@ class PlaylistScreen extends React.Component<Props, State>{
         }
         this.props.getHeart(false);
         // console.log("favories data", this.props.favorites);
+        this.setState({
+            categories: [{
+                cat_id: "-1",
+                song_category: "Select a category",
+                thumbnail: "",
+            }, ...this.props.category]
+        });
+        // if (this.props.categorySongs) {
+        //     RNTrackPlayer.reset();
+        //     RNTrackPlayer.add(transformSongArray(this.props.categorySongs));
+        //     RNTrackPlayer.play();
+        // }
     }
     public playSong = (item: any) => {
-        SoundPlayer.playUrl(item.song_file);
+        // SoundPlayer.playUrl(item.song_file);
+        console.log("at play single song", transformSongArray([item]));
+        RNTrackPlayer.reset();
+        RNTrackPlayer.add(transformSongArray([item, ...this.props.categorySongs]));
+        RNTrackPlayer.play();
         this.props.showPlaying(true);
         this.props.playMusic(true);
         this.props.selectSong(item);
         // SoundPlayer.loadUrl(item.song_file);
 
     }
+    public openVideoScreen = (videoItem: any) => {
+        // SoundPlayer.pause();
+        RNTrackPlayer.pause();
+        this.props.selectSong(videoItem)
+        // this.props.setPlaylist(this.props.featuredVideos);
+        this.props.navigation.push("MusicPlayScreen", { songData: videoItem, isSong: false, videoUrl: videoItem })
+    }
     public shareSong = (item: any) => {
-        let urlParam=[];
-        let shareUrl="";
-        for(let i in item){
+        let urlParam = [];
+        let shareUrl = "";
+        for (let i in item) {
             urlParam.push(encodeURI(i) + "=" + encodeURI(item[i]))
         }
         shareUrl = `http://app.hiphopstreets.com/song?${urlParam.join("&")}`;
-       
+
         Share.open({
             url: shareUrl, title: "HiphopStreets",
             message: "Hey, check out this song on Hiphop Streets!"
@@ -133,7 +161,8 @@ class PlaylistScreen extends React.Component<Props, State>{
         isFav = this.props.favorites ? isFavorite(this.props.favorites, item.songid) : false;
         // image songName catName likeCount
 
-          return ( <View style={{ flexDirection: "row", marginTop: 25, }}>
+        return this.props.selectedPlaylist.length > 0 ? (
+            <View style={{ flexDirection: "row", marginTop: 25, }}>
                 <Image source={{ uri: item.songimage, cache: "reload" }} style={styles.songImg}></Image>
                 <TouchableOpacity onPress={() => this.playSong(item)} style={{ paddingLeft: 10, width: "50%" }}>
                     <Text numberOfLines={2} lineBreakMode={"middle"} style={[styles.heading, { alignSelf: "flex-start" }
@@ -159,7 +188,10 @@ class PlaylistScreen extends React.Component<Props, State>{
                     </TouchableOpacity>
                 </View>
                 {/* <View style={styles.caretView} /> */}
-            </View>)
+            </View>) : <Text>
+                <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
+                    "No songs to display, please try again later!"}</Text>
+            </Text>
     }
     public getHeading = () => {
         if (this.state.playlistType === PlaylistTypes.EXPLORE) {
@@ -219,19 +251,19 @@ class PlaylistScreen extends React.Component<Props, State>{
         }
     }
     public uploadSong = () => {
-        if(this.state.songName.length > 0 && this.state.songCat.length > 0 && this.state.songFile !== undefined &&
-            this.state.songImage.uri.length > 0 && this.state.songStatus !== undefined){
-        this.setState({ showModal: false });
-        this.props.uploadSong({
-            songName: this.state.songName, songFile: this.state.songFile, songCategory: this.state.songCat,
-            songImage: this.state.songImage, status: this.state.songStatus, songType: this.state.songType,
-        })
-    } else{
-        Alert.alert("Error", "Please provide a value for all fields!")
+        if (this.state.songName.length > 0 && this.state.songCat.length > 0 && this.state.songFile !== undefined &&
+            this.state.songImage.uri.length > 0 && this.state.songStatus !== undefined) {
+            this.setState({ showModal: false });
+            this.props.uploadSong({
+                songName: this.state.songName, songFile: this.state.songFile, songCategory: this.state.songCat,
+                songImage: this.state.songImage, status: this.state.songStatus, songType: this.state.songType,
+            })
+        } else {
+            Alert.alert("Error", "Please provide a value for all fields!")
+        }
     }
-}
     public modalContent = () => (
-        <ScrollView style={styles.modalContent}>
+        <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
             {this.state.songImage ? <Image source={{ uri: this.state.songImage.uri }} style={styles.songImageView} onLayout={this.onLayoutImg} />
                 : <View style={[styles.songImageView, { backgroundColor: colors.maroon }]} onLayout={this.onLayoutImg}>
                     <Text style={styles.imagePlaceholder}>Add a picture for your song</Text>
@@ -246,7 +278,7 @@ class PlaylistScreen extends React.Component<Props, State>{
             <TextInput style={styles.textFieldStyle} value={this.state.songName} onChangeText={(text) => this.setState({ songName: text })} underlineColorAndroid={colors.maroon}
                 placeholder={"Enter song name"}
             />
-            
+
             <TouchableOpacity onPress={this.selectSongFile}>
                 <TextInput value={this.state.songFile ? this.state.songFile.name : undefined}
                     underlineColorAndroid={colors.maroon} placeholder={"Select a song file"} pointerEvents="none" editable={false} />
@@ -254,18 +286,23 @@ class PlaylistScreen extends React.Component<Props, State>{
 
             {/* <TextInput value={this.state.songCat} onChangeText={(text) => this.setState({ songCat: text })}
                 underlineColorAndroid={colors.maroon} placeholder={"Enter song category"} /> */}
-                {<Picker
+            {<Picker
                 enabled={true}
                 mode={"dialog"}
                 selectedValue={this.state.songCat}
-                onValueChange={(itemValue) => { this.setState({ songCat: itemValue }) }}
+                onValueChange={(itemValue) => {
+                    if (itemValue.cat_id !== "-1") {
+
+                        this.setState({ songCat: itemValue })
+                    }
+                }}
                 style={{ color: "#A0A0A0", fontSize: 6, fontWeight: "normal" }}
             >
-                {this.props.category ? this.props.category.map((item: any) => (
-                <Picker.Item value={item.song_category} label = {item.song_category}/>)) : (null)}
+                {this.state.categories ? this.state.categories.map((item: any) => (
+                    <Picker.Item value={item.song_category} label={item.song_category} />)) : (null)}
 
             </Picker>}
-            <View style={{backgroundColor: colors.maroon, height: 1, marginBottom: 2}}/>
+            <View style={{ backgroundColor: colors.maroon, height: 1, marginBottom: 2 }} />
 
 
             {/* <TouchableOpacity onPress={() => this.setState({showPicker: true})}>
@@ -284,7 +321,7 @@ class PlaylistScreen extends React.Component<Props, State>{
                 <Picker.Item label="inactive" value={0} />
 
             </Picker>}
-            <View style={{backgroundColor: colors.maroon, height: 1, marginBottom: 2}}/>
+            <View style={{ backgroundColor: colors.maroon, height: 1, marginBottom: 2 }} />
             {<Picker
                 enabled={true}
                 mode={"dialog"}
@@ -296,7 +333,7 @@ class PlaylistScreen extends React.Component<Props, State>{
                 <Picker.Item label="mp4" value={"mp4"} />
 
             </Picker>}
-            <View style={{backgroundColor: colors.maroon, height: 1, marginBottom: 2}}/>
+            <View style={{ backgroundColor: colors.maroon, height: 1, marginBottom: 2 }} />
             {/* <TextInput value={this.state.songFile} onChangeText={(text) => this.setState({ gender: text })} underlineColorAndroid={colors.maroon} /> */}
         </ScrollView>
     )
@@ -323,12 +360,12 @@ class PlaylistScreen extends React.Component<Props, State>{
                 {/* </View> */}
 
                 <ScrollView style={{ paddingHorizontal: 10, paddingTop: 10 }}>
-                    {this.props.selectedPlaylist ? 
+                    {this.props.selectedPlaylist ?
                         <FlatList scrollEnabled={true} style={{ paddingHorizontal: 15, paddingBottom: 40 }}
                             data={this.props.selectedPlaylist} renderItem={this.renderSongs}
                             keyExtractor={(item) => item.songid}
-                        /> :  <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
-                        "No songs to display, please try again later!"}</Text>
+                        /> : <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
+                            "No songs to display, please try again later!"}</Text>
                     }
                 </ScrollView>
                 {this.state.playlistType === PlaylistTypes.MYSONGS && <TouchableOpacity style={styles.addSong}

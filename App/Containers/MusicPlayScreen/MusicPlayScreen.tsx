@@ -17,6 +17,7 @@ import Share from "react-native-share";
 import { FavoriteAction } from "../../Reducers/FavoritesReducer";
 import { isFavorite, isPortrait } from "../../Lib/MusicPlayerHelpers";
 import Video from 'react-native-video';
+import RNTrackPlayer from "react-native-track-player";
 
 export enum OpenSong {
     SCREEN = "From Screen",
@@ -87,21 +88,21 @@ class MusicPlayScreen extends React.Component<Props, State>{
     public componentDidMount() {
         this.props.userRole === UserRole.NORMAL && this.props.getFavorites();
         console.log(this.state.isSong, "song or video");
-        this._onFinishedPlaying = this.state.isSong ? SoundPlayer.addEventListener("FinishedPlaying", (result: any) => {
-            console.log("at song finished playing", result);
-            this.playNextSong(true);
-            this.setState({ duration: { min: 0, sec: 0, total: 0 }, currentTime: { min: 0, sec: 0, total: 0 } })
-            this.timer && clearInterval(this.timer);
-        }) : null;
-        this._onFinishedloading = this.state.comingFrom === OpenSong.SCREEN && this.state.isSong ? SoundPlayer.addEventListener("FinishedLoading", (result: any) => {
-            console.log("at finish loading");
-            if (result) {
-                this.durationCounter();
-            }
-        }) : null;
-        if (this.props.showPlay && this.state.comingFrom === OpenSong.COMPONENT) {
+        // this._onFinishedPlaying = this.state.isSong ? SoundPlayer.addEventListener("FinishedPlaying", (result: any) => {
+        //     console.log("at song finished playing", result);
+        //     this.playNextSong(true);
+        //     this.setState({ duration: { min: 0, sec: 0, total: 0 }, currentTime: { min: 0, sec: 0, total: 0 } })
+        //     this.timer && clearInterval(this.timer);
+        // }) : null;
+        // this._onFinishedloading = this.state.comingFrom === OpenSong.SCREEN && this.state.isSong ? SoundPlayer.addEventListener("FinishedLoading", (result: any) => {
+        //     console.log("at finish loading");
+        //     if (result) {
+        //         this.durationCounter();
+        //     }
+        // }) : null;
+        // if (this.props.showPlay && this.state.comingFrom === OpenSong.COMPONENT) {
             this.durationCounter();
-        }
+        // }
     }
     public getMinsSec = (time: number) => {
         return { minutes: (time / 60).toFixed(0), seconds: (time % 60).toFixed(0) }
@@ -127,14 +128,15 @@ class MusicPlayScreen extends React.Component<Props, State>{
         // this.setState({ duration: {min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration}});
         if (this.props.currentSong.song_file) {
             this.timer = setInterval(async () => {
-                const songInfo = await SoundPlayer.getInfo();
-                const totalTime = this.getMinsSec(songInfo.duration);
-                const current = this.getMinsSec(songInfo.currentTime);
+                const songTotal = await RNTrackPlayer.getDuration();
+                const songCurrent = await RNTrackPlayer.getPosition();
+                const totalTime = this.getMinsSec(songTotal);
+                const current = this.getMinsSec(songCurrent);
                 this.props.isPlaying && this.setState({
-                    duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration },
+                    duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songTotal },
                 });
                 console.log("at parse int", parseInt(current.seconds));
-                this.setState({ currentTime: { min: current.minutes, sec: current.seconds, total: songInfo.currentTime } })
+                this.setState({ currentTime: { min: current.minutes, sec: current.seconds, total: songCurrent } })
                 // this.props.showPlaying && parseInt(current.seconds) === 59 ? this.setState({ currentTime: { min: this.state.currentTime.min + 1, total: songInfo.currentTime, sec: 0 } })
                 //     : this.setState({ currentTime: { sec: this.state.currentTime.sec + 1, total: songInfo.currentTime, min: this.state.currentTime.min } })
                 // console.log("making seconds mins", minutes, seconds);
@@ -156,11 +158,13 @@ class MusicPlayScreen extends React.Component<Props, State>{
     //     info && this.setState({ songDuration: { duration: this.gettimeInMins(info.duration), currentTime: this.gettimeInMins(info.currentTime) } })
     // }
     public componentWillUnmount() {
-        this._onFinishedPlaying && this._onFinishedPlaying.remove();
-        this._onFinishedloading && this._onFinishedloading.remove();
+        // this._onFinishedPlaying && this._onFinishedPlaying.remove();
+        // this._onFinishedloading && this._onFinishedloading.remove();
+        this.timer && clearInterval(this.timer);
     }
     public componentDidUpdate(nextProps: Props) {
-        if (this.props.isPlaying !== nextProps.isPlaying && this.state.isSong) {
+        if ((this.props.isPlaying !== nextProps.isPlaying || this.props.currentSong !== nextProps.currentSong) 
+        && this.state.isSong) {
             // this.props.isPlaying ? this.playSong() : this.pauseSong();
             this.durationCounter()
         };
@@ -168,13 +172,9 @@ class MusicPlayScreen extends React.Component<Props, State>{
     }
     public playSong = () => {
         if (this.props.currentSong.song_file && this.state.isSong) {
-            try {
-                SoundPlayer.playUrl(this.props.currentSong.song_file);
-                SoundPlayer.seek(this.state.songPausedAt);
-            } catch (e) {
-                console.log(`cannot play the sound file`, e)
-            };
+            RNTrackPlayer.play();
             this.props.showPlaying(true);
+            this.durationCounter();
         } else {
             this.setState({ pauseVideo: false });
             this.props.showPlaying(true);
@@ -182,20 +182,23 @@ class MusicPlayScreen extends React.Component<Props, State>{
     };
     public pauseSong = () => {
         if (this.state.isSong) {
-            SoundPlayer.pause();
-            this.setState({ songPausedAt: this.state.currentTime.total })
+            // SoundPlayer.pause();
+            // this.setState({ songPausedAt: this.state.currentTime.total })
             this.timer && clearInterval(this.timer);
+            RNTrackPlayer.pause();
         } else {
             this.setState({ pauseVideo: true }); SoundPlayer.pause()
         }
         this.props.showPlaying(false);
 
     }
-    public playNextSong = (isAuto: boolean) => {
-        this.props.playNext(this.state.isSong);
+    public playNextSong = async (isAuto: boolean) => {
+        // this.props.playNext(this.state.isSong);
+        const skip = await RNTrackPlayer.skipToNext();
     }
-    public playPreviousSong = () => {
-        this.props.playPrev(this.state.isSong);
+    public playPreviousSong = async () => {
+        // this.props.playPrev(this.state.isSong);
+        const skip = await RNTrackPlayer.skipToPrevious()
     }
 
     public onLayoutSlider = (e: any) => {
@@ -239,9 +242,22 @@ class MusicPlayScreen extends React.Component<Props, State>{
     public onBuffer = () => {
         console.log("buffering video")
     }
+    getSongDuration = async () => {
+        if(this.state.isSong){
+           const duration = await RNTrackPlayer.getDuration();
+           let time = this.getMinsSec(duration);
+           this.setState({duration: {min: time.minutes, sec: time.seconds, total: duration}})
+        // return time.minutes.toString() + ":" + time.seconds.toString();
+    }}
+    getSongCurrentTime = async () => {
+        if(this.state.isSong){
+           const duration = await RNTrackPlayer.getPosition();
+           console.log("at curren time", duration);
+           let time = this.getMinsSec(duration);
+           this.setState({currentTime: {min: time.minutes, sec: time.seconds, total: duration}})
+        // return time.minutes.toString() + ":" + time.seconds.toString();
+    }}
     public render() {
-        // console.log(this.state.currentTime.total, this.state.duration.total);
-        // console.log(this.state.isSong, this.state.videoUrl.song_file);
         return (
             <Container style={styles.container}>
                 <CommonHeader title={"Play Music"} rightItem={
@@ -346,13 +362,20 @@ class MusicPlayScreen extends React.Component<Props, State>{
                             value={this.state.currentTime.total}
                         // onProgress={this.songProgress}
                         />
+
+
+                        {/* song time view */}
                         <View style={{ flexDirection: "row", marginTop: 0, justifyContent: "space-between", width: "100%" }}>
-                            <Text style={styles.timeText}>{this.state.currentTime.min.toString() +
-                                ":" + this.state.currentTime.sec.toString()}</Text>
+                            <Text style={styles.timeText}>
+                                {this.state.currentTime.min.toString() +":" + this.state.currentTime.sec.toString()}
+                                </Text>
                             <Text style={styles.timeText}>
                                 {this.state.duration.min.toString() + ":" + this.state.duration.sec.toString()}</Text>
                         </View>
                     </View>
+
+
+                    {/* song play next previous view */}
                     <View style={{
                         flexDirection: "row", alignSelf: "center", marginTop: 25,
                         // position: "absolute", width: "40%",
@@ -363,6 +386,8 @@ class MusicPlayScreen extends React.Component<Props, State>{
                         {!this.props.showPlay && <Icon onPress={this.playSong} style={[styles.icon, { fontSize: 40, paddingHorizontal: 30, marginTop: 0 }]} name={"play"} type={"AntDesign"} />}
                         <Icon onPress={() => this.playNextSong(false)} style={styles.icon} name={"stepforward"} type={"AntDesign"} />
                     </View>
+
+                    {/* share add to favorite view */}
                     <View style={{ flexDirection: "row", alignSelf: "center", marginTop: 25 }}>
                         {
                             this.props.userRole === UserRole.NORMAL &&

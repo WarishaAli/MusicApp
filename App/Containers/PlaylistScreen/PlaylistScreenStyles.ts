@@ -151,8 +151,8 @@ export default StyleSheet.create({
     },
     modalContent: {
         paddingHorizontal: 20,
-        alignSelf: "center",
-        maxHeight: "70%"
+        // alignSelf: "center",
+        maxHeight: "75%"
     },
     songImageView:{
         width: 80,
@@ -181,6 +181,6 @@ export default StyleSheet.create({
         paddingTop: 30,
     },
     textFieldStyle:{
-        paddingHorizontal: 0,
+        // paddingHorizontal: 0,
     }
 })

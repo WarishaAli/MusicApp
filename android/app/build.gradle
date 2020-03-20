@@ -98,6 +98,11 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+}
+
     defaultConfig {
         applicationId "com.hiphopstreet"
         minSdkVersion 19
@@ -148,6 +153,8 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-track-player')
+    implementation project(':react-native-splash-screen')
     implementation project(':react-native-push-notification')
     implementation project(':react-native-webview')
     implementation project(':react-native-video')
