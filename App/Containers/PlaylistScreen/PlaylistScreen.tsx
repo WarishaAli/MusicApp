@@ -1,6 +1,6 @@
-import { Button, Container, Icon, Row, Toast } from "native-base";
+import { Button, Container, Icon, Row, Toast, Card } from "native-base";
 import React from "react";
-import { Image, Picker, Text, TouchableOpacity, View, Alert } from "react-native";
+import { Image, Picker, Text, TouchableOpacity, View, Alert, ActivityIndicator } from "react-native";
 import DocumentPicker from 'react-native-document-picker';
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import ImagePicker from 'react-native-image-picker';
@@ -27,6 +27,8 @@ import { UserRole } from "../SignupScreen/SignupScreen";
 import { isFavorite } from "../../Lib/MusicPlayerHelpers";
 import RNTrackPlayer from "react-native-track-player";
 import { transformSongArray } from "../../Lib/SongQueueHelper";
+import AsyncStorage from "@react-native-community/async-storage";
+import { Fonts } from "../../Themes";
 // import { shareSong } from "../../Lib/ShareSongHelper";
 
 export interface OwnProps {
@@ -56,7 +58,11 @@ export interface StateProps {
     isPlaying: boolean;
     userRole: UserRole;
     category: ICategoryResponse;
+    isSongUploading: boolean;
+    pendingList: Array<ISongUpload>
 }
+export const PENDING_LIST = "PendingList";
+
 export interface State {
     playlistType: PlaylistTypes;
     categoryData: any;
@@ -93,6 +99,7 @@ class PlaylistScreen extends React.Component<Props, State>{
             isVideo: this.props.navigation.getParam("isVideo"),
         }
     }
+
     public async componentDidMount() {
         this.props.setPlaylist(undefined);
         console.log("checkingggggggggg", this.props.navigation.getParam("isVideo"));
@@ -127,20 +134,21 @@ class PlaylistScreen extends React.Component<Props, State>{
         // }
     }
     public playSong = (item: any) => {
-        if(this.state.isVideo){
+        if (this.state.isVideo) {
             this.openVideoScreen(item)
-        } else{
-        // SoundPlayer.playUrl(item.song_file);
-        console.log("at play single song", transformSongArray([item, ...this.props.selectedPlaylist]));
-        RNTrackPlayer.reset();
-        RNTrackPlayer.add(transformSongArray([item, ...this.props.selectedPlaylist]));
-        RNTrackPlayer.play();
-        this.props.showPlaying(true);
-        this.props.playMusic(true);
-        this.props.selectSong(item);
-        // SoundPlayer.loadUrl(item.song_file);
+        } else {
+            // SoundPlayer.playUrl(item.song_file);
+            console.log("at play single song", transformSongArray([item, ...this.props.selectedPlaylist]));
+            RNTrackPlayer.reset();
+            RNTrackPlayer.add(transformSongArray([item, ...this.props.selectedPlaylist]));
+            RNTrackPlayer.play();
+            this.props.showPlaying(true);
+            this.props.playMusic(true);
+            this.props.selectSong(item);
+            // SoundPlayer.loadUrl(item.song_file);
 
-    }}
+        }
+    }
     public openVideoScreen = (videoItem: any) => {
         // SoundPlayer.pause();
         RNTrackPlayer.pause();
@@ -149,7 +157,7 @@ class PlaylistScreen extends React.Component<Props, State>{
         this.props.navigation.push("MusicPlayScreen", { songData: videoItem, isSong: false, videoUrl: videoItem })
     }
     public shareSong = (item: any) => {
-        shareSong(item);
+        // shareSong(item);
         let urlParam = [];
         let shareUrl = "";
         for (let i in item) {
@@ -185,12 +193,12 @@ class PlaylistScreen extends React.Component<Props, State>{
                     <Text style={styles.likeTxt}>{item.likecount}</Text>
                     {/* } */}
                     {/* {(this.props.userRole === UserRole.NORMAL) && */}
-                        <TouchableOpacity style={styles.iconView} onPress={() => { this.props.makeFavorite(item.songid) }}>
-                            {!isFav ?
-                                <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon> :
-                                <Icon name={"heart"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon>
-                            }
-                        </TouchableOpacity>
+                    <TouchableOpacity style={styles.iconView} onPress={() => { this.props.makeFavorite(item.songid) }}>
+                        {!isFav ?
+                            <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon> :
+                            <Icon name={"heart"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon>
+                        }
+                    </TouchableOpacity>
 
                     {/* } */}
 
@@ -261,14 +269,15 @@ class PlaylistScreen extends React.Component<Props, State>{
             }
         }
     }
-    public uploadSong = () => {
+    public uploadSong = async () => {
         if (this.state.songName.length > 0 && this.state.songCat.length > 0 && this.state.songFile !== undefined &&
             this.state.songImage.uri.length > 0 && this.state.songStatus !== undefined) {
             this.setState({ showModal: false });
-            this.props.uploadSong({
+            let songObject = {
                 songName: this.state.songName, songFile: this.state.songFile, songCategory: this.state.songCat,
                 songImage: this.state.songImage, status: this.state.songStatus, songType: this.state.songType,
-            })
+            }
+            this.props.uploadSong(songObject);
         } else {
             Alert.alert("Error", "Please provide a value for all fields!")
         }
@@ -349,7 +358,34 @@ class PlaylistScreen extends React.Component<Props, State>{
         </ScrollView>
     )
 
+    public renderPendingSong = (item: ISongUpload) => {
+        console.log(item)
+        return (
+            <View style={{flexDirection: "row", justifyContent: "space-between", marginTop: 10}}>
+                <View style={{flexDirection: "row", marginLeft: 20}}>
+                <Icon name={"clock"} 
+                type={"SimpleLineIcons"} style={{marginTop: 3, fontSize: 15, color: colors.lightMaroon}}/>
+                 <View style={{ marginLeft: 10, }}>
+                <Text numberOfLines={2} lineBreakMode={"middle"} style={[styles.heading, { alignSelf: "flex-start" }]}>
+                    {item.item.songName}</Text>
+                <Text style={[styles.subHeading,
+                { marginTop: 1, color: colors.maroon, fontSize: 12, marginTop: 2 }]}>{item.item.songCategory}</Text>
+                <Text style={[styles.subHeading,
+                { marginTop: 1, color: colors.maroon, fontSize: 12 }]}>{item.item.songFile.name}</Text>
+                <Text style={[styles.subHeading,
+                { marginTop: 1, color: colors.maroon, fontSize: 12 }]}>{item.item.songType}</Text>
+            </View>
+                </View>
+               
+            <ActivityIndicator color={colors.lightMaroon} style={{marginRight: 20, alignSelf: "flex-start"}}/>
+            </View>
+           
+
+        )
+    }
+
     public render() {
+        console.log(this.props.isSongUploading, this.props.pendingList);
         return (
             <Container>
                 <CommonHeader title={this.getHeading()}
@@ -359,24 +395,25 @@ class PlaylistScreen extends React.Component<Props, State>{
                         </TouchableOpacity>
                     }
                 />
-                {/* <View style={{flexDirection: "row"}}> */}
-                {/* <Image source={{uri: this.state.categoryData.thumbnail}} style={{width: 100, height: 100}}></Image> */}
-                {/* <View style={styles.headerView}> */}
-                    {/* <Text style={styles.header}>{this.getHeading()}</Text> */}
-                    {/* <Button style={styles.listenBtn} onPress={() => this.playSong(this.props.selectedPlaylist[0])}>
-                        <Icon name={"playcircleo"} type={"AntDesign"} style={{ fontSize: 15, padding: 0, margin: 0 }} />
-                        <Text style={styles.listenTxt}>Play All</Text>
-                    </Button> */}
-                {/* </View> */}
-                {/* </View> */}
 
                 <ScrollView style={{ paddingHorizontal: 10, paddingTop: 10, marginBottom: 50 }}>
                     {this.props.selectedPlaylist ?
-                        <FlatList scrollEnabled={true} style={{ paddingHorizontal: 15, paddingBottom: 100 }}
+                        <FlatList scrollEnabled={true} style={{ paddingHorizontal: 15,
+                            paddingBottom: (this.props.isSongUploading && this.state.playlistType === PlaylistTypes.MYSONGS) ? 0 : 100}}
                             data={this.props.selectedPlaylist} renderItem={this.renderSongs}
                             keyExtractor={(item) => item.songid}
                         /> : <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
                             "No songs to display, please try again later!"}</Text>
+                    }
+                    {(this.props.pendingList.length > 0 && this.props.isSongUploading && this.state.playlistType === PlaylistTypes.MYSONGS) &&
+                        <View style={{marginTop: 30}}>
+                            <Text style={[styles.header, { fontSize: 16, marginLeft: 30, color: colors.lightMaroon }]}>Pending Upload</Text>
+                            <FlatList
+                                style={{marginBottom: 100}}
+                                data={this.props.pendingList}
+                                renderItem={this.renderPendingSong}
+                            />
+                        </View>
                     }
                 </ScrollView>
                 {this.state.playlistType === PlaylistTypes.MYSONGS && <TouchableOpacity style={styles.addSong}
@@ -428,6 +465,8 @@ export const mapStateToProps = (state: RootState): StateProps => ({
     isPlaying: state.songs.isPlaying,
     userRole: state.login.userData.user_cat,
     category: state.category.categoriesData,
+    isSongUploading: state.mySongs.uploading,
+    pendingList: state.mySongs.pendingSongUpload,
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlaylistScreen);

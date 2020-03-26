@@ -44,6 +44,7 @@ export interface State {
     pauseVideo: boolean;
     songPausedAt: number;
     comingFrom: OpenSong;
+    
 }
 export interface DispatchProps {
     playMusic: (shouldPlay: boolean) => void;
@@ -80,6 +81,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
             pauseVideo: false,
             songPausedAt: 0,
             comingFrom: this.props.navigation.getParam("comingFrom"),
+       
         }
     }
     public _onFinishedPlaying: any = null;

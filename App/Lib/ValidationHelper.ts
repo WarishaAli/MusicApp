@@ -4,6 +4,6 @@ export const validateEmail = (text: string) => {
   };
 
   export const validatePassword = (text: string) => {
-      const pwdRegex = 	/^[a-zA-Z0-9]+$/;
+      const pwdRegex = 	/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
       return pwdRegex.test(text) && text.length >= 8;
   }

@@ -106,7 +106,7 @@ class SignupScreen extends React.Component<Props, State> {
     }
     public signup = () => {
         this.state.firstPage ? this.setState({ firstPage: false }) :
-            this.props.signup(this.state.username, this.state.email, this.state.password, this.state.userRole, this.state.pob, this.state.dob,
+            this.props.signup(this.state.username, this.state.email, this.state.password, this.state.userRole, this.state.pob, this.state.dob.toString(),
                 this.state.country, this.state.interests, this.state.topAlbums);
     }
     public setInterests = (text: string) => {
@@ -129,7 +129,6 @@ class SignupScreen extends React.Component<Props, State> {
         }
     }
     public renderTextFields = () => {
-        console.log(countryData);
         return this.state.firstPage ? (
             <View>
                 <InputText placeHolder={"Full Name"} onChangeText={this.setUsername} value={this.state.username} />
