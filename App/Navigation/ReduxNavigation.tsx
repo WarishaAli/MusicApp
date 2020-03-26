@@ -8,7 +8,7 @@ import { LoginActions } from "../Reducers/LoginReducers";
 import { Alert, Platform, Linking } from "react-native";
 import { ISongData, OpenSong } from "../Containers/MusicPlayScreen/MusicPlayScreen";
 import { SongsActions } from "../Reducers/SongsReducer";
-import SoundPlayer from "react-native-sound-player";
+import { setKey, expand } from "react-native-google-shortener";
 
 export interface StateProps {
   isLogin: boolean;
@@ -30,6 +30,7 @@ class ReduxNavigation extends React.Component<Props> {
   //   state: nav,
   // });
   public componentDidMount() {
+    setKey("AIzaSyCDJLIQ-qeKlvUDfxokL2W4OCIfmD77pM0");
     this.props.checkLogin();
     this.props.checkUserRole(() => Alert.alert("Error", "no user role"));
     if (Platform.OS === 'android') {
@@ -44,22 +45,27 @@ class ReduxNavigation extends React.Component<Props> {
   public handleOpenURL = (event) => { // D
     this.navigate(event.url);
   }
-  public navigate =  (url) => { // E
-    if(url){
+  public navigate = (url) => { // E
+    if (url) {
+      expand('https://goo.gl/').then(response => {
+        console.log(response.id);
+        console.log(response.longUrl);
+      });
       console.log(url, "at linking listener");
       let croppedShareUrl = "";
       let n = url.search("song");
       croppedShareUrl = url.substring(n + 5, url.length)
       let parsedUrl = JSON.parse('{"' + decodeURI(`${croppedShareUrl}`.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + '"}');
       console.log(parsedUrl, "at redux nav");
-      SoundPlayer.playUrl(parsedUrl.song_file);
+      // SoundPlayer.playUrl(parsedUrl.song_file);
+
       this.props.playSong(parsedUrl);
       this.props.shouldPlay(true);
       this.props.showPlay(true);
       this.props.navigation.push("MusicPlayScreen", { songData: parsedUrl, isSong: parsedUrl.song_type === "mp3", comingFrom: OpenSong.SCREEN })
-   
+
     }
-    }
+  }
   public render() {
     // console.log("at redux comp", this.props.isLogin);
     const AppContainer = createAppContainer(AppNavigation);

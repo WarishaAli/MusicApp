@@ -27,6 +27,7 @@ import { UserRole } from "../SignupScreen/SignupScreen";
 import { isFavorite } from "../../Lib/MusicPlayerHelpers";
 import RNTrackPlayer from "react-native-track-player";
 import { transformSongArray } from "../../Lib/SongQueueHelper";
+// import { shareSong } from "../../Lib/ShareSongHelper";
 
 export interface OwnProps {
     comingFrom: PlaylistTypes;
@@ -68,6 +69,7 @@ export interface State {
     showPicker: boolean;
     songType: "mp3" | "mp4";
     categories: any;
+    isVideo: boolean;
 }
 export type Props = OwnProps & NavigationScreenProps & DispatchProps & StateProps;
 
@@ -87,6 +89,7 @@ class PlaylistScreen extends React.Component<Props, State>{
             showPicker: false,
             songType: "mp3",
             categories: [],
+            isVideo: this.props.navigation.getParam("isVideo"),
         }
     }
     public async componentDidMount() {
@@ -122,17 +125,20 @@ class PlaylistScreen extends React.Component<Props, State>{
         // }
     }
     public playSong = (item: any) => {
+        if(this.state.isVideo){
+            this.openVideoScreen(item)
+        } else{
         // SoundPlayer.playUrl(item.song_file);
-        console.log("at play single song", transformSongArray([item]));
+        console.log("at play single song", transformSongArray([item, ...this.props.selectedPlaylist]));
         RNTrackPlayer.reset();
-        RNTrackPlayer.add(transformSongArray([item, ...this.props.categorySongs]));
+        RNTrackPlayer.add(transformSongArray([item, ...this.props.selectedPlaylist]));
         RNTrackPlayer.play();
         this.props.showPlaying(true);
         this.props.playMusic(true);
         this.props.selectSong(item);
         // SoundPlayer.loadUrl(item.song_file);
 
-    }
+    }}
     public openVideoScreen = (videoItem: any) => {
         // SoundPlayer.pause();
         RNTrackPlayer.pause();
@@ -141,6 +147,7 @@ class PlaylistScreen extends React.Component<Props, State>{
         this.props.navigation.push("MusicPlayScreen", { songData: videoItem, isSong: false, videoUrl: videoItem })
     }
     public shareSong = (item: any) => {
+        shareSong(item);
         let urlParam = [];
         let shareUrl = "";
         for (let i in item) {
@@ -172,8 +179,10 @@ class PlaylistScreen extends React.Component<Props, State>{
                 </TouchableOpacity>
                 <Row></Row>
                 <View style={{ flexDirection: "row" }}>
-                    {this.props.userRole === UserRole.NORMAL && <Text style={styles.likeTxt}>{item.likecount}</Text>}
-                    {(this.props.userRole === UserRole.NORMAL) &&
+                    {/* {this.props.userRole === UserRole.NORMAL &&  */}
+                    <Text style={styles.likeTxt}>{item.likecount}</Text>
+                    {/* } */}
+                    {/* {(this.props.userRole === UserRole.NORMAL) && */}
                         <TouchableOpacity style={styles.iconView} onPress={() => { this.props.makeFavorite(item.songid) }}>
                             {!isFav ?
                                 <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon> :
@@ -181,7 +190,7 @@ class PlaylistScreen extends React.Component<Props, State>{
                             }
                         </TouchableOpacity>
 
-                    }
+                    {/* } */}
 
                     <TouchableOpacity style={styles.shareView} onPress={() => this.shareSong(item)}>
                         <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={styles.heartIcon}></Icon>

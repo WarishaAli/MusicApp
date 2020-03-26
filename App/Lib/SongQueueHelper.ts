@@ -1,4 +1,5 @@
 import { Songs } from "./PlaylistTypes";
+import RNTrackPlayer from "react-native-track-player";
 
 export const transformSongArray = (songArray: Array<Songs>) => {
     if(songArray){
@@ -27,17 +28,8 @@ export const transformSongObject = (songObject: any) => {
     }
 }
 
-// artistName: "Ms Cash"
-// songid: "88"
-// song_name: "Burn Rubber"
-// song_category: "Club"
-// song_image: "b410b7b8ed67a3cf4e7bf4ed32768c4e.jpg"
-// song_file: "http://app.hiphopstreets.com/songfile/e4b030132131cbf9a062eb30bcad3d99.mp3"
-// userid: "93"
-// status: "1"
-// add_date: "2017-08-06 17:09:04"
-// likecount: "2"
-// song_type: "mp3"
-// cat_id: "0"
-// featured: "0"
-// songimage: "http://app.hiphopstreets.com/songimage/b410b7b8ed67a3cf4e7bf4ed32768c4e.jpg"
+export const  getPlayerState = async () => {
+    const b = await RNTrackPlayer.getState();
+    console.log("player state", b);
+    return b === 3 ? true : false;
+}

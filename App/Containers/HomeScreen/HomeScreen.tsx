@@ -20,6 +20,9 @@ import SoundPlayer from "react-native-sound-player";
 import { ISongData, OpenSong } from "../MusicPlayScreen/MusicPlayScreen";
 import { SearchAction } from "../../Reducers/SearchReducer";
 import TrackPlayer from "react-native-track-player";
+import RNTrackPlayer from "react-native-track-player";
+import { transformSongArray } from "../../Lib/SongQueueHelper";
+
 export interface State {
     croppedFeaturedSongs: any;
     showSearchBar: boolean;
@@ -110,14 +113,32 @@ class HomeScreen extends React.Component<Props, State> {
     //     }
     // }
     public playSong = (item) => {
-        SoundPlayer.playUrl(item.song_file);
+        // console.log(item, this.props.featuredSongs, transformSongArray([item]), transformSongArray([item, ...this.props.featuredSongs]))
+        RNTrackPlayer.reset();
+        this.props.featuredSongs.length > 0 ? RNTrackPlayer.add(transformSongArray([item, ...this.props.featuredSongs])) :
+            RNTrackPlayer.add(transformSongArray([item]));
+        RNTrackPlayer.play();
         this.props.playSong(item);
         this.props.shouldPlay(true);
         this.props.showPlay(true);
-        this.props.setPlaylist(this.props.featuredSongs);
+        // this.props.setPlaylist(this.props.featuredSongs);
     }
-    public openSongScreen = async (item) => {
-        this.playSong(item);
+    public openSongScreen = (item) => {
+        // this.playSong(item);
+        // console.log(item, transformSongArray([item]))
+        // RNTrackPlayer.reset();
+        this.props.featuredSongs ? RNTrackPlayer.add(transformSongArray([item, ...this.props.featuredSongs])) :
+            RNTrackPlayer.add({
+                id: item.songid,
+                url: item.song_file,
+                title: item.song_name,
+                artist: item.artistName,
+                artwork: item.songimage,
+            });
+        RNTrackPlayer.play();
+        this.props.playSong(item);
+        this.props.shouldPlay(true);
+        this.props.showPlay(true);
         this.props.navigation.push("MusicPlayScreen", { songData: item, isSong: true, comingFrom: OpenSong.SCREEN })
     }
 
@@ -194,7 +215,6 @@ class HomeScreen extends React.Component<Props, State> {
         )
     }
     public render() {
-        console.log(!this.props.isSongPlaying, "at home")
         return (
             <Container style={{ backgroundColor: colors.snow }} >
                 <CommonHeader title={"Search"}
@@ -268,25 +288,25 @@ class HomeScreen extends React.Component<Props, State> {
                         
                         }
                     }></Button> */}
-                {this.renderTextIcon(DataTypes.SONGS, this.props.featuredSongs)}
-                {this.renderGenreList(this.props.featuredSongs, DataTypes.SONGS)}
-                {this.renderTextIcon(DataTypes.ALBUMS, this.props.category)}
-                {this.renderGenreList(this.props.category, DataTypes.ALBUMS)}
-                {/* {this.renderTextIcon(DataTypes.VIDEOS, this.props.featuredVideos)} */}
-                {/* {this.renderGenreList(this.props.featuredVideos, DataTypes.VIDEOS)} */}
-                {this.renderTextIcon(DataTypes.VIDEOS, this.props.videoCategories)}
-                {this.renderGenreList(this.props.videoCategories, DataTypes.VIDEOS)}
-                {this.renderTextIcon(DataTypes.PODCASTS, this.props.featuredPodcasts)}
-                {this.renderGenreList(this.props.featuredPodcasts, DataTypes.PODCASTS)}
+                    {this.renderTextIcon(DataTypes.SONGS, this.props.featuredSongs)}
+                    {this.renderGenreList(this.props.featuredSongs, DataTypes.SONGS)}
+                    {this.renderTextIcon(DataTypes.ALBUMS, this.props.category)}
+                    {this.renderGenreList(this.props.category, DataTypes.ALBUMS)}
+                    {/* {this.renderTextIcon(DataTypes.VIDEOS, this.props.featuredVideos)} */}
+                    {/* {this.renderGenreList(this.props.featuredVideos, DataTypes.VIDEOS)} */}
+                    {this.renderTextIcon(DataTypes.VIDEOS, this.props.videoCategories)}
+                    {this.renderGenreList(this.props.videoCategories, DataTypes.VIDEOS)}
+                    {this.renderTextIcon(DataTypes.PODCASTS, this.props.featuredPodcasts)}
+                    {this.renderGenreList(this.props.featuredPodcasts, DataTypes.PODCASTS)}
                 </ScrollView>
 
 
                 {
-            this.props.isSongPlaying && <MusicPlayer style={styles.musicPlayer} hide={false}
-                navigation={this.props.navigation}
-            />
-        }
-        <BottomBar navigation={this.props.navigation} />
+                    this.props.isSongPlaying && <MusicPlayer style={styles.musicPlayer} hide={false}
+                        navigation={this.props.navigation}
+                    />
+                }
+                <BottomBar navigation={this.props.navigation} />
             </Container >
         )
     }

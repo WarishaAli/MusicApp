@@ -47,6 +47,7 @@
     "react-native-drawer": "^2.3.0",
     "react-native-fbsdk": "^1.1.1",
     "react-native-gesture-handler": "^1.4.1",
+    "react-native-google-shortener": "^1.1.0",
     "react-native-image-picker": "^2.0.0",
     "react-native-push-notification": "^3.1.9",
     "react-native-share": "^3.0.0",

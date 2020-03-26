@@ -63,19 +63,20 @@ class BottomBar extends React.Component<Props, State>{
         return (
             <View style={styles.mainView}>
 
-                {/* Playlist */}
-                {this.props.userRole === UserRole.NORMAL && <Button onPress={() => this.selectBottomTab(BottomBarBtns.PLAYLIST)} transparent={true}
+                {/* Favorites */}
+                {<Button onPress={() => this.selectBottomTab(BottomBarBtns.PLAYLIST)} transparent={true}
                     style={[styles.iconHolder, { backgroundColor: this.props.selectedTab === BottomBarBtns.PLAYLIST ? colors.lightMaroon : colors.maroon }]}>
                     <Icon style={styles.iconStyle} name={"favorite-border"} type={"MaterialIcons"} />
                     <Text style={styles.textStyle}>Favorites</Text>
                 </Button>}
-                {/* Blogs */}
+
+                {/* My Songs */}
                 {this.props.userRole === UserRole.ARTIST && <Button onPress={() => this.selectBottomTab(BottomBarBtns.MYSONGS)} transparent={true}
                     style={[styles.iconHolder, { backgroundColor: this.props.selectedTab === BottomBarBtns.MYSONGS ? colors.lightMaroon : colors.maroon }]}>
                     <Icon style={styles.iconStyle} name={"playlist"} type={"SimpleLineIcons"} />
                     <Text style={styles.textStyle}>My Songs</Text>
                 </Button>}
-                {/* Settings */}
+                
 
                 {/* Explore */}
                 <Button onPress={() => this.selectBottomTab(BottomBarBtns.EXPLORE)} transparent={true}
@@ -84,6 +85,7 @@ class BottomBar extends React.Component<Props, State>{
                     <Text style={styles.textStyle}>Explore</Text>
                 </Button>
 
+                {/* Blogs */}
                 <Button
                     onPress={() => this.selectBottomTab(BottomBarBtns.BLOGS)}
                     transparent={true}
@@ -92,6 +94,7 @@ class BottomBar extends React.Component<Props, State>{
                     <Text style={styles.textStyle}>Blogs</Text>
                 </Button>
 
+                {/* Settings */}
                 <Button onPress={() => this.selectBottomTab(BottomBarBtns.SETTINGS)} transparent={true}
                     style={[styles.iconHolder, { backgroundColor: this.props.selectedTab === BottomBarBtns.SETTINGS ? colors.lightMaroon : colors.maroon }]}>
                     <Icon style={styles.iconStyle} name={"settings"} type={"SimpleLineIcons"} />

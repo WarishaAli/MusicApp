@@ -7,7 +7,7 @@ import { TouchableOpacity, Image, Text, View, ScrollView, Dimensions } from "rea
 import colors from "../../Themes/Colors";
 import Slider from '@react-native-community/slider';
 import SoundPlayer from "react-native-sound-player";
-import { Songs } from "../../Lib/PlaylistTypes";
+import { Songs, PlaylistTypes } from "../../Lib/PlaylistTypes";
 import { connect, Dispatch } from "react-redux";
 import { SongsActions } from "../../Reducers/SongsReducer";
 import { RootState } from "../../Reducers";
@@ -18,6 +18,8 @@ import { FavoriteAction } from "../../Reducers/FavoritesReducer";
 import { isFavorite, isPortrait } from "../../Lib/MusicPlayerHelpers";
 import Video from 'react-native-video';
 import RNTrackPlayer from "react-native-track-player";
+import { getPlayerState } from "../../Lib/SongQueueHelper";
+import TrackPlayer from "../../Components/TrackPlayer/TrackPlayer";
 
 export enum OpenSong {
     SCREEN = "From Screen",
@@ -85,9 +87,10 @@ class MusicPlayScreen extends React.Component<Props, State>{
     public timer: any = null;
     public videoPlayer: any = null;
 
-    public componentDidMount() {
+    public async componentDidMount() {
         this.props.userRole === UserRole.NORMAL && this.props.getFavorites();
         console.log(this.state.isSong, "song or video");
+        this.getSongTotalTime();
         // this._onFinishedPlaying = this.state.isSong ? SoundPlayer.addEventListener("FinishedPlaying", (result: any) => {
         //     console.log("at song finished playing", result);
         //     this.playNextSong(true);
@@ -101,11 +104,19 @@ class MusicPlayScreen extends React.Component<Props, State>{
         //     }
         // }) : null;
         // if (this.props.showPlay && this.state.comingFrom === OpenSong.COMPONENT) {
-            this.durationCounter();
+        this.durationCounter();
         // }
     }
+    public getSongTotalTime = async () => {
+        if (this.props.currentSong) {
+            const songTotalTime = await RNTrackPlayer.getDuration();
+            const totalTime = this.getMinsSec(songTotalTime);
+            this.setState({ duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songTotalTime }, })
+        }
+    }
     public getMinsSec = (time: number) => {
-        return { minutes: (time / 60).toFixed(0), seconds: (time % 60).toFixed(0) }
+        console.log(Math.floor(time / 60));
+        return { minutes: Math.floor(time / 60), seconds: (time % 60).toFixed(0) }
     }
     // public getDuration = async () => {
     //     const songInfo = await SoundPlayer.getInfo();
@@ -121,20 +132,22 @@ class MusicPlayScreen extends React.Component<Props, State>{
     //         });
     //     this.durationCounter();
     // }
+   
     public durationCounter = async () => {
+
         // const songInfo = await SoundPlayer.getInfo();
         // const totalTime =  this.getMinsSec(songInfo.duration);
         // console.log("at total song time", totalTime);
         // this.setState({ duration: {min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration}});
         if (this.props.currentSong.song_file) {
             this.timer = setInterval(async () => {
-                const songTotal = await RNTrackPlayer.getDuration();
+                // const songTotal = await RNTrackPlayer.getDuration();
                 const songCurrent = await RNTrackPlayer.getPosition();
-                const totalTime = this.getMinsSec(songTotal);
+                // const totalTime = this.getMinsSec(songTotal);
                 const current = this.getMinsSec(songCurrent);
-                this.props.isPlaying && this.setState({
-                    duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songTotal },
-                });
+                // this.props.isPlaying && this.setState({
+                //     duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songTotal },
+                // });
                 console.log("at parse int", parseInt(current.seconds));
                 this.setState({ currentTime: { min: current.minutes, sec: current.seconds, total: songCurrent } })
                 // this.props.showPlaying && parseInt(current.seconds) === 59 ? this.setState({ currentTime: { min: this.state.currentTime.min + 1, total: songInfo.currentTime, sec: 0 } })
@@ -163,10 +176,11 @@ class MusicPlayScreen extends React.Component<Props, State>{
         this.timer && clearInterval(this.timer);
     }
     public componentDidUpdate(nextProps: Props) {
-        if ((this.props.isPlaying !== nextProps.isPlaying || this.props.currentSong !== nextProps.currentSong) 
-        && this.state.isSong) {
+        if ((this.props.isPlaying !== nextProps.isPlaying || this.props.currentSong !== nextProps.currentSong)
+            && this.state.isSong) {
             // this.props.isPlaying ? this.playSong() : this.pauseSong();
             this.durationCounter()
+            this.getSongTotalTime();
         };
 
     }
@@ -243,20 +257,22 @@ class MusicPlayScreen extends React.Component<Props, State>{
         console.log("buffering video")
     }
     getSongDuration = async () => {
-        if(this.state.isSong){
-           const duration = await RNTrackPlayer.getDuration();
-           let time = this.getMinsSec(duration);
-           this.setState({duration: {min: time.minutes, sec: time.seconds, total: duration}})
-        // return time.minutes.toString() + ":" + time.seconds.toString();
-    }}
+        if (this.state.isSong) {
+            const duration = await RNTrackPlayer.getDuration();
+            let time = this.getMinsSec(duration);
+            this.setState({ duration: { min: time.minutes, sec: time.seconds, total: duration } })
+            // return time.minutes.toString() + ":" + time.seconds.toString();
+        }
+    }
     getSongCurrentTime = async () => {
-        if(this.state.isSong){
-           const duration = await RNTrackPlayer.getPosition();
-           console.log("at curren time", duration);
-           let time = this.getMinsSec(duration);
-           this.setState({currentTime: {min: time.minutes, sec: time.seconds, total: duration}})
-        // return time.minutes.toString() + ":" + time.seconds.toString();
-    }}
+        if (this.state.isSong) {
+            const duration = await RNTrackPlayer.getPosition();
+            console.log("at curren time", duration);
+            let time = this.getMinsSec(duration);
+            this.setState({ currentTime: { min: time.minutes, sec: time.seconds, total: duration } })
+            // return time.minutes.toString() + ":" + time.seconds.toString();
+        }
+    }
     public render() {
         return (
             <Container style={styles.container}>
@@ -270,6 +286,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
                             this.props.setSong();
                             SoundPlayer.pause();
                         }
+                        this.timer && clearInterval(this.timer);
                     }}>
                         <Icon name={"ios-arrow-down"} type={"Ionicons"} style={{ color: colors.lightMaroon, fontSize: 18 }} />
                     </TouchableOpacity>
@@ -287,8 +304,10 @@ class MusicPlayScreen extends React.Component<Props, State>{
                             onBuffer={this.onBuffer}                // Callback when remote video is buffering
                             // onError={this.videoError}               // Callback when video cannot be loaded
                             resizeMode={"cover"}
-                            style={{ marginTop: 0, width: Dimensions.get("screen").width,
-                            height: isPortrait() ? 300 : Dimensions.get("window").height / 1.2 }}
+                            style={{
+                                marginTop: 0, width: Dimensions.get("screen").width,
+                                height: isPortrait() ? 300 : Dimensions.get("window").height / 1.2
+                            }}
                             paused={this.state.pauseVideo}
                             onReadyForDisplay={() => this.props.showPlaying(true)}
                             onEnd={() => this.props.showPlaying(false)}
@@ -341,7 +360,8 @@ class MusicPlayScreen extends React.Component<Props, State>{
                                             sec: parseInt(this.getMinsSec(n).seconds), total: n
                                         }
                                     })
-                                    SoundPlayer.seek(this.state.currentTime.total)
+                                    RNTrackPlayer.seekTo(n);
+                                    // SoundPlayer.seek(this.state.currentTime.total)
                                 } else {
                                     this.videoPlayer.seek(n);
                                 }
@@ -354,7 +374,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
                                             sec: parseInt(this.getMinsSec(n).seconds), total: n
                                         }
                                     })
-                                    SoundPlayer.seek(this.state.currentTime.total)
+                                    RNTrackPlayer.seekTo(n);
                                 } else {
                                     this.videoPlayer.seek(n);
                                 }
@@ -367,8 +387,8 @@ class MusicPlayScreen extends React.Component<Props, State>{
                         {/* song time view */}
                         <View style={{ flexDirection: "row", marginTop: 0, justifyContent: "space-between", width: "100%" }}>
                             <Text style={styles.timeText}>
-                                {this.state.currentTime.min.toString() +":" + this.state.currentTime.sec.toString()}
-                                </Text>
+                                {this.state.currentTime.min.toString() + ":" + this.state.currentTime.sec.toString()}
+                            </Text>
                             <Text style={styles.timeText}>
                                 {this.state.duration.min.toString() + ":" + this.state.duration.sec.toString()}</Text>
                         </View>
@@ -389,31 +409,48 @@ class MusicPlayScreen extends React.Component<Props, State>{
 
                     {/* share add to favorite view */}
                     <View style={{ flexDirection: "row", alignSelf: "center", marginTop: 25 }}>
-                        {
-                            this.props.userRole === UserRole.NORMAL &&
+                        {/* {
+                            this.props.userRole === UserRole.NORMAL && */}
                             <TouchableOpacity style={{
-                                padding: 5, width: 180, height: 30, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
+                                padding: 2, flex:0.5, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
                                 justifyContent: "center", borderColor: colors.lightMaroon
                             }} onPress={() => this.props.makeFavorite(this.props.currentSong.songid)}>
-                                <Text>{isFavorite(this.props.favorites, this.props.currentSong.songid) ?
+                                <Text style={{fontSize: 12}}>{isFavorite(this.props.favorites, this.props.currentSong.songid) ?
                                     "Remove from favorites" : "Add to favorites"}</Text>
                                 <Icon name={"hearto"}
                                     type={"AntDesign"} style={{
-                                        fontSize: 12, color: colors.charcoal, marginTop: 2, marginLeft: 2, padding: 0
+                                        fontSize: 10, color: colors.charcoal, marginLeft: 2, padding: 0, marginTop: 3
                                     }}></Icon>
-                            </TouchableOpacity>}
+                            </TouchableOpacity>
+                            {/* } */}
                         <TouchableOpacity
                             style={{
-                                padding: 5, width: 150, height: 30, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
-                                justifyContent: "center", marginLeft: 5, borderColor: colors.lightMaroon,
+                                padding: 2, flex: 0.5, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
+                                justifyContent: "center", marginLeft: 5, borderColor: colors.lightMaroon, marginTop: 1,
                             }}
                             onPress={() => this.shareSong(this.props.currentSong)}>
-                            <Text>{this.state.isSong ? "Share song" : "Share video"}</Text>
-                            <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={{ fontSize: 20, color: colors.charcoal, }}></Icon>
+                            <Text style={{fontSize: 12}}>{this.state.isSong ? "Share song" : "Share video"}</Text>
+                            <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={{ fontSize: 13, color: colors.charcoal, marginTop: 4 }}></Icon>
                         </TouchableOpacity>
                     </View>
 
+                    {/* go to favorites playlist */}
+                    <View
+                    style={{ flexDirection: "row", alignSelf: "center", marginTop: 15, marginBottom: 30 }}
+                    >
+                         <TouchableOpacity style={{
+                                padding: 2, flex:0.5,  flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
+                                justifyContent: "center", borderColor: colors.lightMaroon,
+                            }} onPress={() => this.props.navigation.push("PlaylistScreen", { comingFrom: PlaylistTypes.PLAYLIST })}>
+                                <Text style={{fontSize: 12}}>My playlist</Text>
+                                <Icon name={"playlist"} type={"SimpleLineIcons"} style={{
+                                        fontSize: 10, color: colors.charcoal, marginLeft: 2, padding: 0, marginTop: 2
+                                    }}></Icon>
+                            </TouchableOpacity>
+                    </View>
+
                 </ScrollView>
+                {/* <TrackPlayer/> */}
 
             </Container>
         )
