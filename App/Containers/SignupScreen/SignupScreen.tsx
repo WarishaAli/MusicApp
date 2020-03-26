@@ -5,10 +5,14 @@ import InputText from "../../Components/InputText/InputText";
 import AppLogo from "../../Components/AppLogo/AppLogo";
 import colors from "../../Themes/Colors";
 import LargeButton from "../../Components/LargeButton";
-import { Text, View } from "react-native";
+import { Text, View, Picker } from "react-native";
 import { NavigationScreenProps } from "react-navigation";
 import { LoginActions } from "../../Reducers/LoginReducers";
 import { connect } from "react-redux";
+import { validateEmail, validatePassword } from "../../Lib/ValidationHelper";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { TouchableOpacity } from "react-native-gesture-handler";
+import countryData from "../../Lib/Country";
 
 export enum UserRole {
     NORMAL = "user",
@@ -21,13 +25,20 @@ export interface State {
     confirmPwd: string;
     username: string;
     userRole: UserRole;
-    dob: string;
+    dob: Date;
     pob: string;
     country: string;
     topAlbums: string;
     interests: string;
     firstPage: boolean;
     termsChecked: boolean;
+    emailError: boolean;
+    emailErrorText: string;
+    passwordError: boolean;
+    pwdErrorText: string;
+    confirmPwdError: boolean;
+    confirmPwdErrorText: string;
+    showDatePicker: boolean;
 }
 
 export interface DispatchProps {
@@ -45,13 +56,20 @@ class SignupScreen extends React.Component<Props, State> {
             password: "",
             username: "",
             userRole: UserRole.NORMAL,
-            dob: "",
+            dob: new Date(),
             pob: "",
             interests: "",
             topAlbums: "",
             country: "",
             firstPage: true,
             termsChecked: false,
+            emailErrorText: "",
+            emailError: false,
+            passwordError: false,
+            pwdErrorText: "",
+            confirmPwdError: false,
+            confirmPwdErrorText: " ",
+            showDatePicker: false,
         }
     }
     public openLogin = () => {
@@ -62,14 +80,15 @@ class SignupScreen extends React.Component<Props, State> {
     }
 
     public setEmail = (text: string) => {
-        this.setState({ email: text })
+        this.setState({ email: text });
+        validateEmail(text) ? this.setState({ emailError: false }) : this.setState({ emailError: true, emailErrorText: "Please enter a valid email address" })
     }
-    public setDob = (text: string) => {
-        this.setState({ dob: text })
+    public setDob = () => {
+        this.setState({showDatePicker: true})
     }
 
     public setPob = (text: string) => {
-        this.setState({ pob: text })
+        this.setState({pob: text })
     }
 
     public setCountry = (text: string) => {
@@ -77,9 +96,13 @@ class SignupScreen extends React.Component<Props, State> {
     }
     public setPwd = (text: string) => {
         this.setState({ password: text })
+        validatePassword(text) ? this.setState({ passwordError: false }) : 
+        this.setState({ passwordError: true, pwdErrorText: "Password must be atleast 6 characters long & must contain alphabets & numbers" })
     }
     public confirmPwd = (text: string) => {
         this.setState({ confirmPwd: text })
+        text === this.state.password ? this.setState({ confirmPwdError: false }) :
+            this.setState({ confirmPwdError: true, confirmPwdErrorText: "Password does not match previously entered password" })
     }
     public signup = () => {
         this.state.firstPage ? this.setState({ firstPage: false }) :
@@ -95,25 +118,50 @@ class SignupScreen extends React.Component<Props, State> {
 
     public disableBtn = () => {
         if (this.state.firstPage) {
-            return (this.state.email.length === 0 || this.state.username.length === 0 || this.state.dob.length === 0 ||
+            return (!validateEmail(this.state.email) || this.state.username.length === 0 || this.state.dob.length === 0 ||
                 this.state.pob.length === 0 || this.state.country.length === 0
             )
         } else {
             return this.state.userRole === UserRole.ARTIST ? (this.state.interests.length === 0 ||
                 this.state.topAlbums.length === 0 || this.state.password.length === 0 ||
                 this.state.password !== this.state.confirmPwd || this.state.termsChecked === false
-            ) : (this.state.password.length === 0 ||
-                this.state.password !== this.state.confirmPwd)
+            ) : (!validatePassword(this.state.password) || this.state.confirmPwdError === true)
         }
     }
     public renderTextFields = () => {
+        console.log(countryData);
         return this.state.firstPage ? (
             <View>
                 <InputText placeHolder={"Full Name"} onChangeText={this.setUsername} value={this.state.username} />
-                <InputText style={{ marginTop: 20 }} placeHolder={"Email"} onChangeText={this.setEmail} value={this.state.email} />
-                <InputText style={{ marginTop: 20 }} placeHolder={"Birthday"} onChangeText={this.setDob} value={this.state.dob} />
+                <InputText style={{ marginTop: 20 }} placeHolder={"Email"} onChangeText={this.setEmail}
+                    value={this.state.email} error={this.state.emailError} errorText={this.state.emailErrorText} />
+                {/* <InputText style={{ marginTop: 20 }} placeHolder={"Birthday"}
+                    value={this.state.dob} /> */}
+                    <TouchableOpacity style={styles.greyBox} onPress={this.setDob}>
+                        <Text onPress={this.setDob}>
+                        {this.state.dob.toDateString()}
+                        </Text>
+                    </TouchableOpacity>
                 <InputText style={{ marginTop: 20 }} placeHolder={"Place of birth"} onChangeText={this.setPob} value={this.state.pob} />
-                <InputText style={{ marginTop: 20 }} placeHolder={"Country"} onChangeText={this.setCountry} value={this.state.country} />
+                {/* <InputText style={{ marginTop: 20 }} placeHolder={"Country"} onChangeText={this.setCountry} value={this.state.country} /> */}
+                <View style={[styles.greyBox, {paddingHorizontal: 10}]}>
+                    <Picker
+                    mode={"dialog"}
+                    enabled={true}
+                    selectedValue={this.state.country}
+                    onValueChange={(itemValue) => {
+                        if (itemValue.name !== "Select a country") {
+    
+                            this.setState({ country: itemValue })
+                        }
+                    }}
+                    style={{ color: colors.charcoal, fontSize: 2 }}
+                >
+                    {countryData ? countryData.map((item: any) => (
+                        <Picker.Item value={item.name} label={item.name} />)) : (null)}
+    
+                </Picker>
+                </View>
             </View>
         ) : (
                 <View>
@@ -136,15 +184,19 @@ class SignupScreen extends React.Component<Props, State> {
                         <InputText style={{ marginTop: 20 }} placeHolder={"Interests"} onChangeText={this.setInterests} value={this.state.interests} />
                         <InputText style={{ marginTop: 20 }} placeHolder={"Top Albums"} onChangeText={this.setTopAlbums} value={this.state.topAlbums} />
                     </View>}
-                    <InputText style={{ marginTop: 20 }} placeHolder={"Password"} onChangeText={this.setPwd} secureTextEntry={true} value={this.state.password} />
-                    <InputText style={{ marginTop: 20 }} placeHolder={"Confirm Password"} onChangeText={this.confirmPwd} secureTextEntry={true} value={this.state.confirmPwd} />
+                    <InputText style={{ marginTop: 20 }} placeHolder={"Password"}
+                        onChangeText={this.setPwd} secureTextEntry={true} value={this.state.password} errorText={this.state.pwdErrorText}
+                        error={this.state.passwordError} />
+                    <InputText style={{ marginTop: 20 }} placeHolder={"Confirm Password"} onChangeText={this.confirmPwd} secureTextEntry={true}
+                        error={this.state.confirmPwdError} errorText={this.state.confirmPwdErrorText}
+                        value={this.state.confirmPwd} />
                     {this.state.userRole === UserRole.ARTIST &&
-                        <View style={{backgroundColor: colors.silver, marginTop: 20, padding: 10, flexDirection: "row" }}>
+                        <View style={{ backgroundColor: colors.silver, marginTop: 20, padding: 10, flexDirection: "row" }}>
                             <CheckBox checked={this.state.termsChecked} color={colors.steel}
-                            onPress={() => this.setState({termsChecked: !this.state.termsChecked})}
+                                onPress={() => this.setState({ termsChecked: !this.state.termsChecked })}
                             />
-                            <Text style={{marginLeft: 20}}>
-                                I agree to the <Text style={{color: colors.maroon}}>Terms and Conditions</Text></Text>
+                            <Text style={{ marginLeft: 20 }}>
+                                I agree to the <Text style={{ color: colors.maroon }}>Terms and Conditions</Text></Text>
                         </View>}
                 </View>
             )
@@ -164,6 +216,13 @@ class SignupScreen extends React.Component<Props, State> {
                     }
                     <Text style={styles.accountText}>Already have an account? <Text onPress={this.openLogin} style={{ color: colors.maroon }}>Login</Text></Text>
                 </Content>
+                {this.state.showDatePicker &&
+                    <DateTimePicker
+                    value={this.state.dob}
+                    display={"default"}
+                    onChange={(event, date) => 
+                        date && this.setState({dob: date, showDatePicker: false})}
+                    />}
             </Container>
         )
     }

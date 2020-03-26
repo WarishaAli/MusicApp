@@ -5,5 +5,9 @@ export default StyleSheet.create({
     textField: {
         backgroundColor: colors.silver,
         paddingHorizontal: 20,
+    },
+    errorText: {
+        color: colors.lightMaroon,
+        fontSize: 10,
     }
 });

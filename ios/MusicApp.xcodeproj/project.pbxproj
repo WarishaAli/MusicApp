@@ -72,6 +72,7 @@
 		2CB96CCA24ED45F09D8F7BB8 /* libRNFBApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E91C77DB644DDC9784A5ED /* libRNFBApp.a */; };
 		1A09F6BD0E5D4F83B9E1D3F9 /* libSplashScreen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 88873337F5F4462197174E23 /* libSplashScreen.a */; };
 		FC27542113B740AD91FA6C7C /* libRNTrackPlayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 32F6F1BBF45B420DBD6A2167 /* libRNTrackPlayer.a */; };
+		E147D82205C64FEA9A6076DE /* libRNDateTimePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C262400ACF3480F8DE0095B /* libRNDateTimePicker.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -350,6 +351,8 @@
 		88873337F5F4462197174E23 /* libSplashScreen.a */ = {isa = PBXFileReference; name = "libSplashScreen.a"; path = "libSplashScreen.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		5F7609DCA8C143B498ACDCAA /* RNTrackPlayer.xcodeproj */ = {isa = PBXFileReference; name = "RNTrackPlayer.xcodeproj"; path = "../node_modules/react-native-track-player/ios/RNTrackPlayer.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		32F6F1BBF45B420DBD6A2167 /* libRNTrackPlayer.a */ = {isa = PBXFileReference; name = "libRNTrackPlayer.a"; path = "libRNTrackPlayer.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		199B218E678B4AF4BE72D144 /* RNDateTimePicker.xcodeproj */ = {isa = PBXFileReference; name = "RNDateTimePicker.xcodeproj"; path = "../node_modules/@react-native-community/datetimepicker/ios/RNDateTimePicker.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		6C262400ACF3480F8DE0095B /* libRNDateTimePicker.a */ = {isa = PBXFileReference; name = "libRNDateTimePicker.a"; path = "libRNDateTimePicker.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -393,6 +396,7 @@
 				2CB96CCA24ED45F09D8F7BB8 /* libRNFBApp.a in Frameworks */,
 				1A09F6BD0E5D4F83B9E1D3F9 /* libSplashScreen.a in Frameworks */,
 				FC27542113B740AD91FA6C7C /* libRNTrackPlayer.a in Frameworks */,
+				E147D82205C64FEA9A6076DE /* libRNDateTimePicker.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -578,6 +582,7 @@
 				96C38905B5A642EF87B4F6CF /* RNFBApp.xcodeproj */,
 				A1FF572BF25F4899A38F8140 /* SplashScreen.xcodeproj */,
 				5F7609DCA8C143B498ACDCAA /* RNTrackPlayer.xcodeproj */,
+				199B218E678B4AF4BE72D144 /* RNDateTimePicker.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1189,9 +1194,11 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
@@ -1244,9 +1251,11 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
@@ -1298,6 +1307,7 @@
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
+					"$(SRCROOT)/..",
 				);
 			};
 			name = Debug;
@@ -1318,6 +1328,7 @@
 				VERSIONING_SYSTEM = "apple-generic";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
@@ -1379,9 +1390,11 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
@@ -1443,9 +1456,11 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
 					"$(SRCROOT)/..",
@@ -1502,6 +1517,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 			};
 			name = Debug;
@@ -1526,6 +1542,7 @@
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",

@@ -124,9 +124,6 @@ class HomeScreen extends React.Component<Props, State> {
         // this.props.setPlaylist(this.props.featuredSongs);
     }
     public openSongScreen = (item) => {
-        // this.playSong(item);
-        // console.log(item, transformSongArray([item]))
-        // RNTrackPlayer.reset();
         this.props.featuredSongs ? RNTrackPlayer.add(transformSongArray([item, ...this.props.featuredSongs])) :
             RNTrackPlayer.add({
                 id: item.songid,
@@ -149,7 +146,15 @@ class HomeScreen extends React.Component<Props, State> {
         this.props.navigation.push("MusicPlayScreen", { songData: videoItem, isSong: false, videoUrl: videoItem })
     }
     public openPodcastScreen = (item) => {
-        SoundPlayer.playUrl(item.song_file);
+        // SoundPlayer.playUrl(item.song_file);
+        this.props.featuredPodcasts ? RNTrackPlayer.add(transformSongArray([item, ...this.props.featuredPodcasts])) :
+        RNTrackPlayer.add({
+            id: item.songid,
+            url: item.song_file,
+            title: item.song_name,
+            artist: item.artistName,
+            artwork: item.songimage,
+        });
         this.props.playSong(item);
         this.props.shouldPlay(true);
         this.props.showPlay(true);

@@ -44,6 +44,7 @@ export interface DispatchProps {
     uploadSong: (params: ISongUpload) => void;
     showPlaying: (showPlayer: boolean) => void;
     getHeart: (setPlaylist: boolean) => void;
+    setPlaylist: (songs: Playlist | undefined) => void;
 }
 export interface StateProps {
     shouldPlay: boolean;
@@ -93,6 +94,7 @@ class PlaylistScreen extends React.Component<Props, State>{
         }
     }
     public async componentDidMount() {
+        this.props.setPlaylist(undefined);
         console.log("checkingggggggggg", this.props.navigation.getParam("isVideo"));
         switch (this.state.playlistType) {
             case PlaylistTypes.EXPLORE: {
@@ -350,7 +352,7 @@ class PlaylistScreen extends React.Component<Props, State>{
     public render() {
         return (
             <Container>
-                <CommonHeader title={"Stream songs"}
+                <CommonHeader title={this.getHeading()}
                     leftItem={
                         this.state.playlistType === PlaylistTypes.EXPLORE && <TouchableOpacity style={{ marginTop: 10, paddingRight: 5 }} onPress={() => this.props.navigation.pop()}>
                             <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.lightMaroon, padding: 10 }}></Icon>
@@ -359,18 +361,18 @@ class PlaylistScreen extends React.Component<Props, State>{
                 />
                 {/* <View style={{flexDirection: "row"}}> */}
                 {/* <Image source={{uri: this.state.categoryData.thumbnail}} style={{width: 100, height: 100}}></Image> */}
-                <View style={styles.headerView}>
-                    <Text style={styles.header}>{this.getHeading()}</Text>
+                {/* <View style={styles.headerView}> */}
+                    {/* <Text style={styles.header}>{this.getHeading()}</Text> */}
                     {/* <Button style={styles.listenBtn} onPress={() => this.playSong(this.props.selectedPlaylist[0])}>
                         <Icon name={"playcircleo"} type={"AntDesign"} style={{ fontSize: 15, padding: 0, margin: 0 }} />
                         <Text style={styles.listenTxt}>Play All</Text>
                     </Button> */}
-                </View>
+                {/* </View> */}
                 {/* </View> */}
 
-                <ScrollView style={{ paddingHorizontal: 10, paddingTop: 10 }}>
+                <ScrollView style={{ paddingHorizontal: 10, paddingTop: 10, marginBottom: 50 }}>
                     {this.props.selectedPlaylist ?
-                        <FlatList scrollEnabled={true} style={{ paddingHorizontal: 15, paddingBottom: 40 }}
+                        <FlatList scrollEnabled={true} style={{ paddingHorizontal: 15, paddingBottom: 100 }}
                             data={this.props.selectedPlaylist} renderItem={this.renderSongs}
                             keyExtractor={(item) => item.songid}
                         /> : <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
@@ -413,6 +415,7 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     uploadSong: (params: ISongUpload) => dispatch(MySongAction.uploadMySongReq(params)),
     showPlaying: (playing) => dispatch(SongsActions.showPlaying(playing)),
     getHeart: () => dispatch(FavoriteAction.getFavoriteRequest(false)),
+    setPlaylist: (songs) => dispatch(SongsActions.setPlaylist(songs)),
     // playNext: () => dispatch(SongsActions.setNextSong()),
 });
 export const mapStateToProps = (state: RootState): StateProps => ({

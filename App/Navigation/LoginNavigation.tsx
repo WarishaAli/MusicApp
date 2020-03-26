@@ -13,7 +13,7 @@ const LoginNav = createStackNavigator({
     ForgotPasswordScreen: { screen: ForgotPasswordScreen },
 }, {
     headerMode: "none",
-    initialRouteName: "LaunchScreen",
+    initialRouteName: "EmailLogin",
     navigationOptions: {
         headerStyle: styles.header,
     },

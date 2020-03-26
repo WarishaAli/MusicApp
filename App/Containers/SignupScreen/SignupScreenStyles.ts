@@ -1,4 +1,4 @@
-import {StyleSheet} from "react-native";
+import { StyleSheet } from "react-native";
 import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
@@ -18,5 +18,12 @@ export default StyleSheet.create({
         textAlign: "center",
         marginTop: 20,
         fontFamily: "serif"
-      }
+    },
+    greyBox: {
+        backgroundColor: colors.silver,
+        height: 50,
+        paddingHorizontal: 20,
+        marginTop: 20,
+        justifyContent: "center"
+    }
 });

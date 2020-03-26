@@ -53,7 +53,7 @@ export interface DispatchProps {
     isSongPlaying: (play: boolean) => void;
     getArtist: (userId: string) => void;
     makeFavorite: (songId: string) => void;
-    getFavorites: () => void;
+    getFavorites: (shoulSetPlaylist: boolean) => void;
     setSong: () => void;
 }
 
@@ -88,7 +88,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
     public videoPlayer: any = null;
 
     public async componentDidMount() {
-        this.props.userRole === UserRole.NORMAL && this.props.getFavorites();
+        this.props.getFavorites(false);
         console.log(this.state.isSong, "song or video");
         this.getSongTotalTime();
         // this._onFinishedPlaying = this.state.isSong ? SoundPlayer.addEventListener("FinishedPlaying", (result: any) => {
@@ -104,7 +104,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
         //     }
         // }) : null;
         // if (this.props.showPlay && this.state.comingFrom === OpenSong.COMPONENT) {
-        this.durationCounter();
+       this.props.currentSong && this.durationCounter();
         // }
     }
     public getSongTotalTime = async () => {
@@ -148,7 +148,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
                 // this.props.isPlaying && this.setState({
                 //     duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songTotal },
                 // });
-                console.log("at parse int", parseInt(current.seconds));
+                // console.log("at parse int", parseInt(current.seconds));
                 this.setState({ currentTime: { min: current.minutes, sec: current.seconds, total: songCurrent } })
                 // this.props.showPlaying && parseInt(current.seconds) === 59 ? this.setState({ currentTime: { min: this.state.currentTime.min + 1, total: songInfo.currentTime, sec: 0 } })
                 //     : this.setState({ currentTime: { sec: this.state.currentTime.sec + 1, total: songInfo.currentTime, min: this.state.currentTime.min } })
@@ -179,7 +179,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
         if ((this.props.isPlaying !== nextProps.isPlaying || this.props.currentSong !== nextProps.currentSong)
             && this.state.isSong) {
             // this.props.isPlaying ? this.playSong() : this.pauseSong();
-            this.durationCounter()
+            this.durationCounter();
             this.getSongTotalTime();
         };
 
@@ -464,7 +464,7 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
     isSongPlaying: (play) => dispatch(SongsActions.setIsPlaying(true)),
     getArtist: (userId) => dispatch(ArtistProfileAction.getArtistProfileRequest(userId)),
     makeFavorite: (songId) => dispatch(FavoriteAction.makeFavoriteRequest(songId)),
-    getFavorites: () => dispatch(FavoriteAction.getFavoriteRequest(false)),
+    getFavorites: (shoulSetPlaylist) => dispatch(FavoriteAction.getFavoriteRequest(shoulSetPlaylist)),
     setSong: () => dispatch(SongsActions.setSong({ song_name: "Select a song", songimage: "", song_file: "" })),
 });
 export const mapStateToProps = (state: RootState): StateProps => ({

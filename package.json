@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.7.1",
+    "@react-native-community/datetimepicker": "^2.3.0",
     "@react-native-community/google-signin": "^3.0.4",
     "@react-native-community/slider": "^2.0.8",
     "@react-native-firebase/app": "^6.3.4",

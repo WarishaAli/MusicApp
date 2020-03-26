@@ -5,7 +5,7 @@ export const transformSongArray = (songArray: Array<Songs>) => {
     if(songArray){
     let newArray = songArray.map((item, index, array) => {
         return {
-            id: item.songid,
+            id: item.songid ? item.songid : "0",
             url: item.song_file,
             title: item.song_name,
             artist: item.artistName,
