@@ -25,6 +25,7 @@ export type Props = OwnProps & NavigationScreenProps;
 export class RootContainer extends React.Component<Props, State> {
   public componentDidMount() {
     SplashScreen.hide();
+    
     // if redux persist is not active fire startup action
     if (!ReduxPersist.active) {
       this.props.startup();

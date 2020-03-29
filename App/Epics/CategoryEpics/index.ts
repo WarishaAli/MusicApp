@@ -32,18 +32,20 @@ export const getSongByCategoryEpic: Epic = (action$, state$, { api }: IDependenc
                 console.log("song by category", response);
                 if (response.ok) {
                     // SoundPlayer.playUrl(response.data.data[0].song_file);
-                    let songsList = transformSongArray(response.data.data);
-                    if (songsList.length > 0) {
+                    let songsList = transformSongArray(response.data.data, state$.value.login.userData.user_cat);
+                    if (songsList.length > 0 && !action.payload.includes("videos")) {
 
                         songsList.length > 0 && RNTrackPlayer.reset();
                         songsList.length > 0 && RNTrackPlayer.add(songsList);
                         RNTrackPlayer.play();
+                        console.log("at song play")
 
                     }
-                    return response.data.data.length > 0 ?
+                    return (response.data.data.length > 0 && songsList.length > 0) ?
                         of(CategoryAction.getSongByCatSuccess(response.data.data),
-                            SongsActions.setPlaylist(response.data.data), SongsActions.setSong(response.data.data[0]),
-                            SongsActions.setIsPlaying(true), SongsActions.showPlaying(true)
+                            SongsActions.setPlaylist(response.data.data), 
+                            // SongsActions.setSong(response.data.data[0]),
+                            // SongsActions.setIsPlaying(true), SongsActions.showPlaying(true)
                         ) : of(CategoryAction.getSongByCatSuccess(response.data.data),
                             SongsActions.setPlaylist(response.data.data),
                         )

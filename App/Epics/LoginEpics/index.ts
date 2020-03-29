@@ -12,6 +12,7 @@ import { IDependencies } from "../../Reducers/CreateStore";
 import { LoginActions } from "../../Reducers/LoginReducers";
 import { ProfileAction } from '../../Reducers/ProfileReducers';
 import { SongsActions } from "../../Reducers/SongsReducer";
+import RNTrackPlayer from 'react-native-track-player';
 
 export let loginData: any = undefined;
 // export let shouldLogin: boolean = false;
@@ -167,6 +168,8 @@ export const logoutEpic: Epic = (action$, state$, { api }: IDependencies) => act
         } catch{
           console.log("logout error")
         }
+        RNTrackPlayer.destroy();
+        RNTrackPlayer.pause();
         return of(SongsActions.void())
       }),
       mergeMap(() => {

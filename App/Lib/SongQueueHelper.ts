@@ -1,20 +1,42 @@
 import { Songs } from "./PlaylistTypes";
 import RNTrackPlayer from "react-native-track-player";
+import { UserRole } from "../Containers/SignupScreen/SignupScreen";
 
-export const transformSongArray = (songArray: Array<Songs>) => {
-    if(songArray){
-    let newArray = songArray.map((item, index, array) => {
-        return {
-            id: item.songid ? item.songid : "0",
-            url: item.song_file,
-            title: item.song_name,
-            artist: item.artistName,
-            artwork: item.songimage,
-        };
-    })
-    return newArray;
-    // console.log("array for track player", newArray);
-}}
+export const transformSongArray = (songArray: Array<Songs>, userRole?: UserRole) => {
+    if (songArray) {
+        let newArray = songArray.map((item, index, array) => {
+            // dont show unapproved song to normal users
+            if (userRole) {
+                if (userRole === UserRole.NORMAL && item.status === "1") { 
+                    return null 
+                } else {
+                    return {
+                        id: item.songid ? item.songid : "0",
+                        url: item.song_file,
+                        title: item.song_name,
+                        artist: item.artistName,
+                        artwork: item.songimage,
+                    };
+                }
+            }
+            else {
+                return {
+                    id: item.songid ? item.songid : "0",
+                    url: item.song_file,
+                    title: item.song_name,
+                    artist: item.artistName,
+                    artwork: item.songimage,
+                };
+            }
+        });
+        const filterdArray = newArray.filter((item) => {
+           return item !== null
+        });
+        console.log("array for track player", newArray, filterdArray);
+        return filterdArray;
+       
+    }
+}
 
 export const transformSongObject = (songObject: any) => {
     return {
@@ -28,7 +50,7 @@ export const transformSongObject = (songObject: any) => {
     }
 }
 
-export const  getPlayerState = async () => {
+export const getPlayerState = async () => {
     const b = await RNTrackPlayer.getState();
     console.log("player state", b);
     return b === 3 ? true : false;

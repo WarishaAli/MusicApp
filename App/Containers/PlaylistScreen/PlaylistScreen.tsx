@@ -59,7 +59,7 @@ export interface StateProps {
     userRole: UserRole;
     category: ICategoryResponse;
     isSongUploading: boolean;
-    pendingList: Array<ISongUpload>
+    pendingList: Array<ISongUpload>;
 }
 export const PENDING_LIST = "PendingList";
 
@@ -92,7 +92,7 @@ class PlaylistScreen extends React.Component<Props, State>{
             songImage: { uri: "", type: "image/jpeg", name: "" },
             songName: "",
             imgPosition: { x: 0, y: 0 },
-            songStatus: 1,
+            songStatus: 0,
             showPicker: false,
             songType: "mp3",
             categories: [],
@@ -173,44 +173,53 @@ class PlaylistScreen extends React.Component<Props, State>{
             Toast.show({ text: "Song shared successfully!" });
         }).catch((err) => console.log("at error", err))
     }
+
     public renderSongs = ({ item }) => {
-        let isFav = false;
-        isFav = this.props.favorites ? isFavorite(this.props.favorites, item.songid) : false;
-        // image songName catName likeCount
+        // condition to check if song is unapproved, and user is normal user, if yes then dont show the song 
+        if (item.status === "1" && this.state.playlistType !== PlaylistTypes.MYSONGS && this.props.userRole === UserRole.NORMAL) {
+            return null;
+        } else {
+            let isFav = false;
+            isFav = this.props.favorites ? isFavorite(this.props.favorites, item.songid) : false;
+            // image songName catName likeCount
 
-        return this.props.selectedPlaylist.length > 0 ? (
-            <View style={{ flexDirection: "row", marginTop: 25, }}>
-                <Image source={{ uri: item.songimage, cache: "reload" }} style={styles.songImg}></Image>
-                <TouchableOpacity onPress={() => this.playSong(item)} style={{ paddingLeft: 10, width: "50%" }}>
-                    <Text numberOfLines={2} lineBreakMode={"middle"} style={[styles.heading, { alignSelf: "flex-start" }
-                        // { fontWeight: this.props.selectedSong.name === item.name ? "bold" : "normal", color: this.props.selectedSong.name === item.name ? colors.maroon : colors.black }
-                    ]}>{item.song_name}</Text>
-                    <Text style={[styles.subHeading, { marginTop: 1, color: colors.maroon, fontSize: 12 }]}>{item.artistName || item.song_category}</Text>
-                </TouchableOpacity>
-                <Row></Row>
-                <View style={{ flexDirection: "row" }}>
-                    {/* {this.props.userRole === UserRole.NORMAL &&  */}
-                    <Text style={styles.likeTxt}>{item.likecount}</Text>
-                    {/* } */}
-                    {/* {(this.props.userRole === UserRole.NORMAL) && */}
-                    <TouchableOpacity style={styles.iconView} onPress={() => { this.props.makeFavorite(item.songid) }}>
-                        {!isFav ?
-                            <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon> :
-                            <Icon name={"heart"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon>
+            return this.props.selectedPlaylist.length > 0 ? (
+                <View style={{ flexDirection: "row", marginTop: 25, }}>
+                    <Image source={{ uri: item.songimage, cache: "reload" }} style={styles.songImg}></Image>
+                    <TouchableOpacity onPress={() => this.playSong(item)} style={{ paddingLeft: 10, width: "50%" }}>
+                        <Text numberOfLines={2} lineBreakMode={"middle"} style={[styles.heading, { alignSelf: "flex-start" }
+                            // { fontWeight: this.props.selectedSong.name === item.name ? "bold" : "normal", color: this.props.selectedSong.name === item.name ? colors.maroon : colors.black }
+                        ]}>{item.song_name}</Text>
+                        <Text style={[styles.subHeading, { marginTop: 1, color: colors.maroon, fontSize: 12 }]}>{item.artistName || item.song_category}</Text>
+                    </TouchableOpacity>
+                    <Row></Row>
+                    <View style={{ flexDirection: "row" }}>
+                        {/* {this.props.userRole === UserRole.NORMAL &&  */}
+                        {this.state.playlistType !== PlaylistTypes.MYSONGS && <Text style={styles.likeTxt}>{item.likecount}</Text>}
+                        {(this.state.playlistType !== PlaylistTypes.MYSONGS) && <TouchableOpacity style={styles.iconView} onPress={() => { this.props.makeFavorite(item.songid) }}>
+                            {!isFav ?
+                                <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon> :
+                                <Icon name={"heart"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon>
+                            }
+                        </TouchableOpacity>}
+
+                        {/* } */}
+
+                        {this.state.playlistType !== PlaylistTypes.MYSONGS && <TouchableOpacity style={styles.shareView} onPress={() => this.shareSong(item)}>
+                            <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={styles.heartIcon}></Icon>
+                        </TouchableOpacity>}
+                        {(this.state.playlistType === PlaylistTypes.MYSONGS && item.status === "1")
+                            && <Text style={[styles.likeTxt, { color: colors.lightMaroon, alignSelf: "center" }]}>Waiting for Approval</Text>}
+                        {(this.state.playlistType === PlaylistTypes.MYSONGS && item.status === "0") &&
+                            <Text style={[styles.likeTxt, { color: colors.lightMaroon, alignSelf: "center" }]}>Approved</Text>
                         }
-                    </TouchableOpacity>
-
-                    {/* } */}
-
-                    <TouchableOpacity style={styles.shareView} onPress={() => this.shareSong(item)}>
-                        <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={styles.heartIcon}></Icon>
-                    </TouchableOpacity>
-                </View>
-                {/* <View style={styles.caretView} /> */}
-            </View>) : <Text>
-                <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
-                    "No songs to display, please try again later!"}</Text>
-            </Text>
+                    </View>
+                    {/* <View style={styles.caretView} /> */}
+                </View>) : <Text>
+                    <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
+                        "No songs to display, please try again later!"}</Text>
+                </Text>
+        }
     }
     public getHeading = () => {
         if (this.state.playlistType === PlaylistTypes.EXPLORE) {
@@ -330,18 +339,18 @@ class PlaylistScreen extends React.Component<Props, State>{
                         underlineColorAndroid={colors.maroon} placeholder={"Select song's status"}
                         pointerEvents="none" editable={false} />
                         </TouchableOpacity> */}
-            {<Picker
+            {/* {<Picker
                 enabled={true}
                 mode={"dialog"}
                 selectedValue={this.state.songStatus}
                 onValueChange={(itemValue, itemIndex) => { this.setState({ songStatus: itemValue }) }}
                 style={{ color: "#A0A0A0", fontSize: 8, fontWeight: "normal" }}
             >
-                <Picker.Item label="active" value={1} />
-                <Picker.Item label="inactive" value={0} />
+                <Picker.Item label="active" value={0} />
+                <Picker.Item label="inactive" value={1} />
 
-            </Picker>}
-            <View style={{ backgroundColor: colors.maroon, height: 1, marginBottom: 2 }} />
+            </Picker>} */}
+            {/* <View style={{ backgroundColor: colors.maroon, height: 1, marginBottom: 2 }} /> */}
             {<Picker
                 enabled={true}
                 mode={"dialog"}
@@ -361,31 +370,31 @@ class PlaylistScreen extends React.Component<Props, State>{
     public renderPendingSong = (item: ISongUpload) => {
         console.log(item)
         return (
-            <View style={{flexDirection: "row", justifyContent: "space-between", marginTop: 10}}>
-                <View style={{flexDirection: "row", marginLeft: 20}}>
-                <Icon name={"clock"} 
-                type={"SimpleLineIcons"} style={{marginTop: 3, fontSize: 15, color: colors.lightMaroon}}/>
-                 <View style={{ marginLeft: 10, }}>
-                <Text numberOfLines={2} lineBreakMode={"middle"} style={[styles.heading, { alignSelf: "flex-start" }]}>
-                    {item.item.songName}</Text>
-                <Text style={[styles.subHeading,
-                { marginTop: 1, color: colors.maroon, fontSize: 12, marginTop: 2 }]}>{item.item.songCategory}</Text>
-                <Text style={[styles.subHeading,
-                { marginTop: 1, color: colors.maroon, fontSize: 12 }]}>{item.item.songFile.name}</Text>
-                <Text style={[styles.subHeading,
-                { marginTop: 1, color: colors.maroon, fontSize: 12 }]}>{item.item.songType}</Text>
-            </View>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                <View style={{ flexDirection: "row", marginLeft: 20 }}>
+                    <Icon name={"clock"}
+                        type={"SimpleLineIcons"} style={{ marginTop: 3, fontSize: 15, color: colors.lightMaroon }} />
+                    <View style={{ marginLeft: 10, }}>
+                        <Text numberOfLines={2} lineBreakMode={"middle"} style={[styles.heading, { alignSelf: "flex-start" }]}>
+                            {item.item.songName}</Text>
+                        <Text style={[styles.subHeading,
+                        { marginTop: 1, color: colors.maroon, fontSize: 12, marginTop: 2 }]}>{item.item.songCategory}</Text>
+                        <Text style={[styles.subHeading,
+                        { marginTop: 1, color: colors.maroon, fontSize: 12 }]}>{item.item.songFile.name}</Text>
+                        <Text style={[styles.subHeading,
+                        { marginTop: 1, color: colors.maroon, fontSize: 12 }]}>{item.item.songType}</Text>
+                    </View>
                 </View>
-               
-            <ActivityIndicator color={colors.lightMaroon} style={{marginRight: 20, alignSelf: "flex-start"}}/>
+
+                <ActivityIndicator color={colors.lightMaroon} style={{ marginRight: 20, alignSelf: "flex-start" }} />
             </View>
-           
+
 
         )
     }
 
     public render() {
-        console.log(this.props.isSongUploading, this.props.pendingList);
+        // console.log(this.props.isSongUploading, this.props.pendingList);
         return (
             <Container>
                 <CommonHeader title={this.getHeading()}
@@ -398,18 +407,23 @@ class PlaylistScreen extends React.Component<Props, State>{
 
                 <ScrollView style={{ paddingHorizontal: 10, paddingTop: 10, marginBottom: 50 }}>
                     {this.props.selectedPlaylist ?
-                        <FlatList scrollEnabled={true} style={{ paddingHorizontal: 15,
-                            paddingBottom: (this.props.isSongUploading && this.state.playlistType === PlaylistTypes.MYSONGS) ? 0 : 100}}
-                            data={this.props.selectedPlaylist} renderItem={this.renderSongs}
-                            keyExtractor={(item) => item.songid}
-                        /> : <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
-                            "No songs to display, please try again later!"}</Text>
+                        this.props.selectedPlaylist.length > 0 ?
+                            <FlatList scrollEnabled={true} style={{
+                                paddingHorizontal: 15,
+                                paddingBottom: (this.props.isSongUploading && this.state.playlistType === PlaylistTypes.MYSONGS) ? 0 : 100
+                            }}
+                                data={this.props.selectedPlaylist} renderItem={this.renderSongs}
+                                keyExtractor={(item) => item.songid}
+                            /> : <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
+                                "No songs to display, please try again later!"}</Text> : 
+                                <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
+                                    "No songs to display, please try again later!"}</Text>
                     }
                     {(this.props.pendingList.length > 0 && this.props.isSongUploading && this.state.playlistType === PlaylistTypes.MYSONGS) &&
-                        <View style={{marginTop: 30}}>
+                        <View style={{ marginTop: 30 }}>
                             <Text style={[styles.header, { fontSize: 16, marginLeft: 30, color: colors.lightMaroon }]}>Pending Upload</Text>
                             <FlatList
-                                style={{marginBottom: 100}}
+                                style={{ marginBottom: 100 }}
                                 data={this.props.pendingList}
                                 renderItem={this.renderPendingSong}
                             />

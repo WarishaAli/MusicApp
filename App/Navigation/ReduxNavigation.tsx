@@ -9,6 +9,8 @@ import { Alert, Platform, Linking } from "react-native";
 import { ISongData, OpenSong } from "../Containers/MusicPlayScreen/MusicPlayScreen";
 import { SongsActions } from "../Reducers/SongsReducer";
 import { setKey, expand } from "react-native-google-shortener";
+import { transformSongArray } from "../Lib/SongQueueHelper";
+import RNTrackPlayer from "react-native-track-player";
 
 export interface StateProps {
   isLogin: boolean;
@@ -47,22 +49,19 @@ class ReduxNavigation extends React.Component<Props> {
   }
   public navigate = (url) => { // E
     if (url) {
-      expand('https://goo.gl/').then(response => {
-        console.log(response.id);
-        console.log(response.longUrl);
-      });
+
       console.log(url, "at linking listener");
       let croppedShareUrl = "";
       let n = url.search("song");
       croppedShareUrl = url.substring(n + 5, url.length)
       let parsedUrl = JSON.parse('{"' + decodeURI(`${croppedShareUrl}`.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + '"}');
       console.log(parsedUrl, "at redux nav");
-      // SoundPlayer.playUrl(parsedUrl.song_file);
-
       this.props.playSong(parsedUrl);
       this.props.shouldPlay(true);
+      RNTrackPlayer.add(transformSongArray([parsedUrl]));
+      RNTrackPlayer.play();
       this.props.showPlay(true);
-      this.props.navigation.push("MusicPlayScreen", { songData: parsedUrl, isSong: parsedUrl.song_type === "mp3", comingFrom: OpenSong.SCREEN })
+      // this.props.navigation.push("MusicPlayScreen", { songData: parsedUrl, isSong: parsedUrl.song_type === "mp3", comingFrom: OpenSong.SCREEN })
 
     }
   }

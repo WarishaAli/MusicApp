@@ -124,8 +124,8 @@ class SignupScreen extends React.Component<Props, State> {
         } else {
             return this.state.userRole === UserRole.ARTIST ? (this.state.interests.length === 0 ||
                 this.state.topAlbums.length === 0 || this.state.password.length === 0 ||
-                this.state.password !== this.state.confirmPwd || this.state.termsChecked === false
-            ) : (!validatePassword(this.state.password) || this.state.confirmPwdError === true)
+                this.state.password !== this.state.confirmPwd || this.state.termsChecked === false || !validatePassword(this.state.password)
+            ) : !validatePassword(this.state.password) || this.state.password !== this.state.confirmPwd
         }
     }
     public renderTextFields = () => {

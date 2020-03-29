@@ -22,6 +22,7 @@ import { SearchAction } from "../../Reducers/SearchReducer";
 import TrackPlayer from "react-native-track-player";
 import RNTrackPlayer from "react-native-track-player";
 import { transformSongArray } from "../../Lib/SongQueueHelper";
+import { UserRole } from "../SignupScreen/SignupScreen";
 
 export interface State {
     croppedFeaturedSongs: any;
@@ -59,6 +60,7 @@ export interface StateProps {
     searchData: any;
     isSongSearching: boolean;
     videoCategories: any;
+    userRole: UserRole;
 }
 export type Props = OwnProps & NavigationScreenProps & DispatchProps & StateProps;
 class HomeScreen extends React.Component<Props, State> {
@@ -139,12 +141,12 @@ class HomeScreen extends React.Component<Props, State> {
         this.props.navigation.push("MusicPlayScreen", { songData: item, isSong: true, comingFrom: OpenSong.SCREEN })
     }
 
-    public openVideoScreen = (videoItem: any) => {
-        SoundPlayer.pause();
-        this.props.playSong(videoItem)
-        this.props.setPlaylist(this.props.featuredVideos);
-        this.props.navigation.push("MusicPlayScreen", { songData: videoItem, isSong: false, videoUrl: videoItem })
-    }
+    // public openVideoScreen = (videoItem: any) => {
+    //     SoundPlayer.pause();
+    //     this.props.playSong(videoItem)
+    //     this.props.setPlaylist(this.props.featuredVideos);
+    //     this.props.navigation.push("MusicPlayScreen", { songData: videoItem, isSong: false, videoUrl: videoItem })
+    // }
     public openPodcastScreen = (item) => {
         // SoundPlayer.playUrl(item.song_file);
         this.props.featuredPodcasts ? RNTrackPlayer.add(transformSongArray([item, ...this.props.featuredPodcasts])) :
@@ -167,7 +169,7 @@ class HomeScreen extends React.Component<Props, State> {
             <TouchableOpacity
                 onPress={() => {
                     if (text === DataTypes.VIDEOS) {
-                        this.openVideoScreen(item.item)
+                        // this.openVideoScreen(item.item)
                     } else if (text === DataTypes.PODCASTS) {
                         this.openPodcastScreen(item.item)
                     } else if (text === DataTypes.SONGS) {
@@ -211,13 +213,13 @@ class HomeScreen extends React.Component<Props, State> {
         item.song_category === "Podcast videos" ? this.openVideoScreen(item) : this.openSongScreen(item);
     }
     public renderSearchItem = ({ item }) => {
-        return (
+        return (item.status === "0" && this.props.userRole === UserRole.NORMAL) ? (
             <TouchableOpacity style={{ marginTop: 5, marginLeft: 5 }} onPress={() => this.onClickSearchItem(item)}>
                 <Text style={{ fontSize: 18, fontFamily: "serif", paddingLeft: 10 }}>{item.song_name}</Text>
                 <Text style={{ paddingLeft: 10, marginTop: 2, fontSize: 12 }}>{item.song_category}</Text>
                 <View style={{ backgroundColor: colors.maroon, height: 0.5, width: "80%", margin: 15 }}></View>
             </TouchableOpacity>
-        )
+        ) : null
     }
     public render() {
         return (
@@ -339,5 +341,6 @@ export const mapStateToProps = (state: RootState): StateProps => ({
     searchData: state.search.searchData,
     isSongSearching: state.search.fetching,
     videoCategories: state.category.homeData ? state.category.homeData.videoCategories : undefined,
+    userRole: state.login.userData.user_cat,
 })
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

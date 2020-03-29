@@ -44,7 +44,7 @@ export interface State {
     pauseVideo: boolean;
     songPausedAt: number;
     comingFrom: OpenSong;
-    
+
 }
 export interface DispatchProps {
     playMusic: (shouldPlay: boolean) => void;
@@ -81,7 +81,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
             pauseVideo: false,
             songPausedAt: 0,
             comingFrom: this.props.navigation.getParam("comingFrom"),
-       
+
         }
     }
     public _onFinishedPlaying: any = null;
@@ -106,7 +106,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
         //     }
         // }) : null;
         // if (this.props.showPlay && this.state.comingFrom === OpenSong.COMPONENT) {
-       this.props.currentSong && this.durationCounter();
+        (this.props.currentSong && this.state.isSong) && this.durationCounter();
         // }
     }
     public getSongTotalTime = async () => {
@@ -134,7 +134,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
     //         });
     //     this.durationCounter();
     // }
-   
+
     public durationCounter = async () => {
 
         // const songInfo = await SoundPlayer.getInfo();
@@ -181,7 +181,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
         if ((this.props.isPlaying !== nextProps.isPlaying || this.props.currentSong !== nextProps.currentSong)
             && this.state.isSong) {
             // this.props.isPlaying ? this.playSong() : this.pauseSong();
-            this.durationCounter();
+            this.state.isSong && this.durationCounter();
             this.getSongTotalTime();
         };
 
@@ -190,7 +190,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
         if (this.props.currentSong.song_file && this.state.isSong) {
             RNTrackPlayer.play();
             this.props.showPlaying(true);
-            this.durationCounter();
+            this.state.isSong && this.durationCounter();
         } else {
             this.setState({ pauseVideo: false });
             this.props.showPlaying(true);
@@ -203,18 +203,25 @@ class MusicPlayScreen extends React.Component<Props, State>{
             this.timer && clearInterval(this.timer);
             RNTrackPlayer.pause();
         } else {
-            this.setState({ pauseVideo: true }); SoundPlayer.pause()
+            this.setState({ pauseVideo: true });
         }
         this.props.showPlaying(false);
 
     }
     public playNextSong = async (isAuto: boolean) => {
         // this.props.playNext(this.state.isSong);
-        const skip = await RNTrackPlayer.skipToNext();
+        if (this.state.isSong) {
+            const skip = await RNTrackPlayer.skipToNext();
+        } else {
+            this.props.playNext(this.state.isSong)
+        }
     }
     public playPreviousSong = async () => {
-        // this.props.playPrev(this.state.isSong);
-        const skip = await RNTrackPlayer.skipToPrevious()
+        if(this.state.isSong){
+            const skip = await RNTrackPlayer.skipToPrevious()
+        } else{
+            this.props.playPrev(this.state.isSong)
+        }
     }
 
     public onLayoutSlider = (e: any) => {
@@ -240,6 +247,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
     //     }).catch((err) => console.log("at error", err))
     // }
     public shareSong = (item: any) => {
+        this.setState({pauseVideo: true});
         let urlParam = [];
         let shareUrl = "";
         for (let i in item) {
@@ -275,6 +283,14 @@ class MusicPlayScreen extends React.Component<Props, State>{
             // return time.minutes.toString() + ":" + time.seconds.toString();
         }
     }
+
+    public removePauseVideo = () => {
+
+        this.props.showPlaying(false);
+        this.setState({ pauseVideo: true });
+        this.props.isSongPlaying(false);
+        this.props.setSong();
+    }
     public render() {
         return (
             <Container style={styles.container}>
@@ -282,11 +298,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
                     <TouchableOpacity onPress={() => {
                         this.props.navigation.pop();
                         if (!this.state.isSong) {
-                            this.props.showPlaying(false);
-                            this.setState({ pauseVideo: true });
-                            this.props.isSongPlaying(false);
-                            this.props.setSong();
-                            SoundPlayer.pause();
+                            this.removePauseVideo();
                         }
                         this.timer && clearInterval(this.timer);
                     }}>
@@ -413,42 +425,45 @@ class MusicPlayScreen extends React.Component<Props, State>{
                     <View style={{ flexDirection: "row", alignSelf: "center", marginTop: 25 }}>
                         {/* {
                             this.props.userRole === UserRole.NORMAL && */}
-                            <TouchableOpacity style={{
-                                padding: 2, flex:0.5, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
-                                justifyContent: "center", borderColor: colors.lightMaroon
-                            }} onPress={() => this.props.makeFavorite(this.props.currentSong.songid)}>
-                                <Text style={{fontSize: 12}}>{isFavorite(this.props.favorites, this.props.currentSong.songid) ?
-                                    "Remove from favorites" : "Add to favorites"}</Text>
-                                <Icon name={"hearto"}
-                                    type={"AntDesign"} style={{
-                                        fontSize: 10, color: colors.charcoal, marginLeft: 2, padding: 0, marginTop: 3
-                                    }}></Icon>
-                            </TouchableOpacity>
-                            {/* } */}
+                        <TouchableOpacity style={{
+                            padding: 2, flex: 0.5, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
+                            justifyContent: "center", borderColor: colors.lightMaroon
+                        }} onPress={() => this.props.makeFavorite(this.props.currentSong.songid)}>
+                            <Text style={{ fontSize: 12 }}>{isFavorite(this.props.favorites, this.props.currentSong.songid) ?
+                                "Remove from favorites" : "Add to favorites"}</Text>
+                            <Icon name={"hearto"}
+                                type={"AntDesign"} style={{
+                                    fontSize: 10, color: colors.charcoal, marginLeft: 2, padding: 0, marginTop: 3
+                                }}></Icon>
+                        </TouchableOpacity>
+                        {/* } */}
                         <TouchableOpacity
                             style={{
                                 padding: 2, flex: 0.5, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
                                 justifyContent: "center", marginLeft: 5, borderColor: colors.lightMaroon, marginTop: 1,
                             }}
                             onPress={() => this.shareSong(this.props.currentSong)}>
-                            <Text style={{fontSize: 12}}>{this.state.isSong ? "Share song" : "Share video"}</Text>
+                            <Text style={{ fontSize: 12 }}>{this.state.isSong ? "Share song" : "Share video"}</Text>
                             <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={{ fontSize: 13, color: colors.charcoal, marginTop: 4 }}></Icon>
                         </TouchableOpacity>
                     </View>
 
                     {/* go to favorites playlist */}
                     <View
-                    style={{ flexDirection: "row", alignSelf: "center", marginTop: 15, marginBottom: 30 }}
+                        style={{ flexDirection: "row", alignSelf: "center", marginTop: 15, marginBottom: 30 }}
                     >
-                         <TouchableOpacity style={{
-                                padding: 2, flex:0.5,  flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
-                                justifyContent: "center", borderColor: colors.lightMaroon,
-                            }} onPress={() => this.props.navigation.push("PlaylistScreen", { comingFrom: PlaylistTypes.PLAYLIST })}>
-                                <Text style={{fontSize: 12}}>My playlist</Text>
-                                <Icon name={"playlist"} type={"SimpleLineIcons"} style={{
-                                        fontSize: 10, color: colors.charcoal, marginLeft: 2, padding: 0, marginTop: 2
-                                    }}></Icon>
-                            </TouchableOpacity>
+                        <TouchableOpacity style={{
+                            padding: 2, flex: 0.5, flexDirection: "row", borderWidth: 0.5, borderRadius: 5,
+                            justifyContent: "center", borderColor: colors.lightMaroon,
+                        }} onPress={() => {
+                            !this.state.isSong && this.removePauseVideo();
+                            this.props.navigation.push("PlaylistScreen", { comingFrom: PlaylistTypes.PLAYLIST })
+                        }}>
+                            <Text style={{ fontSize: 12 }}>My playlist</Text>
+                            <Icon name={"playlist"} type={"SimpleLineIcons"} style={{
+                                fontSize: 10, color: colors.charcoal, marginLeft: 2, padding: 0, marginTop: 2
+                            }}></Icon>
+                        </TouchableOpacity>
                     </View>
 
                 </ScrollView>

@@ -207,10 +207,10 @@ class SettingScreen extends React.Component<Props, State>{
             <Container>
                 <CommonHeader title={"Profile & Settings"} />
                 {/* {this.props.profileData ?  */}
-                <View style={{}}>
+                <Content style={{}}>
                     {this.renderTopProfileView()}
                     {this.renderListView()}
-                </View>
+                </Content>
                 {/* : */}
                 {/* <Text style={{padding: 30, alignSelf: "center", marginTop: 50}}>Unfortunately, your profile data is not available at the moment! Please try again later</Text> */}
                 {/* } */}
