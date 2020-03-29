@@ -213,13 +213,13 @@ class HomeScreen extends React.Component<Props, State> {
         item.song_category === "Podcast videos" ? this.openVideoScreen(item) : this.openSongScreen(item);
     }
     public renderSearchItem = ({ item }) => {
-        return (item.status === "0" && this.props.userRole === UserRole.NORMAL) ? (
+        return (item.status === "1" && this.props.userRole === UserRole.NORMAL) ?  null : (
             <TouchableOpacity style={{ marginTop: 5, marginLeft: 5 }} onPress={() => this.onClickSearchItem(item)}>
                 <Text style={{ fontSize: 18, fontFamily: "serif", paddingLeft: 10 }}>{item.song_name}</Text>
                 <Text style={{ paddingLeft: 10, marginTop: 2, fontSize: 12 }}>{item.song_category}</Text>
                 <View style={{ backgroundColor: colors.maroon, height: 0.5, width: "80%", margin: 15 }}></View>
             </TouchableOpacity>
-        ) : null
+        )
     }
     public render() {
         return (
