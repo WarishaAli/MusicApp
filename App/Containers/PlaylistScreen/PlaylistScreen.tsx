@@ -176,7 +176,7 @@ class PlaylistScreen extends React.Component<Props, State>{
 
     public renderSongs = ({ item }) => {
         // condition to check if song is unapproved, and user is normal user, if yes then dont show the song 
-        if (item.status === "1" && this.state.playlistType !== PlaylistTypes.MYSONGS && this.props.userRole === UserRole.NORMAL) {
+        if (item.status === "0" && this.state.playlistType !== PlaylistTypes.MYSONGS && this.props.userRole === UserRole.NORMAL) {
             return null;
         } else {
             let isFav = false;
@@ -208,9 +208,9 @@ class PlaylistScreen extends React.Component<Props, State>{
                         {this.state.playlistType !== PlaylistTypes.MYSONGS && <TouchableOpacity style={styles.shareView} onPress={() => this.shareSong(item)}>
                             <Icon name={"share-outline"} type={"MaterialCommunityIcons"} style={styles.heartIcon}></Icon>
                         </TouchableOpacity>}
-                        {(this.state.playlistType === PlaylistTypes.MYSONGS && item.status === "1")
+                        {(this.state.playlistType === PlaylistTypes.MYSONGS && item.status === "0")
                             && <Text style={[styles.likeTxt, { color: colors.lightMaroon, alignSelf: "center" }]}>Waiting for Approval</Text>}
-                        {(this.state.playlistType === PlaylistTypes.MYSONGS && item.status === "0") &&
+                        {(this.state.playlistType === PlaylistTypes.MYSONGS && item.status === "1") &&
                             <Text style={[styles.likeTxt, { color: colors.lightMaroon, alignSelf: "center" }]}>Approved</Text>
                         }
                     </View>

@@ -7,7 +7,7 @@ export const transformSongArray = (songArray: Array<Songs>, userRole?: UserRole)
         let newArray = songArray.map((item, index, array) => {
             // dont show unapproved song to normal users
             if (userRole) {
-                if (userRole === UserRole.NORMAL && item.status === "1") { 
+                if (userRole === UserRole.NORMAL && item.status === "0") { 
                     return null 
                 } else {
                     return {
