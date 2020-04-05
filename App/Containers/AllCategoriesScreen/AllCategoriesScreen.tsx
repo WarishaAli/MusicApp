@@ -101,10 +101,12 @@ class AllCategoriesScreen extends React.Component<Props>{
                 />
                 <Content style={{ paddingHorizontal: 20, }}>
                     {/* <Text style={styles.headerTitle}>{this.categoryData.title}</Text> */}
-                    {this.categoryData.data.length > 0 ?                    <FlatList renderItem={(this.categoryData.title === DataTypes.ALBUMS || this.categoryData.title === DataTypes.VIDEOS ) ? this.renderCatTiles : this.renderSongTiles}
+                    {this.categoryData.data ?
+                    <FlatList renderItem={(this.categoryData.title === DataTypes.ALBUMS || this.categoryData.title === DataTypes.VIDEOS ) ? this.renderCatTiles : this.renderSongTiles}
                         data={this.categoryData.data} style={{ marginBottom: 100 }}
                         numColumns={2}
-                /> : <Text>{this.categoryData.title}</Text>
+                /> : <Text style={{paddingVertical: 40, alignSelf: "center", paddingHorizontal: 20}}>
+                    {"There are no " + this.categoryData.title + " in this list. Please try again later"}</Text>
                 }
  
                 </Content>

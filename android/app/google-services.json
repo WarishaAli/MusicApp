@@ -41,50 +41,6 @@
           ]
         }
       }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:591629993468:android:34b0b2f6d4f0fc3c891e79",
-        "android_client_info": {
-          "package_name": "com.hiphopstreet"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "591629993468-nm7ir9aa53547h7shrho0jpgecq8l41o.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.hiphopstreet",
-            "certificate_hash": "baf03b665db85ec51d1b8ca3665d1d19509d156f"
-          }
-        },
-        {
-          "client_id": "591629993468-hkojukbn20k8q7lqad2eajevvrmc5naj.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCt_BsRsSIzRjnJgVBvN3l0lreR5R-KJx4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "591629993468-hkojukbn20k8q7lqad2eajevvrmc5naj.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "591629993468-qb7g0um4atnj8h16bnph2s81bu4nf4i0.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.hhs.hiphopstreets"
-              }
-            }
-          ]
-        }
-      }
     }
   ],
   "configuration_version": "1"
