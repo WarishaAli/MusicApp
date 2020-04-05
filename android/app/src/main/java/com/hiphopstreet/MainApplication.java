@@ -1,4 +1,4 @@
-package com.hiphopstreet;
+package com.goigi.android.hiphopstreet;
 
 import android.app.Application;
 

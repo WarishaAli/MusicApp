@@ -9,5 +9,18 @@ export default StyleSheet.create({
     errorText: {
         color: colors.lightMaroon,
         fontSize: 10,
+    },
+    eye: {
+        fontSize: 12,
+        color: colors.maroon,
+        // alignSelf: "center",
+    },
+    eyeView:{
+        // backgroundColor: colors.black, 
+        position: "absolute",
+        right: 10,
+        height: 90,
+        justifyContent: "center",
+        padding: 5,
     }
 });

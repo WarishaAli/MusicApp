@@ -2,6 +2,9 @@ import { StyleSheet } from "react-native";
 import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
+    viewText:{
+        color: colors.charcoal,
+    },
     mainContainer: {
         flex: 1,
         backgroundColor: colors.snow,

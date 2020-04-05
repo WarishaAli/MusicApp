@@ -217,9 +217,9 @@ class MusicPlayScreen extends React.Component<Props, State>{
         }
     }
     public playPreviousSong = async () => {
-        if(this.state.isSong){
+        if (this.state.isSong) {
             const skip = await RNTrackPlayer.skipToPrevious()
-        } else{
+        } else {
             this.props.playPrev(this.state.isSong)
         }
     }
@@ -247,7 +247,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
     //     }).catch((err) => console.log("at error", err))
     // }
     public shareSong = (item: any) => {
-        this.setState({pauseVideo: true});
+        this.setState({ pauseVideo: true });
         let urlParam = [];
         let shareUrl = "";
         for (let i in item) {
@@ -294,17 +294,20 @@ class MusicPlayScreen extends React.Component<Props, State>{
     public render() {
         return (
             <Container style={styles.container}>
-                <CommonHeader title={"Play Music"} rightItem={
-                    <TouchableOpacity onPress={() => {
-                        this.props.navigation.pop();
-                        if (!this.state.isSong) {
-                            this.removePauseVideo();
-                        }
-                        this.timer && clearInterval(this.timer);
-                    }}>
-                        <Icon name={"ios-arrow-down"} type={"Ionicons"} style={{ color: colors.lightMaroon, fontSize: 18 }} />
-                    </TouchableOpacity>
-                } />
+                <CommonHeader title={"Play Music"}
+                    leftItem={
+                        <TouchableOpacity 
+                        style={{ marginTop: 10, paddingRight: 5 }}
+                        onPress={() => {
+                            this.props.navigation.pop();
+                            if (!this.state.isSong) {
+                                this.removePauseVideo();
+                            }
+                            this.timer && clearInterval(this.timer);
+                        }}>
+                            <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.lightMaroon, paddingVertical: 10 }}></Icon>
+                        </TouchableOpacity>
+                    } />
 
                 <ScrollView style={styles.holderView}>
 

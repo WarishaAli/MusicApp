@@ -3,7 +3,7 @@ import React from "react";
 import { Container, Card, Content, Icon } from "native-base";
 import { Text, TouchableOpacity, ImageBackground } from "react-native";
 import styles from "./AllCategoriesScreenStyles";
-import { PlaylistTypes, Playlist } from "../../Lib/PlaylistTypes";
+import { PlaylistTypes, Playlist, Songs } from "../../Lib/PlaylistTypes";
 import colors from "../../Themes/Colors";
 import { SongsActions } from "../../Reducers/SongsReducer";
 import { connect } from "react-redux";
@@ -14,6 +14,8 @@ import MusicPlayer from "../../Components/MusicPlayer/MusicPlayer";
 import { ISongData, OpenSong } from "../MusicPlayScreen/MusicPlayScreen";
 import SoundPlayer from "react-native-sound-player";
 import { DataTypes } from "../HomeScreen/HomeScreen";
+import RNTrackPlayer from "react-native-track-player";
+import { transformSongArray } from "../../Lib/SongQueueHelper";
 
 export enum ScreenTitle {
     GENRE = "Albums",
@@ -32,6 +34,7 @@ export interface DispatchProps {
 }
 export interface StateProps {
     isPlaying: boolean;
+    currentSong: Songs;
 }
 export type Props = OwnProps & NavigationScreenProps & DispatchProps & StateProps;
 
@@ -66,11 +69,13 @@ class AllCategoriesScreen extends React.Component<Props>{
             this.props.setPlaylist(this.categoryData.data);
             this.props.navigation.push("MusicPlayScreen", { songData: songData, isSong: false, videoUrl: songData })
         } else {
-            SoundPlayer.playUrl(songData.song_file);
+            RNTrackPlayer.reset();
+            RNTrackPlayer.add(transformSongArray([item, ...this.categoryData.data]))
+            RNTrackPlayer.play();
             this.props.showPlay(true);
             this.props.playSong(songData);
             this.props.shouldPlay(true);
-            this.props.setPlaylist(this.categoryData.data);
+            // this.props.setPlaylist(this.categoryData.data);
             this.props.navigation.push("MusicPlayScreen", { songData: songData, isSong: true, comingFrom: OpenSong.SCREEN })
         }
     }
@@ -96,12 +101,17 @@ class AllCategoriesScreen extends React.Component<Props>{
                 />
                 <Content style={{ paddingHorizontal: 20, }}>
                     {/* <Text style={styles.headerTitle}>{this.categoryData.title}</Text> */}
-                    <FlatList renderItem={(this.categoryData.title === DataTypes.ALBUMS || this.categoryData.title === DataTypes.VIDEOS ) ? this.renderCatTiles : this.renderSongTiles}
+                    {this.categoryData.data.length > 0 ?                    <FlatList renderItem={(this.categoryData.title === DataTypes.ALBUMS || this.categoryData.title === DataTypes.VIDEOS ) ? this.renderCatTiles : this.renderSongTiles}
                         data={this.categoryData.data} style={{ marginBottom: 100 }}
                         numColumns={2}
-                    />
+                /> : <Text>{this.categoryData.title}</Text>
+                }
+ 
                 </Content>
-                <MusicPlayer style={styles.musicPlayer} hide={!this.props.isPlaying} navigation={this.props.navigation} />
+                {this.props.currentSong.song_file && 
+                <MusicPlayer style={styles.musicPlayer}  navigation={this.props.navigation} />
+                }
+                
             </Container>
         );
     }
@@ -115,6 +125,7 @@ export const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
 
 export const mapStateToProps = (state: RootState): StateProps => ({
     isPlaying: state.songs.isPlaying,
+    currentSong: state.songs.song,
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(AllCategoriesScreen);

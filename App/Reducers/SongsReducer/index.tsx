@@ -44,8 +44,8 @@ export const INITIAL_STATE : ImmutableSongsState = SI.from({
     playlist: undefined,
     song: { 
         songid: "",
-        song_name: "Select a song",
-        song_category: "from your favorite genre",
+        song_name: "",
+        song_category: "",
         song_file: undefined,
     },
     showPlay: false,

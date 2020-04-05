@@ -24,6 +24,8 @@ const images = {
   backgroundImg: require("../Images/backgroundImage.jpeg"),
   croppedBackgroundImage: require("../Images/backgroundImageCropped.jpeg"),
   categoryBackground: require("../Images/catBackground.jpg"),
+  songImage: require("../Images/songPlaceholder.jpg"),
+  profileImage: require("../Images/profilePlaceholder.jpg"),
 };
 
 export default images;

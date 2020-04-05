@@ -29,6 +29,7 @@ import RNTrackPlayer from "react-native-track-player";
 import { transformSongArray } from "../../Lib/SongQueueHelper";
 import AsyncStorage from "@react-native-community/async-storage";
 import { Fonts } from "../../Themes";
+import images from "../../Themes/Images";
 // import { shareSong } from "../../Lib/ShareSongHelper";
 
 export interface OwnProps {
@@ -100,6 +101,7 @@ class PlaylistScreen extends React.Component<Props, State>{
         }
     }
 
+
     public async componentDidMount() {
         this.props.setPlaylist(undefined);
         console.log("checkingggggggggg", this.props.navigation.getParam("isVideo"));
@@ -167,7 +169,7 @@ class PlaylistScreen extends React.Component<Props, State>{
 
         Share.open({
             url: shareUrl, title: "HiphopStreets",
-            message: "Hey, check out this song on Hiphop Streets!"
+            message: "Hey, check out this song on HiphopStreets!"
         }).then((res) => {
             console.log(res);
             Toast.show({ text: "Song shared successfully!" });
@@ -211,7 +213,7 @@ class PlaylistScreen extends React.Component<Props, State>{
                         {(this.state.playlistType === PlaylistTypes.MYSONGS && item.status === "0")
                             && <Text style={[styles.likeTxt, { color: colors.lightMaroon, alignSelf: "center" }]}>Waiting for Approval</Text>}
                         {(this.state.playlistType === PlaylistTypes.MYSONGS && item.status === "1") &&
-                            <Text style={[styles.likeTxt, { color: colors.lightMaroon, alignSelf: "center" }]}>Approved</Text>
+                            <Text style={[styles.likeTxt, { color: colors.green, alignSelf: "center" }]}>Approved</Text>
                         }
                     </View>
                     {/* <View style={styles.caretView} /> */}
@@ -293,11 +295,8 @@ class PlaylistScreen extends React.Component<Props, State>{
     }
     public modalContent = () => (
         <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
-            {this.state.songImage ? <Image source={{ uri: this.state.songImage.uri }} style={styles.songImageView} onLayout={this.onLayoutImg} />
-                : <View style={[styles.songImageView, { backgroundColor: colors.maroon }]} onLayout={this.onLayoutImg}>
-                    <Text style={styles.imagePlaceholder}>Add a picture for your song</Text>
-                    {/* <Icon name={"camera"} type={"FontAwesome"} style={styles.emptyImageIcon}></Icon> */}
-                </View>
+            {this.state.songImage.uri ? <Image source={{ uri: this.state.songImage.uri }} style={styles.songImageView} onLayout={this.onLayoutImg} />
+                : <Image source={images.songImage} style={styles.songImageView} onLayout={this.onLayoutImg} />
             }
             <TouchableOpacity style={[styles.cameraView, { top: this.state.imgPosition.y - 100, left: this.state.imgPosition.x - 30, }]}
                 onPress={this.selectImage}
@@ -392,9 +391,13 @@ class PlaylistScreen extends React.Component<Props, State>{
 
         )
     }
+    public shouldRenderMusicBar = () => {
+        return this.state.playlistType === PlaylistTypes.EXPLORE ? true : this.props.isPlaying;
+        
+    }
 
     public render() {
-        // console.log(this.props.isSongUploading, this.props.pendingList);
+        console.log(this.shouldRenderMusicBar())
         return (
             <Container>
                 <CommonHeader title={this.getHeading()}
@@ -430,16 +433,20 @@ class PlaylistScreen extends React.Component<Props, State>{
                         </View>
                     }
                 </ScrollView>
-                {this.state.playlistType === PlaylistTypes.MYSONGS && <TouchableOpacity style={styles.addSong}
+                {this.state.playlistType === PlaylistTypes.MYSONGS && <TouchableOpacity 
+                    style={[styles.addSong, {bottom: this.props.selectedSong.song_file === undefined ? 100 : 170}]}
                     onPress={() => this.setState({ showModal: true })}
                 >
                     <Icon name={"add"} style={styles.addIcon} ></Icon>
                 </TouchableOpacity>}
+                {this.props.selectedSong.song_file &&
                 <MusicPlayer
                     style={this.state.playlistType === PlaylistTypes.EXPLORE ? styles.singleCatStyle : styles.playlistStyle}
-                    hide={false}
+                    // hide={this.state.playlistType === PlaylistTypes.EXPLORE ? 
+                    //     false : !this.props.isPlaying }
+                    // hide={false}
                     navigation={this.props.navigation}
-                />
+                />}
                 <ModalView content={
                     this.modalContent()
                 }

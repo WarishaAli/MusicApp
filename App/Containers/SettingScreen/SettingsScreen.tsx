@@ -18,6 +18,7 @@ import { BottomBarBtns } from "../../Types/BottomBar";
 import styles from "./SettingsScreenStyles";
 import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 import Share from "react-native-share";
+import { Images } from "../../Themes";
 
 export interface DispatchProps {
     selectBottomTab: (selectedTab: BottomBarBtns) => void;
@@ -29,7 +30,7 @@ export interface DispatchProps {
 
 export interface State {
     visible: boolean;
-    profileImage: { uri: string, type: string, name: string };
+    profileImage: { uri: string, type: string, name: string } | any;
     userName: string;
     bio: string;
     gender: string;
@@ -43,12 +44,13 @@ export interface StateProps {
 export type Props = NavigationScreenProps & DispatchProps & StateProps;
 
 class SettingScreen extends React.Component<Props, State>{
-
+    public emptyImagePath = "http://app.hiphopstreets.com/uploads/";
     public constructor(props) {
         super(props);
         this.state = {
             visible: false,
-            profileImage: { uri: "", type: "image/jpeg", name: "" },
+            // profileImage: { uri: Images.profileImage, type: "image/jpeg", name: "" },
+            profileImage: Images.profileImage,
             bio: this.props.profileData ? this.props.profileData.biography : "Say something about yourself",
             // gender: this.props.profileData ? this.props.profileData.sex : "Specify your gender",
             userName: this.props.profileData ? this.props.profileData.name : "your username",
@@ -85,7 +87,13 @@ class SettingScreen extends React.Component<Props, State>{
     public renderTopProfileView = () => {
         let data = this.props.profileData;
         return (<View style={styles.profileView}>
-            <Image style={styles.roundView} source={{ uri: data ? data.image : "" }}></Image>
+            {data ? data.image === this.emptyImagePath ? 
+        <Image source={Images.profileImage} style={styles.roundView}></Image>  
+        : <Image source={{uri: data.image}} style={styles.roundView}></Image> : <Image
+                style={styles.roundView}
+        source={Images.profileImage}></Image>
+        }
+          
             <View style={styles.profileInfo}>
                 <Text style={styles.userNameHeading}>{data ? data.name : "Username"}</Text>
                 <Text style={styles.bioHeading} numberOfLines={4}>{data ? data.email_id : "Email id"}</Text>
@@ -114,7 +122,7 @@ class SettingScreen extends React.Component<Props, State>{
                 <View style={styles.settingsItemView}>
                     <Text style={styles.text}>About Us</Text>
                     <Text style={styles.descriptionText}>We have one mission at HipHop Streets...Inspire aspiring artists to go for their dreams. We use our custom music app, our relationships  and our various platforms to give deserving artists the exposure and opportunities they need. Learn more about us at <Text
-                    style={{color:colors.maroon}} onPress={() => Linking.openURL("https://www.hiphopstreets.com")}>https://www.hiphopstreets.com</Text></Text>
+                        style={{ color: colors.maroon }} onPress={() => Linking.openURL("https://www.hiphopstreets.com")}>https://www.hiphopstreets.com</Text></Text>
                     <View style={styles.caretLine}></View>
                 </View>
             </View>
@@ -216,7 +224,13 @@ class SettingScreen extends React.Component<Props, State>{
                 {/* } */}
                 <ModalView content={
                     <ScrollView style={styles.modalContent}>
-                        <Image source={{ uri: this.state.profileImage.uri }} style={styles.roundView} onLayout={this.onLayoutImg} />
+                        {this.state.profileImage.uri ? <Image
+                            source={{ uri: this.state.profileImage.uri }} style={styles.roundView} onLayout={this.onLayoutImg} /> :
+                            <Image
+                                source={Images.profileImage} style={styles.roundView} onLayout={this.onLayoutImg}
+                            />
+                        }
+
                         <TouchableOpacity style={[styles.cameraView, { top: this.state.imgPosition.y - 140, left: this.state.imgPosition.x - 30, }]}
                             onPress={this.selectImage}
                         >

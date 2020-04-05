@@ -1,4 +1,4 @@
-package com.hiphopstreet;
+package com.goigi.android.hiphopstreet;
 
 import com.facebook.react.ReactActivity;
 import org.devio.rn.splashscreen.SplashScreen;

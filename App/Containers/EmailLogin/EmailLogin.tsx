@@ -104,14 +104,15 @@ class EmailLogin extends React.Component<Props, State> {
     public render() {
         return (
             <Container style={styles.mainContainer}>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>  
                     <AppLogo iconStyle={{ color: colors.maroon }}  appSloganStyle={{ color: colors.maroon }} />
                     <InputText error={this.state.emailError} placeHolder={"Email"} onChangeText={this.setEmail} value={this.state.email}
                     errorText={this.state.emailErrorText}
                     />
                     <InputText style={{ marginTop: 20 }} 
                     placeHolder={"Password"} onChangeText={this.setPassword}
-                    value={this.state.password} secureTextEntry={true}
+                    value={this.state.password} 
+                    isPwd={this.state.password.length > 0}
                     error={this.state.passwordError} errorText={this.state.pwdErrorText}
                     />
                     <LargeButton onPress={this.login} style={{ marginTop: 20 }} text={"LOGIN"}

@@ -83,7 +83,8 @@ class TrackPlayer extends React.Component<Props> {
     public async init() {
         // set up the player so we can use it
         RNTrackPlayer.setupPlayer({
-            iosCategoryMode: 'spokenAudio'
+            iosCategoryMode: 'spokenAudio',
+            maxCacheSize: 5000
         })
 
         // add support for capabilities

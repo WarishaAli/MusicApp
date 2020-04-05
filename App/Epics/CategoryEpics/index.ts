@@ -33,7 +33,7 @@ export const getSongByCategoryEpic: Epic = (action$, state$, { api }: IDependenc
                 if (response.ok) {
                     // SoundPlayer.playUrl(response.data.data[0].song_file);
                     let songsList = transformSongArray(response.data.data, state$.value.login.userData.user_cat);
-                    if (songsList.length > 0 && !action.payload.includes("videos")) {
+                    if (songsList && !action.payload.includes("videos")) {
 
                         songsList.length > 0 && RNTrackPlayer.reset();
                         songsList.length > 0 && RNTrackPlayer.add(songsList);

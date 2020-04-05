@@ -273,28 +273,6 @@ class HomeScreen extends React.Component<Props, State> {
 
 
                 <ScrollView style={{ marginLeft: 15, flex: 0.9, marginBottom: 100 }}>
-                    {/* <Button onPress={() => {
-                            TrackPlayer.add([{
-                                id: 'trackId',
-                                url: "http://app.hiphopstreets.com/songfile/439008f6956afd56b0a0b770769a63e7.mp3",
-                                title: 'Dope',
-                                artist: 'Warisha',
-                                artwork: Images.appLogo,
-                            },{
-                                id: 'track2',
-                                url: "http://app.hiphopstreets.com/songfile/439008f6956afd56b0a0b770769a63e7.mp3",
-                                title: 'Hello',
-                                artist: 'Ali',
-                                artwork: Images.croppedBackgroundImage,  
-                            }
-                        ]);
-                           
-                        
-                            // Starts playing it
-                            TrackPlayer.play();
-                        
-                        }
-                    }></Button> */}
                     {this.renderTextIcon(DataTypes.SONGS, this.props.featuredSongs)}
                     {this.renderGenreList(this.props.featuredSongs, DataTypes.SONGS)}
                     {this.renderTextIcon(DataTypes.ALBUMS, this.props.category)}

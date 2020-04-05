@@ -132,7 +132,7 @@ export default StyleSheet.create({
         justifyContent: "center",
         // marginBottom: 10,
         position: "absolute",
-        bottom: 170,
+        // bottom: 170,
         right: 20,
         zIndex: 4
     },
@@ -157,7 +157,7 @@ export default StyleSheet.create({
     songImageView:{
         width: 80,
         height: 80,
-        backgroundColor: colors.silver,
+        // backgroundColor: colors.silver,
         borderRadius: 200,
         marginTop: 30,
         justifyContent: "center",

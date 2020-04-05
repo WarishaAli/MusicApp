@@ -1,18 +1,19 @@
 import React from "react";
-import { Container, Content, CheckBox } from "native-base";
+import { Container, Content, CheckBox, Picker, Icon, Button } from "native-base";
 import styles from "./SignupScreenStyles";
 import InputText from "../../Components/InputText/InputText";
 import AppLogo from "../../Components/AppLogo/AppLogo";
 import colors from "../../Themes/Colors";
 import LargeButton from "../../Components/LargeButton";
-import { Text, View, Picker } from "react-native";
+import { Text, View } from "react-native";
 import { NavigationScreenProps } from "react-navigation";
 import { LoginActions } from "../../Reducers/LoginReducers";
 import { connect } from "react-redux";
-import { validateEmail, validatePassword } from "../../Lib/ValidationHelper";
+import { validateEmail, validatePassword, validateUserName } from "../../Lib/ValidationHelper";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import countryData from "../../Lib/Country";
+import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 
 export enum UserRole {
     NORMAL = "user",
@@ -24,6 +25,8 @@ export interface State {
     password: string;
     confirmPwd: string;
     username: string;
+    userNameError: boolean;
+    userNameErrorMsg: string;
     userRole: UserRole;
     dob: Date;
     pob: string;
@@ -76,7 +79,9 @@ class SignupScreen extends React.Component<Props, State> {
         this.props.navigation.navigate("EmailLogin");
     }
     public setUsername = (text: string) => {
-        this.setState({ username: text })
+        this.setState({ username: text });
+        validateUserName(text) ? this.setState({ userNameError: false }) : 
+        this.setState({ userNameError: true, userNameErrorMsg: "Username should contain letters only" })
     }
 
     public setEmail = (text: string) => {
@@ -106,7 +111,7 @@ class SignupScreen extends React.Component<Props, State> {
     }
     public signup = () => {
         this.state.firstPage ? this.setState({ firstPage: false }) :
-            this.props.signup(this.state.username, this.state.email, this.state.password, this.state.userRole, this.state.pob, this.state.dob.toString(),
+            this.props.signup(this.state.username, this.state.email, this.state.password, this.state.userRole, this.state.country, this.state.dob.toString(),
                 this.state.country, this.state.interests, this.state.topAlbums);
     }
     public setInterests = (text: string) => {
@@ -119,7 +124,7 @@ class SignupScreen extends React.Component<Props, State> {
     public disableBtn = () => {
         if (this.state.firstPage) {
             return (!validateEmail(this.state.email) || this.state.username.length === 0 || this.state.dob.length === 0 ||
-                this.state.pob.length === 0 || this.state.country.length === 0
+                this.state.country.length === 0 || !validateUserName(this.state.username)
             )
         } else {
             return this.state.userRole === UserRole.ARTIST ? (this.state.interests.length === 0 ||
@@ -131,20 +136,39 @@ class SignupScreen extends React.Component<Props, State> {
     public renderTextFields = () => {
         return this.state.firstPage ? (
             <View>
-                <InputText placeHolder={"Full Name"} onChangeText={this.setUsername} value={this.state.username} />
+                <InputText placeHolder={"Full Name"}
+                error={this.state.userNameError}
+                errorText={this.state.userNameErrorMsg}
+                onChangeText={this.setUsername} value={this.state.username} />
                 <InputText style={{ marginTop: 20 }} placeHolder={"Email"} onChangeText={this.setEmail}
                     value={this.state.email} error={this.state.emailError} errorText={this.state.emailErrorText} />
                 {/* <InputText style={{ marginTop: 20 }} placeHolder={"Birthday"}
                     value={this.state.dob} /> */}
                     <TouchableOpacity style={styles.greyBox} onPress={this.setDob}>
-                        <Text onPress={this.setDob}>
+                        <Text onPress={this.setDob} style={styles.viewText}>
                         {this.state.dob.toDateString()}
                         </Text>
                     </TouchableOpacity>
-                <InputText style={{ marginTop: 20 }} placeHolder={"Place of birth"} onChangeText={this.setPob} value={this.state.pob} />
+                {/* <InputText style={{ marginTop: 20 }} placeHolder={"Place of birth"} onChangeText={this.setPob} value={this.state.pob} /> */}
+               
                 {/* <InputText style={{ marginTop: 20 }} placeHolder={"Country"} onChangeText={this.setCountry} value={this.state.country} /> */}
                 <View style={[styles.greyBox, {paddingHorizontal: 10}]}>
                     <Picker
+                    style={styles.viewText}
+                    
+                    mode={"dialog"}
+                    selectedValue={this.state.country}
+                    onValueChange={(itemValue) => {
+                        if (itemValue.name !== "Select a country") {
+    
+                            this.setState({ country: itemValue })
+                        }
+                    }}
+                    >
+                             {countryData ? countryData.map((item: any) => (
+                        <Picker.Item value={item.name} label={item.name} />)) : (null)}
+                    </Picker>
+                    {/* <Picker
                     mode={"dialog"}
                     enabled={true}
                     selectedValue={this.state.country}
@@ -154,12 +178,12 @@ class SignupScreen extends React.Component<Props, State> {
                             this.setState({ country: itemValue })
                         }
                     }}
-                    style={{ color: colors.charcoal, fontSize: 2 }}
+                    style={styles.viewText}
                 >
                     {countryData ? countryData.map((item: any) => (
                         <Picker.Item value={item.name} label={item.name} />)) : (null)}
     
-                </Picker>
+                </Picker> */}
                 </View>
             </View>
         ) : (
@@ -184,9 +208,12 @@ class SignupScreen extends React.Component<Props, State> {
                         <InputText style={{ marginTop: 20 }} placeHolder={"Top Albums"} onChangeText={this.setTopAlbums} value={this.state.topAlbums} />
                     </View>}
                     <InputText style={{ marginTop: 20 }} placeHolder={"Password"}
-                        onChangeText={this.setPwd} secureTextEntry={true} value={this.state.password} errorText={this.state.pwdErrorText}
+                        onChangeText={this.setPwd} 
+                        isPwd={this.state.password.length > 0}
+                        value={this.state.password} errorText={this.state.pwdErrorText}
                         error={this.state.passwordError} />
-                    <InputText style={{ marginTop: 20 }} placeHolder={"Confirm Password"} onChangeText={this.confirmPwd} secureTextEntry={true}
+                    <InputText style={{ marginTop: 20 }} placeHolder={"Confirm Password"} onChangeText={this.confirmPwd}
+                        isPwd={this.state.confirmPwd.length > 0}
                         error={this.state.confirmPwdError} errorText={this.state.confirmPwdErrorText}
                         value={this.state.confirmPwd} />
                     {this.state.userRole === UserRole.ARTIST &&
@@ -203,6 +230,11 @@ class SignupScreen extends React.Component<Props, State> {
     public render() {
         return (
             <Container style={styles.mainContainer}>
+                <View style={{position: "absolute", top: 5, left: 10}}>
+                <Button transparent={true} style={{paddingRight: 5, zIndex: 10 }} onPress={() => this.props.navigation.pop()}>
+                        <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.lightMaroon, padding: 10 }}></Icon>
+                    </Button>
+                </View>
                 <Content showsVerticalScrollIndicator={false}>
                     <AppLogo iconStyle={{ color: colors.lightPink }} appSloganStyle={{ color: colors.lightPink }} />
                     {this.renderTextFields()}

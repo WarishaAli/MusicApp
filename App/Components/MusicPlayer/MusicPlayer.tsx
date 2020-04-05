@@ -119,7 +119,7 @@ class MusicPlayer extends React.Component<Props, State> {
         <TouchableOpacity
             // activeOpacity={0}
             onPress={this.openSongScrenn}
-            style={[styles.mainView, this.props.style, { opacity: this.props.hide ? 0 : 1 }]}>
+            style={[styles.mainView, this.props.style]}>
             {/* <View style={styles.imageView}> */}
             <Image
                 style={styles.imageView}

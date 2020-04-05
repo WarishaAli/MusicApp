@@ -10,7 +10,7 @@ export default StyleSheet.create({
         justifyContent: "space-between",
         borderRadius: 20,
         flex: 1,
-        opacity: 0,
+        opacity: 1,
     },
     imageView: {
         borderRadius: 200,

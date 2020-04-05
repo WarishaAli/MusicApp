@@ -5,8 +5,9 @@
         android:drawable="@color/splashscreen_bg"/>
 
     <item
-
-        android:drawable="@mipmap/hiphop_launcher"
+         
+        android:drawable="@drawable/splashlogo"
         android:gravity="center" />
 
 </layer-list>
+

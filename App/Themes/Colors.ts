@@ -27,6 +27,7 @@ const colors = {
   black: "#000000",
   lightMaroon: "#b22222",
   lightPink: "#FDF5F9",
+  green: "#1fc600"
 //9C0000
 };
 
