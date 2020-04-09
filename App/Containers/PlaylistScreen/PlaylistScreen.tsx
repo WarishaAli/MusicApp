@@ -78,6 +78,7 @@ export interface State {
     songType: "mp3" | "mp4";
     categories: any;
     isVideo: boolean;
+    isHeartClicked: string;
 }
 export type Props = OwnProps & NavigationScreenProps & DispatchProps & StateProps;
 
@@ -98,6 +99,7 @@ class PlaylistScreen extends React.Component<Props, State>{
             songType: "mp3",
             categories: [],
             isVideo: this.props.navigation.getParam("isVideo"),
+            isHeartClicked: "hearto",
         }
     }
 
@@ -136,7 +138,7 @@ class PlaylistScreen extends React.Component<Props, State>{
         // }
     }
     public playSong = (item: any) => {
-        if (this.state.isVideo) {
+        if (this.state.isVideo || item.song_type !== "mp3") {
             this.openVideoScreen(item)
         } else {
             // SoundPlayer.playUrl(item.song_file);
@@ -203,7 +205,7 @@ class PlaylistScreen extends React.Component<Props, State>{
                         {this.state.playlistType !== PlaylistTypes.MYSONGS && <Text style={styles.likeTxt}>{item.likecount}</Text>}
                         {(this.state.playlistType !== PlaylistTypes.MYSONGS) && <TouchableOpacity style={styles.iconView}
                             onPress={() => {
-                                if(this.state.playlistType === PlaylistTypes.PLAYLIST){
+                                if(this.state.playlistType === PlaylistTypes.PLAYLIST || isFav){
                                     Alert.alert("Confirmation", "Are you sure you want to remove this song from playlist",
                                     [
                                         {
@@ -218,10 +220,11 @@ class PlaylistScreen extends React.Component<Props, State>{
                                     )
                                 } else{
                                 this.props.makeFavorite(item.songid);
+                                // !isFav && this.setState({isHeartClicked: "heart"})
                                 }
                             }}>
                             {!isFav ?
-                                <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon> :
+                                <Icon name={this.state.isHeartClicked} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]} ></Icon> :
                                 <Icon name={"heart"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon>
                             }
                         </TouchableOpacity>}

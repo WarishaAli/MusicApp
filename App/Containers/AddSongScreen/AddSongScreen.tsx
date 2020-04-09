@@ -23,9 +23,12 @@ class AddSongScreen extends React.Component<Props>{
                             <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.lightMaroon, padding: 10 }}></Icon>
                         </TouchableOpacity>}
                 ></CommonHeader>
-                 <Text style={styles.descriptionText}>We are working to add this feature in our app, for now please visit our website to upload song <Text
-                        style={{ color: colors.maroon }} onPress={() => Linking.openURL("https://www.hiphopstreets.com")}>https://www.hiphopstreets.com</Text>
-                        </Text>
+                 <Text style={[styles.descriptionText, {paddingHorizontal: 15}]}>
+                     Thanks for joining the HipHopstreets Streaming App. Go to 
+                     <Text
+                        style={{ color: colors.maroon }} 
+                        onPress={() => Linking.openURL("https://www.hiphopstreets.com")}> https://www.hiphopstreets.com <Text style={{color: colors.coal}}>to upload your song or video</Text></Text>
+                    </Text>
        
                 
             </Container>

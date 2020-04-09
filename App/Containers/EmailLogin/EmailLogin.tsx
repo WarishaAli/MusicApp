@@ -76,25 +76,8 @@ class EmailLogin extends React.Component<Props, State> {
     }
     public setPassword = (text: string) => {
         this.setState({ password: text });
-        // validatePassword(text) ? this.setState({passwordError: false}) : this.setState({passwordError: true, pwdErrorText: "Password must be atleast 6 characters long."})
     }
-    // public modalContent = () => (
-    //     <View>
-    //         <View style={{ flexDirection: "row" }}>
-    //             <View style={{ flexDirection: "row", padding: 10 }}>
-    //                 <CheckBox color={colors.steel} checked={this.state.userRole === UserRole.NORMAL}
-    //                     onPress={() => this.setState({ userRole: UserRole.NORMAL })} />
-    //                 <Text style={{ marginLeft: 20 }}>{UserRole.NORMAL}</Text>
-    //             </View>
-    //             <View style={{ flexDirection: "row", padding: 10 }}>
-    //                 <CheckBox color={colors.steel} checked={this.state.userRole === UserRole.ARTIST}
-    //                     onPress={() => this.setState({ userRole: UserRole.ARTIST })} />
-    //                 <Text style={{ marginLeft: 20 }}>{UserRole.ARTIST}</Text>
-    //             </View>
-    //         </View>
-    //     </View>
-    // );
-
+   
     public disableBtn = () => {
         return !validateEmail(this.state.email) || this.state.password.length === 0
     }

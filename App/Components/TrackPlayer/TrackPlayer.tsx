@@ -27,7 +27,6 @@ class TrackPlayer extends React.Component<Props> {
  
     public async componentDidMount() {
         RNTrackPlayer.addEventListener("remote-pause", (event) => {
-            console.log("#DEBUG remote pause #", event);
             RNTrackPlayer.pause();
         });
 
@@ -37,20 +36,14 @@ class TrackPlayer extends React.Component<Props> {
         // });
 
         RNTrackPlayer.addEventListener("remote-play", (event) => {
-            console.log("#DEBUG remote play #", event);
             RNTrackPlayer.play();
         });
         RNTrackPlayer.addEventListener("playback-track-changed", async (event) => {
-            console.log("#DEBUG track changed #", event);
             let  trackId = await RNTrackPlayer.getCurrentTrack();
             let song = await RNTrackPlayer.getTrack(trackId);
             this.props.setSong(transformSongObject( song));
-            console.log("object transform", transformSongObject(song));
-        
-            console.log("at track changedddd", trackId, await RNTrackPlayer.getTrack(trackId));
         });
         RNTrackPlayer.addEventListener("playback-state", (event) => {
-            console.log("#DEBUG state changed", event, event.state);
             if(event.state === 3 || event.state === 6){
                 this.props.showPlay(true);
                 this.props.isPlaying(true);
@@ -72,7 +65,6 @@ class TrackPlayer extends React.Component<Props> {
             RNTrackPlayer.skipToPrevious();
         })
         const b = await RNTrackPlayer.getState().then((item) => {
-            // console.log("player state", item, item !== 3, typeof(item));
             if (!TrackPlayer.instance) {
                 item !== 3 && this.init();
             }

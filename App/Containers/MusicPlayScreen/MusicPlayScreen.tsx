@@ -85,7 +85,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
     public videoPlayer: any = null;
 
     public componentDidMount() {
-        this.props.getFavorites(true);
+        this.props.getFavorites(false);
         console.log(this.state.isSong, "song or video");
         setTimeout(() => this.getSongTotalTime(), 2000);
         // this.getSongTotalTime();
@@ -94,7 +94,6 @@ class MusicPlayScreen extends React.Component<Props, State>{
     public getSongTotalTime = async () => {
         // if (this.props.currentSong) {
         const songTotalTime = await RNTrackPlayer.getDuration();
-        console.log(songTotalTime, "at get duration")
         const totalTime = this.getMinsSec(songTotalTime);
         this.setState({ duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songTotalTime }, })
         // }
