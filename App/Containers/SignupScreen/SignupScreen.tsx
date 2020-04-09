@@ -231,9 +231,13 @@ class SignupScreen extends React.Component<Props, State> {
         return (
             <Container style={styles.mainContainer}>
                 <View style={{position: "absolute", top: 5, left: 10}}>
-                <Button transparent={true} style={{paddingRight: 5, zIndex: 10 }} onPress={() => this.props.navigation.pop()}>
-                        <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.lightMaroon, padding: 10 }}></Icon>
-                    </Button>
+                {/* <Button transparent={true} style={{zIndex: 10, justifyContent: "flex-start"}} onPress={() => {
+                    this.state.firstPage ? this.props.navigation.pop() : this.setState({firstPage: true})
+                }}> */}
+                        <Icon 
+                        onPress={() => this.state.firstPage ? this.props.navigation.pop() : this.setState({firstPage: true})}
+                        name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.lightMaroon, padding: 10, alignSelf: "flex-start"}}></Icon>
+                    {/* </Button> */}
                 </View>
                 <Content showsVerticalScrollIndicator={false}>
                     <AppLogo iconStyle={{ color: colors.lightPink }} appSloganStyle={{ color: colors.lightPink }} />

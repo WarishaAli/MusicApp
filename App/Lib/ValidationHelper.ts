@@ -9,6 +9,6 @@ export const validateEmail = (text: string) => {
   }
 
   export const validateUserName = (text: string) => {
-      const userNameRegex = /^[A-Za-z]+$/;
+      const userNameRegex = /^[A-Za-z ]+$/;
       return userNameRegex.test(text) && text.length > 0
   }

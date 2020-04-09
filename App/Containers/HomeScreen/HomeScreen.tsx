@@ -76,10 +76,8 @@ class HomeScreen extends React.Component<Props, State> {
         this.props.setBottomTab(BottomBarBtns.EXPLORE);
         this.props.getCategories();
         this.props.getHomeData();
-        // this.props.songCat();
     }
     public selectSingleCategory = (data: any) => {
-        // this.props.setPlaylist(data);
         this.props.navigation.navigate("Playlist", { comingFrom: PlaylistTypes.EXPLORE, category: data, isVideo: data.song_category.includes("videos") })
     };
     public renderTextIcon = (title: string, data: any) => (
@@ -98,34 +96,28 @@ class HomeScreen extends React.Component<Props, State> {
                 style={styles.listStyle}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
-            // keyExtractor={(item) => noDataText === "categories" ? item.cat_id : item.songid}
             />
-        ) : (<Text style={styles.noDataText}>
-            Currently there are no {noDataText} to display!
-        </Text>)
+        ) : (
+        <View style={{flexDirection: "row"}}>
+        <Text style={styles.noDataText}>
+            Currently there are no {noDataText} to display! <Text style={{color: colors.lightMaroon}}
+            onPress={() => this.reload(noDataText)}
+            >Reload</Text>
+        </Text>
+        {/* <Icon name={"reload1"} type={"AntDesign"} style={styles.retryIcon} onPress={() => this.reload(noDataText)}/> */}
+        </View>)
+    }
+    public reload = (dataName: string) => {
+        if(dataName === DataTypes.ALBUMS) {
+            this.props.getCategories();
+        } else{
+            this.props.getHomeData();
+        }
+
     }
 
-    // public getSongInfo = async (item) => {
-    //     try {
-    //         const info = await SoundPlayer.getInfo() // Also, you need to await this because it is async
-    //         console.log('getInfo', info.duration / 60, info.currentTime / 60) // {duration: 12.416, currentTime: 7.691}
-    //         this.props.navigation.push("MusicPlayScreen", { songData: info })
-    //     } catch (e) {
-    //         console.log('There is no song playing', e)
-    //     }
-    // }
-    public playSong = (item) => {
-        // console.log(item, this.props.featuredSongs, transformSongArray([item]), transformSongArray([item, ...this.props.featuredSongs]))
-        RNTrackPlayer.reset();
-        this.props.featuredSongs.length > 0 ? RNTrackPlayer.add(transformSongArray([item, ...this.props.featuredSongs])) :
-            RNTrackPlayer.add(transformSongArray([item]));
-        RNTrackPlayer.play();
-        this.props.playSong(item);
-        this.props.shouldPlay(true);
-        this.props.showPlay(true);
-        // this.props.setPlaylist(this.props.featuredSongs);
-    }
     public openSongScreen = (item) => {
+        RNTrackPlayer.reset();
         this.props.featuredSongs ? RNTrackPlayer.add(transformSongArray([item, ...this.props.featuredSongs])) :
             RNTrackPlayer.add({
                 id: item.songid,
@@ -141,22 +133,16 @@ class HomeScreen extends React.Component<Props, State> {
         this.props.navigation.push("MusicPlayScreen", { songData: item, isSong: true, comingFrom: OpenSong.SCREEN })
     }
 
-    // public openVideoScreen = (videoItem: any) => {
-    //     SoundPlayer.pause();
-    //     this.props.playSong(videoItem)
-    //     this.props.setPlaylist(this.props.featuredVideos);
-    //     this.props.navigation.push("MusicPlayScreen", { songData: videoItem, isSong: false, videoUrl: videoItem })
-    // }
     public openPodcastScreen = (item) => {
-        // SoundPlayer.playUrl(item.song_file);
+        RNTrackPlayer.reset();
         this.props.featuredPodcasts ? RNTrackPlayer.add(transformSongArray([item, ...this.props.featuredPodcasts])) :
-        RNTrackPlayer.add({
-            id: item.songid,
-            url: item.song_file,
-            title: item.song_name,
-            artist: item.artistName,
-            artwork: item.songimage,
-        });
+            RNTrackPlayer.add({
+                id: item.songid,
+                url: item.song_file,
+                title: item.song_name,
+                artist: item.artistName,
+                artwork: item.songimage,
+            });
         this.props.playSong(item);
         this.props.shouldPlay(true);
         this.props.showPlay(true);
@@ -169,7 +155,6 @@ class HomeScreen extends React.Component<Props, State> {
             <TouchableOpacity
                 onPress={() => {
                     if (text === DataTypes.VIDEOS) {
-                        // this.openVideoScreen(item.item)
                     } else if (text === DataTypes.PODCASTS) {
                         this.openPodcastScreen(item.item)
                     } else if (text === DataTypes.SONGS) {
@@ -178,7 +163,6 @@ class HomeScreen extends React.Component<Props, State> {
                 }}>
                 <Card style={styles.songsCard}>
                     <ImageBackground style={styles.cardImage} source={{ uri: item.item.songimage }}
-                    // imageStyle={{ borderRadius: 5 }}
                     ></ImageBackground>
                     <View style={styles.cardOverlayView}>
                         <Text numberOfLines={1} style={styles.songName}>{item.item.song_name}</Text>
@@ -202,9 +186,7 @@ class HomeScreen extends React.Component<Props, State> {
 
         )
     }
-    // public setData = (dataSet: any) => {
-    //     this.setState({ data: dataSet });
-    // }
+
     public showSearchBar = () => {
         this.setState({ showSearchBar: true })
     }
@@ -213,7 +195,7 @@ class HomeScreen extends React.Component<Props, State> {
         item.song_category === "Podcast videos" ? this.openVideoScreen(item) : this.openSongScreen(item);
     }
     public renderSearchItem = ({ item }) => {
-        return (item.status === "0" && this.props.userRole === UserRole.NORMAL) ?  null : (
+        return (item.status === "0" && this.props.userRole === UserRole.NORMAL) ? null : (
             <TouchableOpacity style={{ marginTop: 5, marginLeft: 5 }} onPress={() => this.onClickSearchItem(item)}>
                 <Text style={{ fontSize: 18, fontFamily: "serif", paddingLeft: 10 }}>{item.song_name}</Text>
                 <Text style={{ paddingLeft: 10, marginTop: 2, fontSize: 12 }}>{item.song_category}</Text>

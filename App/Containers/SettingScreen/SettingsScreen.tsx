@@ -1,24 +1,22 @@
 import { Card, Col, Container, Content, Icon } from "native-base";
 import React from "react";
-import { Image, Text, TextInput, TouchableOpacity, View, Alert, ScrollView, Linking } from "react-native";
+import { Alert, Image, Linking, ScrollView, Text, TextInput, TouchableOpacity, View, PermissionsAndroid } from "react-native";
 import ImagePicker from 'react-native-image-picker';
-import { FlatList, NavigationScreenProps } from "react-navigation";
+import { NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
 import BottomBar from "../../Components/BottomBar";
+import CommonHeader from "../../Components/CommonHeader/CommonHeader";
 import ModalView from "../../Components/ModalView/ModalView";
 import { IUserData } from "../../Lib/Interfaces";
-import { SettingsData } from "../../Lib/SettingsData";
 import { RootState } from "../../Reducers";
 import { BottomBarActions } from "../../Reducers/BottomBarReducer";
 import { LoginActions } from "../../Reducers/LoginReducers";
 import { ProfileAction } from "../../Reducers/ProfileReducers";
 import { SongsActions } from "../../Reducers/SongsReducer";
+import { Images } from "../../Themes";
 import colors from "../../Themes/Colors";
 import { BottomBarBtns } from "../../Types/BottomBar";
 import styles from "./SettingsScreenStyles";
-import CommonHeader from "../../Components/CommonHeader/CommonHeader";
-import Share from "react-native-share";
-import { Images } from "../../Themes";
 
 export interface DispatchProps {
     selectBottomTab: (selectedTab: BottomBarBtns) => void;
@@ -62,12 +60,18 @@ class SettingScreen extends React.Component<Props, State>{
     public handleBack = () => {
         this.props.navigation.navigate("HomeScreen");
     }
-    public componentDidMount() {
+    public async componentDidMount () {
+        try{
+        const granted = await PermissionsAndroid.requestMultiple([
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+        ]);
+    } catch(e){
+        console.log("error occured in camera and storage permission")
+    }
         this.props.selectBottomTab(BottomBarBtns.SETTINGS);
-        // this.onBackPress = BackHandler.addEventListener("hardwareBackPress", this.handleBack);
     }
     public componentWillUnmount() {
-        // this.onBackPress && BackHandler.removeEventListener("hardwareBackPress", this.handleBack);
     }
     public renderItem = (initials?: boolean, title: string, onPress: () => void, icon?: string) => {
         return (
@@ -238,7 +242,13 @@ class SettingScreen extends React.Component<Props, State>{
                         </TouchableOpacity>
                         <TextInput value={this.state.userName} onChangeText={(text) => this.setState({ userName: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your username"} />
                         <TextInput value={this.state.emailId} onChangeText={(text) => this.setState({ emailId: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your email id"} />
-                        <TextInput value={this.state.bio} onChangeText={(text) => this.setState({ bio: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your biography"} />
+                        <TextInput value={this.state.bio} onChangeText={(text) => this.setState({ bio: text })} 
+                        underlineColorAndroid={colors.maroon} placeholder={"Enter your biography"}
+                        multiline={true}
+                        maxLength={100}
+                        />
+                        {this.state.bio.length === 100 && 
+                        <Text style={[styles.descriptionText, {color: colors.lightMaroon, fontSize: 12, margin: 0}]}>Oops! You have reached maximum word limit</Text>}
                         {/* <TextInput value={this.state.gender} onChangeText={(text) => this.setState({ gender: text })} underlineColorAndroid={colors.maroon} placeholder={"Enter your gender"}/> */}
                     </ScrollView>
                 }

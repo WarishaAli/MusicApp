@@ -2,6 +2,12 @@ import {StyleSheet} from "react-native";
 import colors from "../../Themes/Colors";
 
 export default StyleSheet.create({
+    retryIcon:{
+        fontSize: 12,
+        color: colors.lightMaroon,
+        alignSelf: "center",
+        marginBottom: 5,
+    },
     shareView:{
         marginLeft: 20
     },

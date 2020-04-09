@@ -183,7 +183,10 @@ class PlaylistScreen extends React.Component<Props, State>{
         } else {
             let isFav = false;
             isFav = this.props.favorites ? isFavorite(this.props.favorites, item.songid) : false;
-            // image songName catName likeCount
+            
+            if(this.state.playlistType === PlaylistTypes.PLAYLIST && !isFav){
+                return null;
+            } else{
 
             return this.props.selectedPlaylist.length > 0 ? (
                 <View style={{ flexDirection: "row", marginTop: 25, }}>
@@ -198,7 +201,25 @@ class PlaylistScreen extends React.Component<Props, State>{
                     <View style={{ flexDirection: "row" }}>
                         {/* {this.props.userRole === UserRole.NORMAL &&  */}
                         {this.state.playlistType !== PlaylistTypes.MYSONGS && <Text style={styles.likeTxt}>{item.likecount}</Text>}
-                        {(this.state.playlistType !== PlaylistTypes.MYSONGS) && <TouchableOpacity style={styles.iconView} onPress={() => { this.props.makeFavorite(item.songid) }}>
+                        {(this.state.playlistType !== PlaylistTypes.MYSONGS) && <TouchableOpacity style={styles.iconView}
+                            onPress={() => {
+                                if(this.state.playlistType === PlaylistTypes.PLAYLIST){
+                                    Alert.alert("Confirmation", "Are you sure you want to remove this song from playlist",
+                                    [
+                                        {
+                                            text: "Yes",
+                                            onPress: () => this.props.makeFavorite(item.songid)
+                                        },
+                                        {
+                                            text: "No",
+                                            onPress: () => null
+                                        }
+                                    ]
+                                    )
+                                } else{
+                                this.props.makeFavorite(item.songid);
+                                }
+                            }}>
                             {!isFav ?
                                 <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon> :
                                 <Icon name={"heart"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon>
@@ -217,11 +238,14 @@ class PlaylistScreen extends React.Component<Props, State>{
                         }
                     </View>
                     {/* <View style={styles.caretView} /> */}
-                </View>) : <Text>
-                    <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
-                        "No songs to display, please try again later!"}</Text>
-                </Text>
-        }
+                </View>) :
+                <>
+                    <Text style={{ alignSelf: "center", marginTop: 100 }}>
+                        {this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
+                            "No songs to display, please try again later!"}
+                    </Text>
+                </>
+        }}
     }
     public getHeading = () => {
         if (this.state.playlistType === PlaylistTypes.EXPLORE) {
@@ -393,11 +417,10 @@ class PlaylistScreen extends React.Component<Props, State>{
     }
     public shouldRenderMusicBar = () => {
         return this.state.playlistType === PlaylistTypes.EXPLORE ? true : this.props.isPlaying;
-        
+
     }
 
     public render() {
-        console.log(this.shouldRenderMusicBar())
         return (
             <Container>
                 <CommonHeader title={this.getHeading()}
@@ -418,9 +441,9 @@ class PlaylistScreen extends React.Component<Props, State>{
                                 data={this.props.selectedPlaylist} renderItem={this.renderSongs}
                                 keyExtractor={(item) => item.songid}
                             /> : <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
-                                "No songs to display, please try again later!"}</Text> : 
-                                <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
-                                    "No songs to display, please try again later!"}</Text>
+                                "No songs to display, please try again later!"}</Text> :
+                        <Text style={{ alignSelf: "center", marginTop: 100 }}>{this.state.playlistType === PlaylistTypes.PLAYLIST ? "Add some songs to your favorite list!" :
+                            "No songs to display, please try again later!"}</Text>
                     }
                     {(this.props.pendingList.length > 0 && this.props.isSongUploading && this.state.playlistType === PlaylistTypes.MYSONGS) &&
                         <View style={{ marginTop: 30 }}>
@@ -433,20 +456,20 @@ class PlaylistScreen extends React.Component<Props, State>{
                         </View>
                     }
                 </ScrollView>
-                {this.state.playlistType === PlaylistTypes.MYSONGS && <TouchableOpacity 
-                    style={[styles.addSong, {bottom: this.props.selectedSong.song_file === undefined ? 100 : 170}]}
-                    onPress={() => this.setState({ showModal: true })}
+                {this.state.playlistType === PlaylistTypes.MYSONGS && <TouchableOpacity
+                    style={[styles.addSong, { bottom: this.props.selectedSong.song_file === undefined ? 100 : 170 }]}
+                    onPress={() => this.props.navigation.push("AddSongScreen")}
                 >
                     <Icon name={"add"} style={styles.addIcon} ></Icon>
                 </TouchableOpacity>}
                 {this.props.selectedSong.song_file &&
-                <MusicPlayer
-                    style={this.state.playlistType === PlaylistTypes.EXPLORE ? styles.singleCatStyle : styles.playlistStyle}
-                    // hide={this.state.playlistType === PlaylistTypes.EXPLORE ? 
-                    //     false : !this.props.isPlaying }
-                    // hide={false}
-                    navigation={this.props.navigation}
-                />}
+                    <MusicPlayer
+                        style={this.state.playlistType === PlaylistTypes.EXPLORE ? styles.singleCatStyle : styles.playlistStyle}
+                        // hide={this.state.playlistType === PlaylistTypes.EXPLORE ? 
+                        //     false : !this.props.isPlaying }
+                        // hide={false}
+                        navigation={this.props.navigation}
+                    />}
                 <ModalView content={
                     this.modalContent()
                 }

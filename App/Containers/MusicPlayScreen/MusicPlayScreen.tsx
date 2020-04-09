@@ -1,25 +1,22 @@
-import React from "react";
-import { Container, Icon, Col, Toast } from "native-base";
-import { NavigationScreenProps } from "react-navigation";
-import styles from "./MusicPlayScreenStyles";
-import CommonHeader from "../../Components/CommonHeader/CommonHeader";
-import { TouchableOpacity, Image, Text, View, ScrollView, Dimensions } from "react-native";
-import colors from "../../Themes/Colors";
 import Slider from '@react-native-community/slider';
-import SoundPlayer from "react-native-sound-player";
-import { Songs, PlaylistTypes } from "../../Lib/PlaylistTypes";
+import { Container, Icon, Toast } from "native-base";
+import React from "react";
+import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import Share from "react-native-share";
+import RNTrackPlayer from "react-native-track-player";
+import Video from 'react-native-video';
+import { NavigationScreenProps } from "react-navigation";
 import { connect, Dispatch } from "react-redux";
-import { SongsActions } from "../../Reducers/SongsReducer";
+import CommonHeader from "../../Components/CommonHeader/CommonHeader";
+import { isFavorite, isPortrait } from "../../Lib/MusicPlayerHelpers";
+import { PlaylistTypes, Songs } from "../../Lib/PlaylistTypes";
 import { RootState } from "../../Reducers";
 import { ArtistProfileAction } from "../../Reducers/ArtistProfileReducer";
-import { UserRole } from "../SignupScreen/SignupScreen";
-import Share from "react-native-share";
 import { FavoriteAction } from "../../Reducers/FavoritesReducer";
-import { isFavorite, isPortrait } from "../../Lib/MusicPlayerHelpers";
-import Video from 'react-native-video';
-import RNTrackPlayer from "react-native-track-player";
-import { getPlayerState } from "../../Lib/SongQueueHelper";
-import TrackPlayer from "../../Components/TrackPlayer/TrackPlayer";
+import { SongsActions } from "../../Reducers/SongsReducer";
+import colors from "../../Themes/Colors";
+import { UserRole } from "../SignupScreen/SignupScreen";
+import styles from "./MusicPlayScreenStyles";
 
 export enum OpenSong {
     SCREEN = "From Screen",
@@ -40,7 +37,6 @@ export interface State {
     currentTime: { min: number, sec: number, total: number };
     layout: { width: number, height: number, x: number, y: number, };
     isSong: boolean;
-    // videoUrl: Songs;
     pauseVideo: boolean;
     songPausedAt: number;
     comingFrom: OpenSong;
@@ -77,7 +73,6 @@ class MusicPlayScreen extends React.Component<Props, State>{
             currentTime: { min: 0, sec: 0, total: 0 },
             layout: { width: 0, height: 0, x: 0, y: 0 },
             isSong: this.props.navigation.getParam("isSong"),
-            // videoUrl:  this.props.navigation.getParam("videoUrl"),
             pauseVideo: false,
             songPausedAt: 0,
             comingFrom: this.props.navigation.getParam("comingFrom"),
@@ -89,100 +84,44 @@ class MusicPlayScreen extends React.Component<Props, State>{
     public timer: any = null;
     public videoPlayer: any = null;
 
-    public async componentDidMount() {
-        this.props.getFavorites(false);
+    public componentDidMount() {
+        this.props.getFavorites(true);
         console.log(this.state.isSong, "song or video");
-        this.getSongTotalTime();
-        // this._onFinishedPlaying = this.state.isSong ? SoundPlayer.addEventListener("FinishedPlaying", (result: any) => {
-        //     console.log("at song finished playing", result);
-        //     this.playNextSong(true);
-        //     this.setState({ duration: { min: 0, sec: 0, total: 0 }, currentTime: { min: 0, sec: 0, total: 0 } })
-        //     this.timer && clearInterval(this.timer);
-        // }) : null;
-        // this._onFinishedloading = this.state.comingFrom === OpenSong.SCREEN && this.state.isSong ? SoundPlayer.addEventListener("FinishedLoading", (result: any) => {
-        //     console.log("at finish loading");
-        //     if (result) {
-        //         this.durationCounter();
-        //     }
-        // }) : null;
-        // if (this.props.showPlay && this.state.comingFrom === OpenSong.COMPONENT) {
-        (this.props.currentSong && this.state.isSong) && this.durationCounter();
-        // }
+        setTimeout(() => this.getSongTotalTime(), 2000);
+        // this.getSongTotalTime();
+        this.state.isSong && this.durationCounter();
     }
     public getSongTotalTime = async () => {
-        if (this.props.currentSong) {
-            const songTotalTime = await RNTrackPlayer.getDuration();
-            const totalTime = this.getMinsSec(songTotalTime);
-            this.setState({ duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songTotalTime }, })
-        }
+        // if (this.props.currentSong) {
+        const songTotalTime = await RNTrackPlayer.getDuration();
+        console.log(songTotalTime, "at get duration")
+        const totalTime = this.getMinsSec(songTotalTime);
+        this.setState({ duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songTotalTime }, })
+        // }
     }
     public getMinsSec = (time: number) => {
-        console.log(Math.floor(time / 60));
+        // console.log(Math.floor(time / 60));
         return { minutes: Math.floor(time / 60), seconds: (time % 60).toFixed(0) }
     }
-    // public getDuration = async () => {
-    //     const songInfo = await SoundPlayer.getInfo();
-    //     const totalTime =  this.getMinsSec(songInfo.duration);
-
-    //     console.log("at total song time", totalTime);
-    //     this.setState({ duration: {min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration},
-    //             // currentTime: {
-    //             //     min: currentTime.minutes,
-    //             //     sec: currentTime.seconds,
-    //             //     total: songInfo.currentTime,
-    //             // }
-    //         });
-    //     this.durationCounter();
-    // }
-
     public durationCounter = async () => {
-
-        // const songInfo = await SoundPlayer.getInfo();
-        // const totalTime =  this.getMinsSec(songInfo.duration);
-        // console.log("at total song time", totalTime);
-        // this.setState({ duration: {min: totalTime.minutes, sec: totalTime.seconds, total: songInfo.duration}});
         if (this.props.currentSong.song_file) {
             this.timer = setInterval(async () => {
-                // const songTotal = await RNTrackPlayer.getDuration();
                 const songCurrent = await RNTrackPlayer.getPosition();
-                // const totalTime = this.getMinsSec(songTotal);
                 const current = this.getMinsSec(songCurrent);
-                // this.props.isPlaying && this.setState({
-                //     duration: { min: totalTime.minutes, sec: totalTime.seconds, total: songTotal },
-                // });
-                // console.log("at parse int", parseInt(current.seconds));
                 this.setState({ currentTime: { min: current.minutes, sec: current.seconds, total: songCurrent } })
-                // this.props.showPlaying && parseInt(current.seconds) === 59 ? this.setState({ currentTime: { min: this.state.currentTime.min + 1, total: songInfo.currentTime, sec: 0 } })
-                //     : this.setState({ currentTime: { sec: this.state.currentTime.sec + 1, total: songInfo.currentTime, min: this.state.currentTime.min } })
-                // console.log("making seconds mins", minutes, seconds);
-                //   this.setState({songDuration: { duration: this.gettimeInMins(info.duration), currentTime: this.gettimeInMins(info.currentTime)}})
             }, 1000);
         }
 
 
     };
-    // public gettimeInMins = (time: number) => {
-    //     let num = time / 60;
-    //     let str = num.toString().substring(0, 5);
-    //     return parseFloat(str);
-    // }
-    // public getInfo = async () => {
-    //     const info = await SoundPlayer.getInfo();
-    //     console.log("song info", info);
-    //     console.log(this.gettimeInMins(info.duration));
-    //     info && this.setState({ songDuration: { duration: this.gettimeInMins(info.duration), currentTime: this.gettimeInMins(info.currentTime) } })
-    // }
     public componentWillUnmount() {
-        // this._onFinishedPlaying && this._onFinishedPlaying.remove();
-        // this._onFinishedloading && this._onFinishedloading.remove();
         this.timer && clearInterval(this.timer);
     }
     public componentDidUpdate(nextProps: Props) {
         if ((this.props.isPlaying !== nextProps.isPlaying || this.props.currentSong !== nextProps.currentSong)
             && this.state.isSong) {
-            // this.props.isPlaying ? this.playSong() : this.pauseSong();
-            this.state.isSong && this.durationCounter();
-            this.getSongTotalTime();
+            this.durationCounter();
+            setTimeout(() => this.getSongTotalTime(), 2000);
         };
 
     }
@@ -198,8 +137,6 @@ class MusicPlayScreen extends React.Component<Props, State>{
     };
     public pauseSong = () => {
         if (this.state.isSong) {
-            // SoundPlayer.pause();
-            // this.setState({ songPausedAt: this.state.currentTime.total })
             this.timer && clearInterval(this.timer);
             RNTrackPlayer.pause();
         } else {
@@ -209,7 +146,6 @@ class MusicPlayScreen extends React.Component<Props, State>{
 
     }
     public playNextSong = async (isAuto: boolean) => {
-        // this.props.playNext(this.state.isSong);
         if (this.state.isSong) {
             const skip = await RNTrackPlayer.skipToNext();
         } else {
@@ -237,15 +173,6 @@ class MusicPlayScreen extends React.Component<Props, State>{
         this.props.navigation.push("ArtistProfileScreen")
     }
 
-    // public shareSong = (item: any) => {
-    //     Share.open({
-    //         url: item.song_file, title: "HiphopStreets",
-    //         message: "Hey, check out this song on Hiphop Streets!"
-    //     }).then((res) => {
-    //         console.log(res);
-    //         Toast.show({ text: "Song shared successfully!" });
-    //     }).catch((err) => console.log("at error", err))
-    // }
     public shareSong = (item: any) => {
         this.setState({ pauseVideo: true });
         let urlParam = [];
@@ -271,7 +198,6 @@ class MusicPlayScreen extends React.Component<Props, State>{
             const duration = await RNTrackPlayer.getDuration();
             let time = this.getMinsSec(duration);
             this.setState({ duration: { min: time.minutes, sec: time.seconds, total: duration } })
-            // return time.minutes.toString() + ":" + time.seconds.toString();
         }
     }
     getSongCurrentTime = async () => {
@@ -280,7 +206,6 @@ class MusicPlayScreen extends React.Component<Props, State>{
             console.log("at curren time", duration);
             let time = this.getMinsSec(duration);
             this.setState({ currentTime: { min: time.minutes, sec: time.seconds, total: duration } })
-            // return time.minutes.toString() + ":" + time.seconds.toString();
         }
     }
 
@@ -292,19 +217,20 @@ class MusicPlayScreen extends React.Component<Props, State>{
         this.props.setSong();
     }
     public render() {
+        // console.log("this is current time", this.state.currentTime);
         return (
             <Container style={styles.container}>
                 <CommonHeader title={"Play Music"}
                     leftItem={
-                        <TouchableOpacity 
-                        style={{ marginTop: 10, paddingRight: 5 }}
-                        onPress={() => {
-                            this.props.navigation.pop();
-                            if (!this.state.isSong) {
-                                this.removePauseVideo();
-                            }
-                            this.timer && clearInterval(this.timer);
-                        }}>
+                        <TouchableOpacity
+                            style={{ marginTop: 10, paddingRight: 5 }}
+                            onPress={() => {
+                                this.props.navigation.pop();
+                                if (!this.state.isSong) {
+                                    this.removePauseVideo();
+                                }
+                                this.timer && clearInterval(this.timer);
+                            }}>
                             <Icon name={"ios-arrow-back"} style={{ fontSize: 16, color: colors.lightMaroon, paddingVertical: 10 }}></Icon>
                         </TouchableOpacity>
                     } />
@@ -362,9 +288,7 @@ class MusicPlayScreen extends React.Component<Props, State>{
                     <View style={{ justifyContent: "space-between" }}>
                         {/* <View style={{height: 3, width: "100%", backgroundColor: colors.black }}></View> */}
                         <Slider
-                            //  onLayout={this.onLayoutSlider} 
                             style={{ marginTop: 20, height: 20, width: "100%" }}
-                            // minimumValue={this.state.currentTime.total}
                             maximumValue={this.state.duration.total}
                             minimumTrackTintColor={colors.lightMaroon}
                             maximumTrackTintColor={colors.black}
@@ -397,7 +321,6 @@ class MusicPlayScreen extends React.Component<Props, State>{
                                 }
                             }}
                             value={this.state.currentTime.total}
-                        // onProgress={this.songProgress}
                         />
 
 

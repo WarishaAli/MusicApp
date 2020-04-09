@@ -10,7 +10,6 @@ export const searchEpic: Epic = (action$, state$, { api }: IDependencies) => act
     mergeMap((action) => {
         return api.hiphop.search(action.payload).pipe(
             mergeMap((response) => {
-                // console.log("profile response", response)
                 if (response.ok) {
                     return of(SearchAction.searchSuccess(response.data.data))
                 } else {

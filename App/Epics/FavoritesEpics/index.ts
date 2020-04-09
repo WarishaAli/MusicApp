@@ -11,7 +11,6 @@ import { Toast } from "native-base";
 export const getFavoritesEpic: Epic = (action$, state$, {api}: IDependencies) => action$.pipe(
     ofType(getType(FavoriteAction.getFavoriteRequest)),
     mergeMap((action) =>{
-        console.log("at epics", action.payload);
         return api.hiphop.getFavoriteSongs(state$.value.login.userData.access_token).pipe(
             mergeMap((response: ApiResponse<any>) => {
                 if(response.ok && response.data.status === 200){
@@ -31,9 +30,7 @@ export const makeFavoritesEpic: Epic = (action$, state$, {api}: IDependencies) =
     mergeMap((action) =>{
         return api.hiphop.makeFavorite(action.payload, state$.value.login.userData.access_token).pipe(
             mergeMap((response: ApiResponse<any>) => {
-                console.log(response, "make favorite response")
                 if(response.ok && response.status === 200){
-                    // console.log("add to fav msg", response.data.message);
                     Toast.show({text: response.data.message.message === "Success: Unliked!" ? "Song removed from favorites list!"
                     : "Song added to favorites list!"}) 
                     return of(FavoriteAction.makeFavoriteSuccess(), FavoriteAction.getFavoriteRequest(false))

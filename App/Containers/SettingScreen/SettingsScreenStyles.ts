@@ -76,7 +76,7 @@ export default StyleSheet.create({
     bioHeading: {
         color: colors.charcoal,
         marginTop: 5,
-        paddingRight: 20
+        paddingRight: 100
     },
     editBtn: {
         borderRadius: 5,

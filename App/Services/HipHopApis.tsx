@@ -12,12 +12,12 @@ export default (baseURL = `http://app.hiphopstreets.com/mobileServices`): HipHop
   const api = apicreate({
     baseURL,
     headers: {
-      // "Cache-Control": "no-cache",
+      "Cache-Control": "public, max-age=31536000",
       // "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
       "Content-Type": "application/json",
     },
-    //   20 second timeout...
-    timeout: 20000,
+    //   10 second timeout...
+    timeout: 15000,
   });
   const signup = (username: string, email: string, pwd: string, userRole: UserRole, pob: string, dob: string, country: string,
     interests? :string, topAlbums? :string) => {

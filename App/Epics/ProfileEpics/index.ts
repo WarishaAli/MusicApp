@@ -14,7 +14,6 @@ export const getProfileEpic: Epic = (action$, state$, { api }: IDependencies) =>
     mergeMap((action) => {
         return api.hiphop.getProfile(state$.value.login.userData.access_token).pipe(
             mergeMap((response) => {
-                // console.log("profile response", response)
                 if (response.ok) {
                     return of(ProfileAction.getProfileSuccess(response.data.userobject))
                 } else {
@@ -30,7 +29,6 @@ export const updateProfileEpic: Epic = (action$, state$, { api }: IDependencies)
     mergeMap((action) => {
         return api.hiphop.updateProfile(state$.value.login.userData.access_token, action.payload).pipe(
             mergeMap((response) => {
-                console.log("profile update response", response)
                 if (response.ok && response.data.error !== 1) {
                     return of(ProfileAction.updateProfileSuccess(response.data.useobject), ProfileAction.getProfileRequest())
                 } else {
@@ -47,10 +45,8 @@ export const updateProfileEpic: Epic = (action$, state$, { api }: IDependencies)
 export const getArtistProfile: Epic = (action$, state$, {api}: IDependencies) => action$.pipe(
     ofType(getType(ArtistProfileAction.getArtistProfileRequest)),
     mergeMap((action) => {
-        console.log("artist", action.payload.userId);
         return api.hiphop.getArtistProfile(action.payload.userId).pipe(
             mergeMap((response) => {
-                console.log("artist response", response);
                 if(response.ok && response.data.error !== true){
                     return of (ArtistProfileAction.getArtistProfileSuccess(response.data.userobject))
                 } else {

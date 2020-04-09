@@ -32,7 +32,6 @@ export const transformSongArray = (songArray: Array<Songs>, userRole?: UserRole)
         const filterdArray = newArray.filter((item) => {
            return item !== null
         });
-        console.log("array for track player", newArray, filterdArray);
         return filterdArray;
        
     }

@@ -29,7 +29,6 @@ export const getSongByCategoryEpic: Epic = (action$, state$, { api }: IDependenc
     mergeMap((action) => {
         return api.hiphop.getSongByCat(action.payload).pipe(
             mergeMap((response) => {
-                console.log("song by category", response);
                 if (response.ok) {
                     // SoundPlayer.playUrl(response.data.data[0].song_file);
                     let songsList = transformSongArray(response.data.data, state$.value.login.userData.user_cat);
@@ -38,7 +37,6 @@ export const getSongByCategoryEpic: Epic = (action$, state$, { api }: IDependenc
                         songsList.length > 0 && RNTrackPlayer.reset();
                         songsList.length > 0 && RNTrackPlayer.add(songsList);
                         RNTrackPlayer.play();
-                        console.log("at song play")
 
                     }
                     return (response.data.data.length > 0 && songsList.length > 0) ?
@@ -65,7 +63,6 @@ export const getHomeDataEpic: Epic = (action$, state$, { api }: IDependencies) =
         return api.hiphop.homeData().pipe(
             mergeMap((response) => {
                 if (response.ok) {
-                    console.log("home data", response)
                     return of(CategoryAction.getHomeDataSuccess({
                         featuredSongs: response.data.featuredSongs, featuredVideos: response.data.featuredVideos,
                         featuredPodcasts: response.data.podcastShows,

@@ -50,10 +50,8 @@ export const storeLoginData = async (loginData: IUserData) => {
 export const loginRequestEpic: Epic = (action$, state$, { api }: IDependencies) => action$.pipe(
   ofType(getType(LoginActions.loginRequest)),
   mergeMap((action) => {
-    console.log("at login request payload", action.payload)
     return api.hiphop.login(action.payload.email, action.payload.pwd, action.payload.socialType, action.payload.socialId).pipe(
       mergeMap(async (response: ApiResponse<any>) => {
-        console.log("login response", response);
         if (response.ok && response.data.error === false) {
           if (response.data.object.user_cat !== "undefined") {
             // loginResponse = response.data.object;
@@ -131,7 +129,6 @@ export const signupRequestEpic: Epic = (action$, state$, { api }: IDependencies)
       action.payload.pob, action.payload.dob, action.payload.country, action.payload.interests, action.payload.topAlbums
       ).pipe(
       mergeMap(async (response: ApiResponse<any>) => {
-        console.log("signup response", response);
         if (response.ok && response.data.error === false) {
           try {
             await AsyncStorage.setItem(LOGIN_KEY, JSON.stringify(response.data.object));
@@ -162,7 +159,6 @@ export const logoutEpic: Epic = (action$, state$, { api }: IDependencies) => act
   mergeMap((action: any) => {
     return api.hiphop.logout(state$.value.login.userData.access_token).pipe(
       mergeMap(async (response) => {
-        console.log("logout response", response);
         try {
           await AsyncStorage.removeItem(LOGIN_KEY)
         } catch{

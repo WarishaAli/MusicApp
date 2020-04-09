@@ -46,6 +46,7 @@ class TrackPlayer extends React.Component<Props> {
             let song = await RNTrackPlayer.getTrack(trackId);
             this.props.setSong(transformSongObject( song));
             console.log("object transform", transformSongObject(song));
+        
             console.log("at track changedddd", trackId, await RNTrackPlayer.getTrack(trackId));
         });
         RNTrackPlayer.addEventListener("playback-state", (event) => {

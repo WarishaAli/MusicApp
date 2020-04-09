@@ -63,6 +63,13 @@ class BottomBar extends React.Component<Props, State>{
         return (
             <View style={styles.mainView}>
 
+                    {/* Explore */}
+                    <Button onPress={() => this.selectBottomTab(BottomBarBtns.EXPLORE)} transparent={true}
+                    style={[styles.iconHolder, { backgroundColor: this.props.selectedTab === BottomBarBtns.EXPLORE ? colors.lightMaroon : colors.maroon }]}>
+                    <Icon style={[styles.iconStyle, { fontSize: 24 }]} name={"compass"} type={"SimpleLineIcons"} />
+                    <Text style={styles.textStyle}>Explore</Text>
+                </Button>
+
                 {/* Favorites */}
                 {<Button onPress={() => this.selectBottomTab(BottomBarBtns.PLAYLIST)} transparent={true}
                     style={[styles.iconHolder, { backgroundColor: this.props.selectedTab === BottomBarBtns.PLAYLIST ? colors.lightMaroon : colors.maroon }]}>
@@ -78,12 +85,7 @@ class BottomBar extends React.Component<Props, State>{
                 </Button>}
                 
 
-                {/* Explore */}
-                <Button onPress={() => this.selectBottomTab(BottomBarBtns.EXPLORE)} transparent={true}
-                    style={[styles.iconHolder, { backgroundColor: this.props.selectedTab === BottomBarBtns.EXPLORE ? colors.lightMaroon : colors.maroon }]}>
-                    <Icon style={[styles.iconStyle, { fontSize: 24 }]} name={"compass"} type={"SimpleLineIcons"} />
-                    <Text style={styles.textStyle}>Explore</Text>
-                </Button>
+            
 
                 {/* Blogs */}
                 <Button
