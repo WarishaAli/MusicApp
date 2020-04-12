@@ -78,7 +78,6 @@ export interface State {
     songType: "mp3" | "mp4";
     categories: any;
     isVideo: boolean;
-    isHeartClicked: string;
 }
 export type Props = OwnProps & NavigationScreenProps & DispatchProps & StateProps;
 
@@ -99,7 +98,6 @@ class PlaylistScreen extends React.Component<Props, State>{
             songType: "mp3",
             categories: [],
             isVideo: this.props.navigation.getParam("isVideo"),
-            isHeartClicked: "hearto",
         }
     }
 
@@ -220,11 +218,10 @@ class PlaylistScreen extends React.Component<Props, State>{
                                     )
                                 } else{
                                 this.props.makeFavorite(item.songid);
-                                // !isFav && this.setState({isHeartClicked: "heart"})
                                 }
                             }}>
                             {!isFav ?
-                                <Icon name={this.state.isHeartClicked} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]} ></Icon> :
+                                <Icon name={"hearto"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]} ></Icon> :
                                 <Icon name={"heart"} type={"AntDesign"} style={[styles.heartIcon, { fontSize: 17 }]}></Icon>
                             }
                         </TouchableOpacity>}

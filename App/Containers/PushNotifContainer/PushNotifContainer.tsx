@@ -8,10 +8,12 @@ export default class PushNotifContainer extends Component{
       PushNotification.configure({
             // (optional) Called when Token is generated (iOS and Android)
             onRegister: function(token) {
+              console.log("token firebase", token)
             },
           
             // (required) Called when a remote or local notification is opened or received
             onNotification: function(notification) {
+              console.log("notification", notification);
           
               // process the notification here
           

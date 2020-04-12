@@ -64,13 +64,13 @@ class AllCategoriesScreen extends React.Component<Props>{
     };
     public playSong = (songData: any) => {
         if (this.categoryData.title === DataTypes.VIDEOS) {
-            SoundPlayer.pause();
+            RNTrackPlayer.pause();
             this.props.playSong(songData)
             this.props.setPlaylist(this.categoryData.data);
             this.props.navigation.push("MusicPlayScreen", { songData: songData, isSong: false, videoUrl: songData })
         } else {
-            RNTrackPlayer.reset();
-            RNTrackPlayer.add(transformSongArray([item, ...this.categoryData.data]))
+            RNTrackPlayer.pause();
+            RNTrackPlayer.add(transformSongArray([songData, ...this.categoryData.data]))
             RNTrackPlayer.play();
             this.props.showPlay(true);
             this.props.playSong(songData);

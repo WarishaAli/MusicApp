@@ -35,6 +35,7 @@ class ReduxNavigation extends React.Component<Props> {
     setKey("AIzaSyCDJLIQ-qeKlvUDfxokL2W4OCIfmD77pM0");
     this.props.checkLogin();
     this.props.checkUserRole(() => Alert.alert("Error", "no user role"));
+    Linking.addEventListener('url', this.handleOpenURL);
     if (Platform.OS === 'android') {
       Linking.getInitialURL().then(url => {
         this.navigate(url);
